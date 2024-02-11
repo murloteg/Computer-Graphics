@@ -1,0 +1,151 @@
+package ru.nsu.bolotov.view;
+
+import ru.nsu.bolotov.util.UtilConsts;
+import ru.nsu.bolotov.view.panel.DrawablePanel;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Objects;
+
+import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.STANDARD_DIALOG_SIZE;
+import static ru.nsu.bolotov.util.UtilConsts.StringConsts.APPLICATION_TITLE;
+
+public class GUI {
+    private final JFrame mainFrame;
+
+    public GUI() {
+        mainFrame = new JFrame(APPLICATION_TITLE);
+        mainFrame.setMinimumSize(new Dimension(UtilConsts.DimensionConsts.MIN_WINDOW_WIDTH, UtilConsts.DimensionConsts.MIN_WINDOW_HEIGHT));
+        mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        mainFrame.setLayout(new BorderLayout());
+        DrawablePanel mainPanel = new DrawablePanel();
+
+        mainFrame.add(mainPanel, BorderLayout.CENTER);
+        addInstrumentsTool(mainFrame, mainPanel);
+        addMenuBar(mainFrame);
+
+        mainFrame.pack();
+        mainFrame.setLocationRelativeTo(null);
+        mainFrame.setVisible(true);
+    }
+
+    private void addInstrumentsTool(JFrame frame, DrawablePanel panel) {
+        JToolBar instrumentsToolBar = new JToolBar("Instruments");
+        ClassLoader guiClassLoader = this.getClass().getClassLoader();
+
+        URL fillIconUrl = guiClassLoader.getResource("icons/fill-icon.png");
+        ImageIcon fillIcon = new ImageIcon(Objects.requireNonNull(fillIconUrl));
+
+        URL eraserIconUrl = guiClassLoader.getResource("icons/eraser-icon.png");
+        ImageIcon eraserIcon = new ImageIcon(Objects.requireNonNull(eraserIconUrl));
+
+        URL stampIconUrl = guiClassLoader.getResource("icons/stamp-icon.png");
+        ImageIcon stampIcon = new ImageIcon(Objects.requireNonNull(stampIconUrl));
+
+        URL lineIconUrl = guiClassLoader.getResource("icons/line-icon.png");
+        ImageIcon lineIcon = new ImageIcon(Objects.requireNonNull(lineIconUrl));
+
+        JButton lineButton = new JButton(lineIcon);
+        JButton stampButton = new JButton(stampIcon);
+        JButton fillButton = new JButton(fillIcon);
+        JButton eraserButton = new JButton(eraserIcon);
+
+        eraserButton.addActionListener(event -> {
+            panel.resetPanelState();
+        });
+
+        lineButton.setToolTipText("Line");
+        stampButton.setToolTipText("Stamp");
+        fillButton.setToolTipText("Fill");
+        eraserButton.setToolTipText("Clean");
+
+        JPanel toolBarPanel = new JPanel();
+        lineButton.setPreferredSize(new Dimension(40, 40));
+        stampButton.setPreferredSize(new Dimension(40, 40));
+        fillButton.setPreferredSize(new Dimension(40, 40));
+        eraserButton.setPreferredSize(new Dimension(40, 40));
+
+        toolBarPanel.add(lineButton);
+        toolBarPanel.add(stampButton);
+        toolBarPanel.add(fillButton);
+        toolBarPanel.add(eraserButton);
+
+        JSeparator separator = new JToolBar.Separator(new Dimension(50, 32));
+        toolBarPanel.add(separator);
+
+        // TODO: divide and make refactoring for this part
+        String colorsDirectoryName = "icons/colors/";
+
+        java.util.List<String> fileNames = new ArrayList<>();
+        Path colorsDirectoryPath;
+        try {
+            colorsDirectoryPath = Paths.get(ClassLoader.getSystemResource(colorsDirectoryName).toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        try (DirectoryStream<Path> colorsDirectory = Files.newDirectoryStream(Paths.get(colorsDirectoryPath.toUri()))) {
+            for (Path colorPath : colorsDirectory) {
+                fileNames.add(colorPath.getFileName().toString());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e); // TODO
+        }
+
+        for (String fileName : fileNames) {
+            URL imageURL = guiClassLoader.getResource(colorsDirectoryName + fileName);
+            JButton colorButton = new JButton(new ImageIcon(Objects.requireNonNull(imageURL)));
+            String[] partsOfFileName = fileName.split("-");
+            colorButton.setToolTipText(partsOfFileName[0]);
+            int rgbColor;
+            try {
+                BufferedImage image = ImageIO.read(imageURL);
+                rgbColor = image.getRGB(image.getWidth() / 2, image.getHeight() / 2);
+            } catch (IOException e) {
+                throw new RuntimeException(e); // TODO
+            }
+
+            colorButton.addActionListener(event -> {
+                panel.setGeneralColor(new Color(rgbColor));
+                frame.update(frame.getGraphics());
+            });
+            toolBarPanel.add(colorButton);
+        }
+
+        ///
+        instrumentsToolBar.add(toolBarPanel);
+        frame.add(instrumentsToolBar, BorderLayout.PAGE_START);
+    }
+
+    private void addMenuBar(JFrame frame) {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu helpBar = new JMenu("Help");
+
+        JMenuItem aboutItem = new JMenuItem("About");
+        aboutItem.addActionListener(event -> {
+            JDialog aboutDialogWindow = new JDialog(frame, UtilConsts.ButtonNameConsts.ABOUT_BUTTON);
+            JLabel aboutLabel = new JLabel(UtilConsts.StringConsts.ABOUT_PROGRAM_TEXT);
+
+            aboutDialogWindow.setMinimumSize(new Dimension(STANDARD_DIALOG_SIZE, STANDARD_DIALOG_SIZE));
+            aboutDialogWindow.add(aboutLabel);
+
+            aboutDialogWindow.pack();
+            aboutDialogWindow.setLocationRelativeTo(null);
+            aboutDialogWindow.setVisible(true);
+        });
+
+        helpBar.add(aboutItem);
+        menuBar.add(helpBar);
+        frame.setJMenuBar(menuBar);
+    }
+}
