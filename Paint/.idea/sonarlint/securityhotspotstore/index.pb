@@ -13,6 +13,19 @@ j
 :src/main/java/ru/nsu/bolotov/view/panel/DrawablePanel.java,6/b/6b48aa4585a559669c0208a94561c8f410ca3d27
 a
 1src/main/java/ru/nsu/bolotov/model/PointPair.java,7/1/7157f90cd12af885968d547086a5fc45f34cd1fb
-:
-
-.gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
+?
+settings.gradle,0/5/05efc8b1657769a27696d478ded1e95f38737233
+;
+gradlew.bat,2/a/2a45a911a8f1836b0b6c5b758962572012d8f8c3
+7
+gradlew,5/b/5bbfa66edb4db3c7c33c5181f43510990d3307f9
+9
+	Paint.iml,6/2/628261ba00d798a85e033a85722845ac8965fa06
+j
+:src/main/java/ru/nsu/bolotov/model/drawmode/PaintMode.java,0/f/0f8ba7d3d0791c5966b850342c25ebebec48bc94
+k
+;src/main/java/ru/nsu/bolotov/model/paintmode/PaintMode.java,1/f/1fe76071edf546b81dac4fdc26241abd7e58801a
+w
+G.idea/sonarlint/issuestore/0/5/05efc8b1657769a27696d478ded1e95f38737233,3/c/3c8c56407c35e5f5ebbd6c7250a79af8128a13a6
+Å
+Q.idea/sonarlint/securityhotspotstore/1/f/1fe76071edf546b81dac4fdc26241abd7e58801a,5/4/54c34e86c50ab22bdcd241078fceec8a72233a5d

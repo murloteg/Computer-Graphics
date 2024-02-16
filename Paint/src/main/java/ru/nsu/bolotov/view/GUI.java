@@ -1,5 +1,6 @@
 package ru.nsu.bolotov.view;
 
+import ru.nsu.bolotov.model.paintmode.PaintMode;
 import ru.nsu.bolotov.util.UtilConsts;
 import ru.nsu.bolotov.view.panel.DrawablePanel;
 
@@ -56,6 +57,10 @@ public class GUI {
         URL lineIconUrl = guiClassLoader.getResource("icons/line-icon.png");
         ImageIcon lineIcon = new ImageIcon(Objects.requireNonNull(lineIconUrl));
 
+        URL brushIconUrl = guiClassLoader.getResource("icons/brush-icon.png");
+        ImageIcon brushIcon = new ImageIcon(Objects.requireNonNull(brushIconUrl));
+
+        JButton brushButton = new JButton(brushIcon);
         JButton lineButton = new JButton(lineIcon);
         JButton stampButton = new JButton(stampIcon);
         JButton fillButton = new JButton(fillIcon);
@@ -65,17 +70,28 @@ public class GUI {
             panel.resetPanelState();
         });
 
+        brushButton.addActionListener(event -> {
+            panel.setPaintMode(PaintMode.BRUSH);
+        });
+
+        lineButton.addActionListener(event -> {
+            panel.setPaintMode(PaintMode.LINE);
+        });
+
+        brushButton.setToolTipText("Brush");
         lineButton.setToolTipText("Line");
         stampButton.setToolTipText("Stamp");
         fillButton.setToolTipText("Fill");
         eraserButton.setToolTipText("Clean");
 
         JPanel toolBarPanel = new JPanel();
+        brushButton.setPreferredSize(new Dimension(40, 40));
         lineButton.setPreferredSize(new Dimension(40, 40));
         stampButton.setPreferredSize(new Dimension(40, 40));
         fillButton.setPreferredSize(new Dimension(40, 40));
         eraserButton.setPreferredSize(new Dimension(40, 40));
 
+        toolBarPanel.add(brushButton);
         toolBarPanel.add(lineButton);
         toolBarPanel.add(stampButton);
         toolBarPanel.add(fillButton);

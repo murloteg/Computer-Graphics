@@ -1,35 +1,56 @@
 package ru.nsu.bolotov.view.panel;
 
-import ru.nsu.bolotov.model.PointPair;
+import ru.nsu.bolotov.model.paintmode.PaintMode;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.LinkedList;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+
+import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.CANVAS_SIZE;
 
 public class DrawablePanel extends JPanel implements MouseListener {
     private int trackedX;
     private int trackedY;
-    private boolean isDrawing = false;
-    private boolean drawMode = false;
+    private PaintMode paintMode;
     private Color generalColor;
-    private final java.util.List<PointPair> panelState = new LinkedList<>();
+    private final BufferedImage canvas;
+    private short clicksCount;
 
     public DrawablePanel() {
         super();
         generalColor = Color.BLACK;
+        canvas = new BufferedImage(CANVAS_SIZE, CANVAS_SIZE, BufferedImage.TYPE_INT_ARGB);
+        canvas.getGraphics().fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+        paintMode = PaintMode.BRUSH;
+        clicksCount = 0;
 
         this.addMouseListener(this);
         this.addMouseMotionListener(new MouseAdapter() {
                 @Override
                 public void mouseDragged(MouseEvent event) {
-                    if (isDrawing) {
-                        Graphics g = event.getComponent().getGraphics();
-                        g.setColor(generalColor);
-                        g.drawLine(trackedX, trackedY, event.getX(), event.getY());
-                        trackedX = event.getX();
-                        trackedY = event.getY();
-                        panelState.add(new PointPair(trackedX, trackedY, false, generalColor));
+                    switch (paintMode) {
+                        case BRUSH: {
+                            Graphics canvasGraphics = canvas.getGraphics();
+                            canvasGraphics.setColor(generalColor);
+                            canvasGraphics.drawLine(trackedX, trackedY, event.getX(), event.getY());
+                            canvasGraphics.dispose();
+                            SwingUtilities.updateComponentTreeUI(DrawablePanel.this.getParent());
+                            trackedX = event.getX();
+                            trackedY = event.getY();
+                            break;
+                        }
+                        case LINE: {
+
+                        }
+                        case FILL: {
+                            break;
+                        }
+                        case POLYGON: {
+                            break;
+                        }
                     }
                 }
             }
@@ -37,25 +58,22 @@ public class DrawablePanel extends JPanel implements MouseListener {
     }
 
     public void setGeneralColor(Color newColor) {
-        generalColor = newColor;
+        this.generalColor = newColor;
+    }
+
+    public void setPaintMode(PaintMode paintMode) {
+        this.paintMode = paintMode;
     }
 
     public void resetPanelState() {
-        panelState.clear();
-        paintComponent(this.getGraphics());
+        canvas.getGraphics().fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+        SwingUtilities.updateComponentTreeUI(this.getParent());
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        for (int i = 0; i < panelState.size() - 1; ++i) {
-            PointPair previousPair = panelState.get(i);
-            PointPair nextPair = panelState.get(i + 1);
-            g.setColor(nextPair.getSelectedColor());
-            if (!previousPair.isBorderPoint()) {
-                g.drawLine(previousPair.getX(), previousPair.getY(), nextPair.getX(), nextPair.getY());
-            }
-        }
+        g.drawImage(canvas, 0, 0, null);
     }
 
     @Override
@@ -65,17 +83,26 @@ public class DrawablePanel extends JPanel implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        if (paintMode == PaintMode.LINE && clicksCount == 1) {
+            Graphics canvasGraphics = canvas.getGraphics();
+            canvasGraphics.setColor(generalColor);
+            // TODO: use Bresenham's algorithm
+            canvasGraphics.drawLine(trackedX, trackedY, e.getX(), e.getY());
+            canvasGraphics.dispose();
+            SwingUtilities.updateComponentTreeUI(DrawablePanel.this.getParent());
+            clicksCount = 0;
+        } else if (paintMode == PaintMode.LINE && clicksCount == 0) {
+            ++clicksCount;
+        } else {
+            clicksCount = 0;
+        }
         trackedX = e.getX();
         trackedY = e.getY();
-        panelState.add(new PointPair(trackedX, trackedY, true, generalColor));
-        isDrawing = true;
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        panelState.remove(panelState.size() - 1);
-        panelState.add(new PointPair(trackedX, trackedY, true, generalColor));
-        isDrawing = false;
+
     }
 
     @Override
