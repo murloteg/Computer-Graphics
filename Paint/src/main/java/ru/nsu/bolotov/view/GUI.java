@@ -2,6 +2,7 @@ package ru.nsu.bolotov.view;
 
 import ru.nsu.bolotov.model.paintmode.PaintMode;
 import ru.nsu.bolotov.util.UtilConsts;
+import ru.nsu.bolotov.view.dialog.ParametersDialog;
 import ru.nsu.bolotov.view.panel.DrawablePanel;
 
 import javax.imageio.ImageIO;
@@ -32,6 +33,10 @@ public class GUI {
         mainFrame.setLayout(new BorderLayout());
         DrawablePanel mainPanel = new DrawablePanel();
 
+//        JScrollPane scrollPane = new JScrollPane(mainPanel);
+//        scrollPane.setPreferredSize(new Dimension(100, 100));
+//        mainFrame.add(scrollPane, BorderLayout.PAGE_END);
+
         mainFrame.add(mainPanel, BorderLayout.CENTER);
         addInstrumentsTool(mainFrame, mainPanel);
         addMenuBar(mainFrame);
@@ -60,11 +65,15 @@ public class GUI {
         URL brushIconUrl = guiClassLoader.getResource("icons/brush-icon.png");
         ImageIcon brushIcon = new ImageIcon(Objects.requireNonNull(brushIconUrl));
 
+        URL settingsIconUrl = guiClassLoader.getResource("icons/settings-icon.png");
+        ImageIcon settingsIcon = new ImageIcon(Objects.requireNonNull(settingsIconUrl));
+
         JButton brushButton = new JButton(brushIcon);
         JButton lineButton = new JButton(lineIcon);
         JButton stampButton = new JButton(stampIcon);
         JButton fillButton = new JButton(fillIcon);
         JButton eraserButton = new JButton(eraserIcon);
+        JButton settingsButton = new JButton(settingsIcon);
 
         eraserButton.addActionListener(event -> {
             panel.resetPanelState();
@@ -78,11 +87,21 @@ public class GUI {
             panel.setPaintMode(PaintMode.LINE);
         });
 
+        fillButton.addActionListener(event -> {
+            panel.setPaintMode(PaintMode.FILL);
+        });
+
+        settingsButton.addActionListener(event -> {
+            ParametersDialog parametersDialog = new ParametersDialog(frame, "Settings", panel);
+            parametersDialog.setVisible(true);
+        });
+
         brushButton.setToolTipText("Brush");
         lineButton.setToolTipText("Line");
         stampButton.setToolTipText("Stamp");
         fillButton.setToolTipText("Fill");
         eraserButton.setToolTipText("Clean");
+        settingsButton.setToolTipText("Settings");
 
         JPanel toolBarPanel = new JPanel();
         brushButton.setPreferredSize(new Dimension(40, 40));
@@ -90,12 +109,17 @@ public class GUI {
         stampButton.setPreferredSize(new Dimension(40, 40));
         fillButton.setPreferredSize(new Dimension(40, 40));
         eraserButton.setPreferredSize(new Dimension(40, 40));
+        settingsButton.setPreferredSize(new Dimension(40, 40));
 
         toolBarPanel.add(brushButton);
         toolBarPanel.add(lineButton);
         toolBarPanel.add(stampButton);
         toolBarPanel.add(fillButton);
         toolBarPanel.add(eraserButton);
+        toolBarPanel.add(settingsButton);
+
+//        JColorChooser colorChooser = new JColorChooser(Color.BLACK);
+//        toolBarPanel.add(colorChooser);
 
         JSeparator separator = new JToolBar.Separator(new Dimension(50, 32));
         toolBarPanel.add(separator);

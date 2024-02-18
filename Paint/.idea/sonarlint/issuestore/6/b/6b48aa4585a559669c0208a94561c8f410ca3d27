@@ -1,15 +1,20 @@
 
+h
+java:S1301'"KReplace this "switch" statement by "if" statements to increase readability.(õ”±Ò8î±äÛ1
 £
-java:S1186P"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ä Ïúüÿÿÿÿ8çÑ“Û1
+java:S1186V"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ä Ïúüÿÿÿÿ8ï’±äÛ1
 
-java:S1186h"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ãÆĞÂ8…ò–“Û1
+java:S1186v"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ãÆĞÂ8ï’±äÛ1
 £
-java:S1186m"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ö„˜şúÿÿÿÿ8çÑ“Û1
-£
-java:S1186r"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(•ßçùÿÿÿÿ8èÑ“Û1
+java:S1186{"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ö„˜şúÿÿÿÿ8ï’±äÛ1
+¤
+java:S1186€"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(•ßçùÿÿÿÿ8ğ’±äÛ1
 J
-java:S1948"(Make "canvas" transient or serializable.(÷ŸìÍıÿÿÿÿ8°ìë’Û1
-m	java:S128-"LEnd this switch case with an unconditional break, return or throw statement.(Óù˜Ÿıÿÿÿÿ8íÑ“Û1
-J	java:S108-")Either remove or fill this block of code.(Óù˜Ÿıÿÿÿÿ8îÑ“Û1
-O
-java:S1135Y"2Complete the task associated to this TODO comment.(ç·è8ø—Á”Û1
+java:S1948"(Make "canvas" transient or serializable.(÷ŸìÍıÿÿÿÿ8ñ’±äÛ1
+u	java:S131'"YComplete cases by adding the missing enum constants or add a default case to this switch.(õ”±Ò8õ’±äÛ1
+u
+java:S3776»"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(ç®Ğîşÿÿÿÿ8ŒÃÃäÛ1
+€
+java:S2234“"]Parameters to drawLineLow have the same names but not the same order as the method arguments.(ñèèıøÿÿÿÿ8ˆ“±äÛ1
+
+java:S2234™"^Parameters to drawLineHigh have the same names but not the same order as the method arguments.(¿š¥Øıÿÿÿÿ8ˆ“±äÛ1
