@@ -1,22 +1,16 @@
 package ru.nsu.bolotov.view;
 
 import ru.nsu.bolotov.model.paintmode.PaintMode;
+import ru.nsu.bolotov.model.polygon.PolygonForm;
 import ru.nsu.bolotov.util.UtilConsts;
 import ru.nsu.bolotov.view.dialog.ParametersDialog;
 import ru.nsu.bolotov.view.panel.DrawablePanel;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.STANDARD_DIALOG_SIZE;
@@ -33,11 +27,19 @@ public class GUI {
         mainFrame.setLayout(new BorderLayout());
         DrawablePanel mainPanel = new DrawablePanel();
 
-//        JScrollPane scrollPane = new JScrollPane(mainPanel);
-//        scrollPane.setPreferredSize(new Dimension(100, 100));
-//        mainFrame.add(scrollPane, BorderLayout.PAGE_END);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.createHorizontalScrollBar();
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-        mainFrame.add(mainPanel, BorderLayout.CENTER);
+        scrollPane.createVerticalScrollBar();
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        scrollPane.setViewportView(mainPanel);
+        scrollPane.setPreferredSize(new Dimension(500,500));
+
+        mainFrame.add(scrollPane, BorderLayout.CENTER);
+
+//        mainFrame.add(mainPanel, BorderLayout.CENTER);
         addInstrumentsTool(mainFrame, mainPanel);
         addMenuBar(mainFrame);
 
@@ -56,8 +58,11 @@ public class GUI {
         URL eraserIconUrl = guiClassLoader.getResource("icons/eraser-icon.png");
         ImageIcon eraserIcon = new ImageIcon(Objects.requireNonNull(eraserIconUrl));
 
-        URL stampIconUrl = guiClassLoader.getResource("icons/stamp-icon.png");
-        ImageIcon stampIcon = new ImageIcon(Objects.requireNonNull(stampIconUrl));
+        URL polygonStampIconUrl = guiClassLoader.getResource("icons/stamp-icon.png");
+        ImageIcon polygonStampIcon = new ImageIcon(Objects.requireNonNull(polygonStampIconUrl));
+
+        URL starStampIconUrl = guiClassLoader.getResource("icons/star-icon.png");
+        ImageIcon starStampIcon = new ImageIcon(Objects.requireNonNull(starStampIconUrl));
 
         URL lineIconUrl = guiClassLoader.getResource("icons/line-icon.png");
         ImageIcon lineIcon = new ImageIcon(Objects.requireNonNull(lineIconUrl));
@@ -70,7 +75,8 @@ public class GUI {
 
         JButton brushButton = new JButton(brushIcon);
         JButton lineButton = new JButton(lineIcon);
-        JButton stampButton = new JButton(stampIcon);
+        JButton polygonStampButton = new JButton(polygonStampIcon);
+        JButton starStampButton = new JButton(starStampIcon);
         JButton fillButton = new JButton(fillIcon);
         JButton eraserButton = new JButton(eraserIcon);
         JButton settingsButton = new JButton(settingsIcon);
@@ -82,9 +88,20 @@ public class GUI {
         brushButton.addActionListener(event -> {
             panel.setPaintMode(PaintMode.BRUSH);
         });
+        // TODO: btn.getModel().setSelected(true);
 
         lineButton.addActionListener(event -> {
             panel.setPaintMode(PaintMode.LINE);
+        });
+
+        polygonStampButton.addActionListener(event -> {
+            panel.setPaintMode(PaintMode.POLYGON);
+            panel.setPolygonForm(PolygonForm.CONVEX);
+        });
+
+        starStampButton.addActionListener(event -> {
+            panel.setPaintMode(PaintMode.POLYGON);
+            panel.setPolygonForm(PolygonForm.STAR);
         });
 
         fillButton.addActionListener(event -> {
@@ -98,7 +115,8 @@ public class GUI {
 
         brushButton.setToolTipText("Brush");
         lineButton.setToolTipText("Line");
-        stampButton.setToolTipText("Stamp");
+        polygonStampButton.setToolTipText("Polygon Stamp");
+        starStampButton.setToolTipText("Star Stamp");
         fillButton.setToolTipText("Fill");
         eraserButton.setToolTipText("Clean");
         settingsButton.setToolTipText("Settings");
@@ -106,14 +124,16 @@ public class GUI {
         JPanel toolBarPanel = new JPanel();
         brushButton.setPreferredSize(new Dimension(40, 40));
         lineButton.setPreferredSize(new Dimension(40, 40));
-        stampButton.setPreferredSize(new Dimension(40, 40));
+        polygonStampButton.setPreferredSize(new Dimension(40, 40));
+        starStampButton.setPreferredSize(new Dimension(40, 40));
         fillButton.setPreferredSize(new Dimension(40, 40));
         eraserButton.setPreferredSize(new Dimension(40, 40));
         settingsButton.setPreferredSize(new Dimension(40, 40));
 
         toolBarPanel.add(brushButton);
         toolBarPanel.add(lineButton);
-        toolBarPanel.add(stampButton);
+        toolBarPanel.add(polygonStampButton);
+        toolBarPanel.add(starStampButton);
         toolBarPanel.add(fillButton);
         toolBarPanel.add(eraserButton);
         toolBarPanel.add(settingsButton);
@@ -124,39 +144,56 @@ public class GUI {
         JSeparator separator = new JToolBar.Separator(new Dimension(50, 32));
         toolBarPanel.add(separator);
 
-        // TODO: divide and make refactoring for this part
-        String colorsDirectoryName = "icons/colors/";
 
-        java.util.List<String> fileNames = new ArrayList<>();
-        Path colorsDirectoryPath;
-        try {
-            colorsDirectoryPath = Paths.get(ClassLoader.getSystemResource(colorsDirectoryName).toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        try (DirectoryStream<Path> colorsDirectory = Files.newDirectoryStream(Paths.get(colorsDirectoryPath.toUri()))) {
-            for (Path colorPath : colorsDirectory) {
-                fileNames.add(colorPath.getFileName().toString());
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e); // TODO
-        }
+        // FIXME: Button.setBackground(); BorderFactory
+        List<JButton> colors = new ArrayList<>();
 
-        for (String fileName : fileNames) {
-            URL imageURL = guiClassLoader.getResource(colorsDirectoryName + fileName);
-            JButton colorButton = new JButton(new ImageIcon(Objects.requireNonNull(imageURL)));
-            String[] partsOfFileName = fileName.split("-");
-            colorButton.setToolTipText(partsOfFileName[0]);
-            int rgbColor;
-            try {
-                BufferedImage image = ImageIO.read(imageURL);
-                rgbColor = image.getRGB(image.getWidth() / 2, image.getHeight() / 2);
-            } catch (IOException e) {
-                throw new RuntimeException(e); // TODO
-            }
+        JButton blackColorButton = new JButton();
+        blackColorButton.setBackground(Color.BLACK);
+        blackColorButton.setToolTipText("Black");
+        colors.add(blackColorButton);
 
+        JButton blueColorButton = new JButton();
+        blueColorButton.setBackground(Color.BLUE);
+        blueColorButton.setToolTipText("Blue");
+        colors.add(blueColorButton);
+
+        JButton redColorButton = new JButton();
+        redColorButton.setBackground(Color.RED);
+        redColorButton.setToolTipText("Red");
+        colors.add(redColorButton);
+
+        JButton greenColorButton = new JButton();
+        greenColorButton.setBackground(Color.GREEN);
+        greenColorButton.setToolTipText("Green");
+        colors.add(greenColorButton);
+
+        JButton whiteColorButton = new JButton();
+        whiteColorButton.setBackground(Color.WHITE);
+        whiteColorButton.setToolTipText("White");
+        colors.add(whiteColorButton);
+
+        JButton magentaColorButton = new JButton();
+        magentaColorButton.setBackground(Color.MAGENTA);
+        magentaColorButton.setToolTipText("Magenta");
+        colors.add(magentaColorButton);
+
+        JButton cyanColorButton = new JButton();
+        cyanColorButton.setBackground(Color.CYAN);
+        cyanColorButton.setToolTipText("Cyan");
+        colors.add(cyanColorButton);
+
+        JButton yellowColorButton = new JButton();
+        yellowColorButton.setBackground(Color.YELLOW);
+        yellowColorButton.setToolTipText("Yellow");
+        colors.add(yellowColorButton);
+
+        for (JButton colorButton: colors) {
+            colorButton.setBorderPainted(false);
+            colorButton.setOpaque(true);
+            colorButton.setPreferredSize(new Dimension(40, 40));
             colorButton.addActionListener(event -> {
-                panel.setGeneralColor(new Color(rgbColor));
+                panel.setGeneralColor(colorButton.getBackground());
                 frame.update(frame.getGraphics());
             });
             toolBarPanel.add(colorButton);

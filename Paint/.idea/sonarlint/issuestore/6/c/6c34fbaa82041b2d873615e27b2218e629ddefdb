@@ -1,7 +1,16 @@
 
+]	java:S125"<This block of commented-out lines of code should be removed.(ªîòïıÿÿÿÿ8Š÷ŒÜ1
 I
-java:S1602"",Remove useless curly braces around statement(£Ùãš8ôåÍØÛ1
+java:S16029",Remove useless curly braces around statement(÷Ø¹ö8šŠ÷ŒÜ1
+H
+java:S1602^",Remove useless curly braces around statement(ñ²†C8œŠ÷ŒÜ1
+I
+java:S1602b",Remove useless curly braces around statement(¬Àƒ8œŠ÷ŒÜ1
+X	java:S125g"<This block of commented-out lines of code should be removed.(ÆÕ™Ù8šŠ÷ŒÜ1
+N
+java:S1602x",Remove useless curly braces around statement(úšªúÿÿÿÿ8îìıŒÜ1
+I
+java:S1602|",Remove useless curly braces around statement(ñ‰¾8½²şŒÜ1
+Y	java:S125Œ"<This block of commented-out lines of code should be removed.(´Æ«ù8Š÷ŒÜ1
 S
-java:S1068"1Remove this unused "drawablePanel" private field.(¹ÁÑøÿÿÿÿ8ğÅÌØÛ1
-I
-java:S1068",Remove this unused "lineSize" private field.(©…¶´8ğÅÌØÛ1
+java:S1068"1Remove this unused "drawablePanel" private field.(¹ÁÑøÿÿÿÿ8 Š÷ŒÜ1

@@ -2,6 +2,8 @@ package ru.nsu.bolotov.view.panel;
 
 import ru.nsu.bolotov.model.data.SpanCoords;
 import ru.nsu.bolotov.model.paintmode.PaintMode;
+import ru.nsu.bolotov.model.polygon.PolygonForm;
+import ru.nsu.bolotov.model.polygon.PolygonParameters;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +21,7 @@ public class DrawablePanel extends JPanel implements MouseListener {
     private PaintMode paintMode;
     private Color generalColor;
     private int lineSize;
+    private PolygonParameters polygonParameters;
     private final BufferedImage canvas;
     private short clicksCount;
 
@@ -26,7 +29,9 @@ public class DrawablePanel extends JPanel implements MouseListener {
         super();
         generalColor = Color.BLACK;
         lineSize = 1;
+        polygonParameters = new PolygonParameters(PolygonForm.CONVEX, 0, 5); // FIXME
         canvas = new BufferedImage(CANVAS_SIZE, CANVAS_SIZE, BufferedImage.TYPE_INT_ARGB);
+        this.createImage(canvas.getSource());
 
         canvas.getGraphics().fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
         paintMode = PaintMode.BRUSH;
@@ -69,6 +74,10 @@ public class DrawablePanel extends JPanel implements MouseListener {
 
     public void setPaintMode(PaintMode paintMode) {
         this.paintMode = paintMode;
+    }
+
+    public void setPolygonForm(PolygonForm polygonForm) {
+        this.polygonParameters.setPolygonForm(polygonForm);
     }
 
     public void resetPanelState() {
@@ -129,7 +138,14 @@ public class DrawablePanel extends JPanel implements MouseListener {
 
     }
 
+    private boolean isPointInBounds(int x, int y) {
+        return x >= 0 && x < CANVAS_SIZE && y >= 0 && y < CANVAS_SIZE;
+    }
+
     private boolean isSpanPoint(int x, int y, int oldColor) {
+        if (!isPointInBounds(x, y)) {
+            return false;
+        }
         return canvas.getRGB(x, y) == oldColor;
     }
 
@@ -269,7 +285,18 @@ public class DrawablePanel extends JPanel implements MouseListener {
         }
     }
 
+    private int normalizeCoordinate(int coordinate) {
+        if (coordinate < 0 || coordinate >= CANVAS_SIZE) {
+            return Math.abs(coordinate - CANVAS_SIZE) < Math.abs(coordinate) ? (CANVAS_SIZE - 1) : 0;
+        }
+        return coordinate;
+    }
+
     private void bresenhamLineAlgorithm(int x0, int y0, int x1, int y1) {
+        x0 = normalizeCoordinate(x0);
+        y0 = normalizeCoordinate(y0);
+        x1 = normalizeCoordinate(x1);
+        y1 = normalizeCoordinate(y1);
         if (Math.abs(y1 - y0) < Math.abs(x1 - x0)) {
             if (x0 > x1) {
                 drawLineLow(x1, y1, x0, y0);

@@ -29,3 +29,7 @@ n
 >src/main/java/ru/nsu/bolotov/view/dialog/ParametersDialog.java,6/c/6c34fbaa82041b2d873615e27b2218e629ddefdb
 g
 7src/main/java/ru/nsu/bolotov/model/data/SpanCoords.java,4/d/4d232132cd271680eaaf4c4a6a458074bfe2aaca
+q
+Asrc/main/java/ru/nsu/bolotov/model/polygon/PolygonParameters.java,7/2/72a5ed7128455233be5ee17f3b4e92ecc70b2968
+k
+;src/main/java/ru/nsu/bolotov/model/polygon/PolygonForm.java,9/a/9aa57b4bfd05fada1d366f67d2364619dabf8e0c

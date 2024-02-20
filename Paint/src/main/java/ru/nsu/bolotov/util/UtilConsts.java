@@ -5,6 +5,8 @@ public final class UtilConsts {
         public static final int MIN_WINDOW_WIDTH = 640;
         public static final int MIN_WINDOW_HEIGHT = 480;
         public static final int STANDARD_DIALOG_SIZE = 220;
+        public static final int CHOOSE_DIALOG_HEIGHT = 90;
+        public static final int POLYGON_DIALOG_HEIGHT = 90;
         public static final int CANVAS_SIZE = 900;
 
         private DimensionConsts() {
