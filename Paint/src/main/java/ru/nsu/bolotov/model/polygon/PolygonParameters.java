@@ -4,6 +4,7 @@ public class PolygonParameters {
     private PolygonForm polygonForm;
     private int rotationInDegrees;
     private int radiusInPx;
+    private int numberOfVertices;
 
     public PolygonParameters(PolygonForm polygonForm, int rotationInDegrees, int radiusInPx) {
         this.polygonForm = polygonForm;
@@ -33,5 +34,13 @@ public class PolygonParameters {
 
     public void setRadiusInPx(int radiusInPx) {
         this.radiusInPx = radiusInPx;
+    }
+
+    public int getNumberOfVertices() {
+        return numberOfVertices;
+    }
+
+    public void setNumberOfVertices(int numberOfVertices) {
+        this.numberOfVertices = numberOfVertices;
     }
 }

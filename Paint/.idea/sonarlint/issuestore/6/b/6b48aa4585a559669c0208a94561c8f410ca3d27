@@ -1,24 +1,23 @@
 
-h
-java:S1301,"KReplace this "switch" statement by "if" statements to increase readability.(õ”±Ò8ç¥ÂÜ1
 £
-java:S1186_"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ä Ïúüÿÿÿÿ8‹©ÂÜ1
-
-java:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ãÆĞÂ8Œ©ÂÜ1
+java:S1186["€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ä Ïúüÿÿÿÿ8ØİÄåÜ1
+Ÿ
+java:S1186‚"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ãÆĞÂ8ØİÄåÜ1
 ¤
-java:S1186„"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ö„˜şúÿÿÿÿ8Œ©ÂÜ1
+java:S1186‡"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ö„˜şúÿÿÿÿ8ØİÄåÜ1
 ¤
-java:S1186‰"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(•ßçùÿÿÿÿ8Œ©ÂÜ1
+java:S1186Œ"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(•ßçùÿÿÿÿ8ÙİÄåÜ1
 U
-java:S1948"3Make "polygonParameters" transient or serializable.(êŞüÌøÿÿÿÿ8©ÂÜ1
+java:S1948"3Make "polygonParameters" transient or serializable.(êŞüÌøÿÿÿÿ8ÚİÄåÜ1
 J
-java:S1948"(Make "canvas" transient or serializable.(÷ŸìÍıÿÿÿÿ8©ÂÜ1
+java:S1948"(Make "canvas" transient or serializable.(÷ŸìÍıÿÿÿÿ8ÚİÄåÜ1
 a
-java:S1134 "DTake the required action to fix the issue indicated by this comment.(îı»8“©ÂÜ1
-u	java:S131,"YComplete cases by adding the missing enum constants or add a default case to this switch.(õ”±Ò8™©ÂÜ1
+java:S1134""DTake the required action to fix the issue indicated by this comment.(îı»8ÜİÄåÜ1
+a
+java:S1134w"DTake the required action to fix the issue indicated by this comment.(÷Ã“8åİÄåÜ1
 u
-java:S3776Ë"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(ç®Ğîşÿÿÿÿ8ª©ÂÜ1
+java:S3776ë"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(ç®Ğîşÿÿÿÿ8ñİÄåÜ1
 €
-java:S2234®"]Parameters to drawLineLow have the same names but not the same order as the method arguments.(ñèèıøÿÿÿÿ8µ©ÂÜ1
+java:S2234Î"]Parameters to drawLineLow have the same names but not the same order as the method arguments.(ñèèıøÿÿÿÿ8ùİÄåÜ1
 
-java:S2234´"^Parameters to drawLineHigh have the same names but not the same order as the method arguments.(¿š¥Øıÿÿÿÿ8µ©ÂÜ1
+java:S2234Ô"^Parameters to drawLineHigh have the same names but not the same order as the method arguments.(¿š¥Øıÿÿÿÿ8úİÄåÜ1

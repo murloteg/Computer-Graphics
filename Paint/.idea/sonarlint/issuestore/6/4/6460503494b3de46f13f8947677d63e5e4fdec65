@@ -1,16 +1,11 @@
 
-]	java:S125*"<This block of commented-out lines of code should be removed.(×ĞÒÉşÿÿÿÿ8Ò’»Ü1
+]	java:S125/"<This block of commented-out lines of code should be removed.(×ĞÒÉşÿÿÿÿ8·£ğİÜ1
 N
-java:S1602T",Remove useless curly braces around statement(‰’„©ıÿÿÿÿ8Ù’»Ü1
+java:S1602j",Remove useless curly braces around statement(‰’„©ıÿÿÿÿ8À£ğİÜ1
+W	java:S125t"<This block of commented-out lines of code should be removed.(¨¡¸/8Â£ğİÜ1
 N
-java:S1602X",Remove useless curly braces around statement(Šõè­üÿÿÿÿ8Ù’»Ü1
-W	java:S125["<This block of commented-out lines of code should be removed.(¨¡¸/8Ö¥”»Ü1
-N
-java:S1135["2Complete the task associated to this TODO comment.(¨¡¸/8Ö¥”»Ü1
-I
-java:S1602]",Remove useless curly braces around statement(ÖÑ´Ğ8Ú’»Ü1
-I
-java:S1602k",Remove useless curly braces around statement(ı„ô¸8Û’»Ü1
-^	java:S125"<This block of commented-out lines of code should be removed.(õê—«ıÿÿÿÿ8ß’»Ü1
+java:S1135t"2Complete the task associated to this TODO comment.(¨¡¸/8Â£ğİÜ1
 g
-java:S1134”"DTake the required action to fix the issue indicated by this comment.(²êˆ„úÿÿÿÿ8ß’»Ü1
+java:S1134¶"DTake the required action to fix the issue indicated by this comment.(²êˆ„úÿÿÿÿ8É£ğİÜ1
+P
+java:S1135"2Complete the task associated to this TODO comment.(…ïœ†8ˆ‚÷İÜ1

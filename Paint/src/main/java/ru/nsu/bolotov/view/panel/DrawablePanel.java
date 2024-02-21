@@ -11,7 +11,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.CANVAS_SIZE;
 
@@ -41,23 +43,17 @@ public class DrawablePanel extends JPanel implements MouseListener {
         this.addMouseMotionListener(new MouseAdapter() {
                 @Override
                 public void mouseDragged(MouseEvent event) {
-                    switch (paintMode) {
-                        case BRUSH: {
-                            Graphics canvasGraphics = canvas.getGraphics();
-                            canvasGraphics.setColor(generalColor);
-                            Graphics2D cg2 = (Graphics2D) canvasGraphics;
-                            cg2.setStroke(new BasicStroke(lineSize));
+                    if (paintMode == PaintMode.BRUSH) {
+                        Graphics canvasGraphics = canvas.getGraphics();
+                        Graphics2D cg2 = (Graphics2D) canvasGraphics;
+                        cg2.setColor(generalColor);
+                        cg2.setStroke(new BasicStroke(lineSize));
 
-                            canvasGraphics.drawLine(trackedX, trackedY, event.getX(), event.getY());
-                            canvasGraphics.dispose();
-                            SwingUtilities.updateComponentTreeUI(DrawablePanel.this.getParent());
-                            trackedX = event.getX();
-                            trackedY = event.getY();
-                            break;
-                        }
-                        case POLYGON: {
-                            break;
-                        }
+                        cg2.drawLine(trackedX, trackedY, event.getX(), event.getY());
+                        cg2.dispose();
+                        SwingUtilities.updateComponentTreeUI(DrawablePanel.this.getParent());
+                        trackedX = event.getX();
+                        trackedY = event.getY();
                     }
                 }
             }
@@ -103,11 +99,11 @@ public class DrawablePanel extends JPanel implements MouseListener {
                 bresenhamLineAlgorithm(trackedX, trackedY, e.getX(), e.getY());
             } else {
                 Graphics canvasGraphics = canvas.getGraphics();
-                canvasGraphics.setColor(generalColor);
                 Graphics2D cg2 = (Graphics2D) canvasGraphics;
+                cg2.setColor(generalColor);
                 cg2.setStroke(new BasicStroke(lineSize));
-                canvasGraphics.drawLine(trackedX, trackedY, e.getX(), e.getY());
-                canvasGraphics.dispose();
+                cg2.drawLine(trackedX, trackedY, e.getX(), e.getY());
+                cg2.dispose();
             }
             SwingUtilities.updateComponentTreeUI(DrawablePanel.this.getParent());
             clicksCount = 0;
@@ -115,6 +111,13 @@ public class DrawablePanel extends JPanel implements MouseListener {
             ++clicksCount;
         } else if (paintMode == PaintMode.FILL) {
             spanFillingAlgorithm(e.getX(), e.getY());
+            SwingUtilities.updateComponentTreeUI(DrawablePanel.this.getParent());
+        } else if (paintMode == PaintMode.POLYGON) {
+            polygonParameters.setNumberOfVertices(3);
+            polygonParameters.setRadiusInPx(100);
+            polygonParameters.setRotationInDegrees(45);
+            // FIXME
+            drawRegularPolygon(e.getX(), e.getY());
             SwingUtilities.updateComponentTreeUI(DrawablePanel.this.getParent());
         } else {
             clicksCount = 0;
@@ -136,6 +139,35 @@ public class DrawablePanel extends JPanel implements MouseListener {
     @Override
     public void mouseExited(MouseEvent e) {
 
+    }
+
+    private void drawRegularPolygon(int centerX, int centerY) {
+        int numberOfVertices = polygonParameters.getNumberOfVertices();
+        int polygonRadius = polygonParameters.getRadiusInPx();
+        double shiftAngleInRadians = Math.toRadians(polygonParameters.getRotationInDegrees());
+
+        List<Integer> xCoordsList = new ArrayList<>();
+        for (int i = 0; i < numberOfVertices; ++i) {
+            int currentX = centerX + (int) Math.round(polygonRadius * Math.cos(shiftAngleInRadians + 2 * Math.PI * i / numberOfVertices));
+            xCoordsList.add(i, currentX);
+        }
+
+        List<Integer> yCoordsList = new ArrayList<>();
+        for (int i = 0; i < numberOfVertices; ++i) {
+            int currentY = centerY + (int) Math.round(polygonRadius * Math.sin(shiftAngleInRadians + 2 * Math.PI * i / numberOfVertices));
+            yCoordsList.add(i, currentY);
+        }
+
+        int[] xArray = xCoordsList.stream().mapToInt(i -> i).toArray();
+        int[] yArray = yCoordsList.stream().mapToInt(i -> i).toArray();
+        Polygon polygon = new Polygon(xArray, yArray, numberOfVertices);
+
+        Graphics canvasGraphics = canvas.getGraphics();
+        Graphics2D cg2 = (Graphics2D) canvasGraphics;
+        cg2.setColor(Color.BLACK);
+        cg2.setStroke(new BasicStroke(1));
+        cg2.drawPolygon(polygon);
+        canvasGraphics.dispose();
     }
 
     private boolean isPointInBounds(int x, int y) {

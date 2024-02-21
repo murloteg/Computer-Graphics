@@ -24,6 +24,11 @@ public class GUI {
         mainFrame.setMinimumSize(new Dimension(UtilConsts.DimensionConsts.MIN_WINDOW_WIDTH, UtilConsts.DimensionConsts.MIN_WINDOW_HEIGHT));
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+        URL applicationIconUrl = this.getClass().getClassLoader().getResource("paint-logo.png");
+        ImageIcon applicationIcon = new ImageIcon(Objects.requireNonNull(applicationIconUrl));
+
+        mainFrame.setIconImage(applicationIcon.getImage());
+
         mainFrame.setLayout(new BorderLayout());
         DrawablePanel mainPanel = new DrawablePanel();
 
@@ -46,6 +51,14 @@ public class GUI {
         mainFrame.pack();
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
+    }
+
+    private void unselectOtherInstrumentsButtons(List<JButton> instruments, JButton callerButton) {
+        for (JButton instrumentButton : instruments) {
+            if (!instrumentButton.equals(callerButton)) {
+                instrumentButton.getModel().setSelected(false);
+            }
+        }
     }
 
     private void addInstrumentsTool(JFrame frame, DrawablePanel panel) {
@@ -81,31 +94,55 @@ public class GUI {
         JButton eraserButton = new JButton(eraserIcon);
         JButton settingsButton = new JButton(settingsIcon);
 
+        List<JButton> instruments = new ArrayList<>();
+        instruments.add(brushButton);
+        instruments.add(lineButton);
+        instruments.add(polygonStampButton);
+        instruments.add(starStampButton);
+        instruments.add(fillButton);
+        instruments.add(eraserButton);
+        instruments.add(settingsButton);
+
         eraserButton.addActionListener(event -> {
             panel.resetPanelState();
         });
 
         brushButton.addActionListener(event -> {
             panel.setPaintMode(PaintMode.BRUSH);
+            brushButton.getModel().setSelected(true);
+            brushButton.setOpaque(true);
+            unselectOtherInstrumentsButtons(instruments, brushButton);
         });
         // TODO: btn.getModel().setSelected(true);
 
         lineButton.addActionListener(event -> {
             panel.setPaintMode(PaintMode.LINE);
+            lineButton.getModel().setSelected(true);
+            lineButton.setOpaque(true);
+            unselectOtherInstrumentsButtons(instruments, lineButton);
         });
 
         polygonStampButton.addActionListener(event -> {
             panel.setPaintMode(PaintMode.POLYGON);
             panel.setPolygonForm(PolygonForm.CONVEX);
+            polygonStampButton.getModel().setSelected(true);
+            polygonStampButton.setOpaque(true);
+            unselectOtherInstrumentsButtons(instruments, polygonStampButton);
         });
 
         starStampButton.addActionListener(event -> {
             panel.setPaintMode(PaintMode.POLYGON);
             panel.setPolygonForm(PolygonForm.STAR);
+            starStampButton.getModel().setSelected(true);
+            starStampButton.setOpaque(true);
+            unselectOtherInstrumentsButtons(instruments, starStampButton);
         });
 
         fillButton.addActionListener(event -> {
             panel.setPaintMode(PaintMode.FILL);
+            fillButton.getModel().setSelected(true);
+            fillButton.setOpaque(true);
+            unselectOtherInstrumentsButtons(instruments, fillButton);
         });
 
         settingsButton.addActionListener(event -> {
@@ -138,9 +175,6 @@ public class GUI {
         toolBarPanel.add(eraserButton);
         toolBarPanel.add(settingsButton);
 
-//        JColorChooser colorChooser = new JColorChooser(Color.BLACK);
-//        toolBarPanel.add(colorChooser);
-
         JSeparator separator = new JToolBar.Separator(new Dimension(50, 32));
         toolBarPanel.add(separator);
 
@@ -168,25 +202,25 @@ public class GUI {
         greenColorButton.setToolTipText("Green");
         colors.add(greenColorButton);
 
-        JButton whiteColorButton = new JButton();
-        whiteColorButton.setBackground(Color.WHITE);
-        whiteColorButton.setToolTipText("White");
-        colors.add(whiteColorButton);
+        JButton cyanColorButton = new JButton();
+        cyanColorButton.setBackground(Color.CYAN);
+        cyanColorButton.setToolTipText("Cyan");
+        colors.add(cyanColorButton);
 
         JButton magentaColorButton = new JButton();
         magentaColorButton.setBackground(Color.MAGENTA);
         magentaColorButton.setToolTipText("Magenta");
         colors.add(magentaColorButton);
 
-        JButton cyanColorButton = new JButton();
-        cyanColorButton.setBackground(Color.CYAN);
-        cyanColorButton.setToolTipText("Cyan");
-        colors.add(cyanColorButton);
-
         JButton yellowColorButton = new JButton();
         yellowColorButton.setBackground(Color.YELLOW);
         yellowColorButton.setToolTipText("Yellow");
         colors.add(yellowColorButton);
+
+        JButton whiteColorButton = new JButton();
+        whiteColorButton.setBackground(Color.WHITE);
+        whiteColorButton.setToolTipText("White");
+        colors.add(whiteColorButton);
 
         for (JButton colorButton: colors) {
             colorButton.setBorderPainted(false);
@@ -198,6 +232,23 @@ public class GUI {
             });
             toolBarPanel.add(colorButton);
         }
+
+        URL paletteIconUrl = guiClassLoader.getResource("icons/palette-icon.png");
+        ImageIcon paletteIcon = new ImageIcon(Objects.requireNonNull(paletteIconUrl));
+
+        JButton chooseColorButton = new JButton(paletteIcon);
+        chooseColorButton.setToolTipText("Choose color");
+        brushButton.setPreferredSize(new Dimension(40, 40));
+
+        chooseColorButton.addActionListener(event -> {
+            Color selectedColor = JColorChooser.showDialog(frame, "Choose color", Color.BLACK);
+            if (Objects.nonNull(selectedColor)) {
+                panel.setGeneralColor(selectedColor);
+            }
+        });
+
+        toolBarPanel.add(chooseColorButton);
+
 
         ///
         instrumentsToolBar.add(toolBarPanel);
@@ -220,9 +271,22 @@ public class GUI {
             aboutDialogWindow.setLocationRelativeTo(null);
             aboutDialogWindow.setVisible(true);
         });
-
         helpBar.add(aboutItem);
+
+        JMenu instrumentsBar = new JMenu("Instruments");
+        JMenuItem brushItem = new JMenuItem();
+        JRadioButton brushButton = new JRadioButton("Brush");
+        brushButton.setMinimumSize(new Dimension(40, 40));
+
+        ButtonGroup radioButtonGroup = new ButtonGroup();
+        radioButtonGroup.add(brushButton);
+
+        brushItem.add(brushButton);
+        instrumentsBar.add(brushItem);
+        // TODO
+
         menuBar.add(helpBar);
+        menuBar.add(instrumentsBar);
         frame.setJMenuBar(menuBar);
     }
 }
