@@ -31,7 +31,7 @@ public class DrawablePanel extends JPanel implements MouseListener {
         super();
         generalColor = Color.BLACK;
         lineSize = 1;
-        polygonParameters = new PolygonParameters(PolygonForm.CONVEX, 0, 5); // FIXME
+        polygonParameters = new PolygonParameters();
         canvas = new BufferedImage(CANVAS_SIZE, CANVAS_SIZE, BufferedImage.TYPE_INT_ARGB);
         this.createImage(canvas.getSource());
 
@@ -76,6 +76,10 @@ public class DrawablePanel extends JPanel implements MouseListener {
         this.polygonParameters.setPolygonForm(polygonForm);
     }
 
+    public PolygonParameters getPolygonParameters() {
+        return this.polygonParameters;
+    }
+
     public void resetPanelState() {
         canvas.getGraphics().fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
         SwingUtilities.updateComponentTreeUI(this.getParent());
@@ -113,10 +117,6 @@ public class DrawablePanel extends JPanel implements MouseListener {
             spanFillingAlgorithm(e.getX(), e.getY());
             SwingUtilities.updateComponentTreeUI(DrawablePanel.this.getParent());
         } else if (paintMode == PaintMode.POLYGON) {
-            polygonParameters.setNumberOfVertices(3);
-            polygonParameters.setRadiusInPx(100);
-            polygonParameters.setRotationInDegrees(45);
-            // FIXME
             drawRegularPolygon(e.getX(), e.getY());
             SwingUtilities.updateComponentTreeUI(DrawablePanel.this.getParent());
         } else {

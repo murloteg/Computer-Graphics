@@ -6,6 +6,13 @@ public class PolygonParameters {
     private int radiusInPx;
     private int numberOfVertices;
 
+    public PolygonParameters() {
+        this.polygonForm = PolygonForm.CONVEX;
+        this.numberOfVertices = 3;
+        this.radiusInPx = 10;
+        this.rotationInDegrees = 0;
+    }
+
     public PolygonParameters(PolygonForm polygonForm, int rotationInDegrees, int radiusInPx) {
         this.polygonForm = polygonForm;
         this.rotationInDegrees = rotationInDegrees;
@@ -42,5 +49,12 @@ public class PolygonParameters {
 
     public void setNumberOfVertices(int numberOfVertices) {
         this.numberOfVertices = numberOfVertices;
+    }
+
+    public static void copyParameters(PolygonParameters source, PolygonParameters destination) {
+        destination.setPolygonForm(source.getPolygonForm());
+        destination.setNumberOfVertices(source.getNumberOfVertices());
+        destination.setRadiusInPx(source.getRadiusInPx());
+        destination.setRotationInDegrees(source.getRotationInDegrees());
     }
 }

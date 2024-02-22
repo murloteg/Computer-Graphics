@@ -1,6 +1,6 @@
 
 £
-java:S1186["€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ä Ïúüÿÿÿÿ8ØİÄåÜ1
+java:S1186_"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ä Ïúüÿÿÿÿ8ØİÄåÜ1
 Ÿ
 java:S1186‚"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ãÆĞÂ8ØİÄåÜ1
 ¤
@@ -11,10 +11,6 @@ U
 java:S1948"3Make "polygonParameters" transient or serializable.(êŞüÌøÿÿÿÿ8ÚİÄåÜ1
 J
 java:S1948"(Make "canvas" transient or serializable.(÷ŸìÍıÿÿÿÿ8ÚİÄåÜ1
-a
-java:S1134""DTake the required action to fix the issue indicated by this comment.(îı»8ÜİÄåÜ1
-a
-java:S1134w"DTake the required action to fix the issue indicated by this comment.(÷Ã“8åİÄåÜ1
 u
 java:S3776ë"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(ç®Ğîşÿÿÿÿ8ñİÄåÜ1
 €
