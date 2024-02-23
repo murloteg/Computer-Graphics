@@ -33,3 +33,5 @@ q
 Asrc/main/java/ru/nsu/bolotov/model/polygon/PolygonParameters.java,7/2/72a5ed7128455233be5ee17f3b4e92ecc70b2968
 k
 ;src/main/java/ru/nsu/bolotov/model/polygon/PolygonForm.java,9/a/9aa57b4bfd05fada1d366f67d2364619dabf8e0c
+f
+6src/main/java/ru/nsu/bolotov/view/toolbar/ToolBar.java,c/b/cb42e37772975ed210199e49e7c11e06c28e8796

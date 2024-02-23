@@ -23,8 +23,8 @@ public class DrawablePanel extends JPanel implements MouseListener {
     private PaintMode paintMode;
     private Color generalColor;
     private int lineSize;
-    private PolygonParameters polygonParameters;
-    private final BufferedImage canvas;
+    private final transient PolygonParameters polygonParameters;
+    private final transient BufferedImage canvas;
     private short clicksCount;
 
     public DrawablePanel() {
@@ -117,7 +117,7 @@ public class DrawablePanel extends JPanel implements MouseListener {
             spanFillingAlgorithm(e.getX(), e.getY());
             SwingUtilities.updateComponentTreeUI(DrawablePanel.this.getParent());
         } else if (paintMode == PaintMode.POLYGON) {
-            drawRegularPolygon(e.getX(), e.getY());
+            drawPolygon(e.getX(), e.getY());
             SwingUtilities.updateComponentTreeUI(DrawablePanel.this.getParent());
         } else {
             clicksCount = 0;
@@ -141,21 +141,77 @@ public class DrawablePanel extends JPanel implements MouseListener {
 
     }
 
+    private void drawPolygon(int centerX, int centerY) {
+        if (polygonParameters.getPolygonForm() == PolygonForm.CONVEX) {
+            drawRegularPolygon(centerX, centerY);
+        } else if (polygonParameters.getPolygonForm() == PolygonForm.STAR) {
+            drawRegularStar(centerX, centerY);
+        }
+    }
+
+    private void drawRegularStar(int centerX, int centerY) {
+        int numberOfVertices = polygonParameters.getNumberOfVertices();
+        int outerRadius = polygonParameters.getRadiusInPx();
+        double shiftAngleInRadians = Math.toRadians(polygonParameters.getRotationInDegrees());
+
+        double innerRadius = (double) outerRadius / 2;
+        double angleBetweenOuterPoints = 2 * Math.PI / numberOfVertices;
+        double angleBetweenInnerPoints = angleBetweenOuterPoints / 2;
+
+        List<Integer> xCoordsList = new ArrayList<>();
+        List<Integer> yCoordsList = new ArrayList<>();
+        for (int i = 0; i < numberOfVertices; ++i) {
+            int currentX = centerX + (int) Math.round(
+                    outerRadius * Math.cos(shiftAngleInRadians + angleBetweenOuterPoints * i)
+            );
+            xCoordsList.add(currentX);
+
+            int currentY = centerY + (int) Math.round(
+                    outerRadius * Math.sin(shiftAngleInRadians + angleBetweenOuterPoints * i)
+            );
+            yCoordsList.add(currentY);
+
+            int additionalX = centerX + (int) Math.round(
+                    innerRadius * Math.cos(shiftAngleInRadians + angleBetweenOuterPoints * i + angleBetweenInnerPoints)
+            );
+            xCoordsList.add(additionalX);
+
+            int additionalY = centerY + (int) Math.round(
+                    innerRadius * Math.sin(shiftAngleInRadians + angleBetweenOuterPoints * i + angleBetweenInnerPoints)
+            );
+            yCoordsList.add(additionalY);
+        }
+
+        int[] xArray = xCoordsList.stream().mapToInt(i -> i).toArray();
+        int[] yArray = yCoordsList.stream().mapToInt(i -> i).toArray();
+        Polygon polygon = new Polygon(xArray, yArray, xArray.length);
+
+        Graphics canvasGraphics = canvas.getGraphics();
+        Graphics2D cg2 = (Graphics2D) canvasGraphics;
+        cg2.setColor(Color.BLACK);
+        cg2.setStroke(new BasicStroke(1));
+        cg2.drawPolygon(polygon);
+        canvasGraphics.dispose();
+    }
+
     private void drawRegularPolygon(int centerX, int centerY) {
         int numberOfVertices = polygonParameters.getNumberOfVertices();
         int polygonRadius = polygonParameters.getRadiusInPx();
         double shiftAngleInRadians = Math.toRadians(polygonParameters.getRotationInDegrees());
+        double angleBetweenOuterPoints = 2 * Math.PI / numberOfVertices;
 
         List<Integer> xCoordsList = new ArrayList<>();
-        for (int i = 0; i < numberOfVertices; ++i) {
-            int currentX = centerX + (int) Math.round(polygonRadius * Math.cos(shiftAngleInRadians + 2 * Math.PI * i / numberOfVertices));
-            xCoordsList.add(i, currentX);
-        }
-
         List<Integer> yCoordsList = new ArrayList<>();
         for (int i = 0; i < numberOfVertices; ++i) {
-            int currentY = centerY + (int) Math.round(polygonRadius * Math.sin(shiftAngleInRadians + 2 * Math.PI * i / numberOfVertices));
-            yCoordsList.add(i, currentY);
+            int currentX = centerX + (int) Math.round(
+                    polygonRadius * Math.cos(shiftAngleInRadians + angleBetweenOuterPoints * i)
+            );
+            xCoordsList.add(currentX);
+
+            int currentY = centerY + (int) Math.round(
+                    polygonRadius * Math.sin(shiftAngleInRadians + angleBetweenOuterPoints * i)
+            );
+            yCoordsList.add(currentY);
         }
 
         int[] xArray = xCoordsList.stream().mapToInt(i -> i).toArray();

@@ -8,15 +8,9 @@ public class PolygonParameters {
 
     public PolygonParameters() {
         this.polygonForm = PolygonForm.CONVEX;
-        this.numberOfVertices = 3;
-        this.radiusInPx = 10;
+        this.numberOfVertices = 3; // TODO
+        this.radiusInPx = 45;
         this.rotationInDegrees = 0;
-    }
-
-    public PolygonParameters(PolygonForm polygonForm, int rotationInDegrees, int radiusInPx) {
-        this.polygonForm = polygonForm;
-        this.rotationInDegrees = rotationInDegrees;
-        this.radiusInPx = radiusInPx;
     }
 
     public PolygonForm getPolygonForm() {
