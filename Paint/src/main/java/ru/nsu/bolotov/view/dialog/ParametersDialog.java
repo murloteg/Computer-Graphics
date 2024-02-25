@@ -51,7 +51,7 @@ public class ParametersDialog extends JDialog {
         }
 
         JButton okLineButton = new JButton("Ok");
-        okLineButton.setPreferredSize(new Dimension(60, 40));
+        okLineButton.setPreferredSize(new Dimension(CONFIRM_BUTTON_WIDTH, STANDARD_BUTTON_SIZE));
 
         okLineButton.addActionListener(event -> {
             drawablePanel.setLineSize((Integer) lineSizeComboBox.getSelectedItem());
@@ -59,7 +59,7 @@ public class ParametersDialog extends JDialog {
         });
 
         JButton cancelLineButton = new JButton("Cancel");
-        cancelLineButton.setPreferredSize(new Dimension(60, 40));
+        cancelLineButton.setPreferredSize(new Dimension(CONFIRM_BUTTON_WIDTH, STANDARD_BUTTON_SIZE));
 
         cancelLineButton.addActionListener(event -> {
             lineParametersDialog.dispose();
@@ -108,7 +108,7 @@ public class ParametersDialog extends JDialog {
         unitedPanel.add(radiusAndRotationPanel, BorderLayout.SOUTH);
 
         JButton okPolygonButton = new JButton("Ok");
-        okPolygonButton.setPreferredSize(new Dimension(60, 40));
+        okPolygonButton.setPreferredSize(new Dimension(CONFIRM_BUTTON_WIDTH, STANDARD_BUTTON_SIZE));
 
         okPolygonButton.addActionListener(event -> {
             PolygonParameters.copyParameters(updatedPolygonParameters, currentPolygonParameters);
@@ -116,7 +116,7 @@ public class ParametersDialog extends JDialog {
         });
 
         JButton cancelPolygonButton = new JButton("Cancel");
-        cancelPolygonButton.setPreferredSize(new Dimension(60, 40));
+        cancelPolygonButton.setPreferredSize(new Dimension(CONFIRM_BUTTON_WIDTH, STANDARD_BUTTON_SIZE));
 
         cancelPolygonButton.addActionListener(event -> {
             polygonParametersDialog.dispose();
@@ -171,7 +171,8 @@ public class ParametersDialog extends JDialog {
         radiusSlider.setValue(updatedPolygonParameters.getRadiusInPx());
 
         radiusSlider.addChangeListener(event -> {
-            radiusComboBox.setSelectedItem(radiusSlider.getValue());
+            int updatedValue = radiusSlider.getValue() - radiusSlider.getValue() % 5;
+            radiusComboBox.setSelectedItem(updatedValue);
             updatedPolygonParameters.setRadiusInPx(radiusSlider.getValue());
         });
 

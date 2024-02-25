@@ -4,6 +4,7 @@ import ru.nsu.bolotov.model.data.SpanCoords;
 import ru.nsu.bolotov.model.paintmode.PaintMode;
 import ru.nsu.bolotov.model.polygon.PolygonForm;
 import ru.nsu.bolotov.model.polygon.PolygonParameters;
+import ru.nsu.bolotov.view.dialog.ParametersDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +16,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.CANVAS_SIZE;
+import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.CANVAS_SIZE_WIDTH;
+import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.CANVAS_SIZE_HEIGHT;
 
 public class DrawablePanel extends JPanel implements MouseListener {
     private int trackedX;
@@ -26,16 +28,18 @@ public class DrawablePanel extends JPanel implements MouseListener {
     private final transient PolygonParameters polygonParameters;
     private final transient BufferedImage canvas;
     private short clicksCount;
+    private final JFrame ownerFrame;
 
-    public DrawablePanel() {
+    public DrawablePanel(JFrame ownerFrame) {
         super();
+        this.ownerFrame = ownerFrame;
         generalColor = Color.BLACK;
         lineSize = 1;
         polygonParameters = new PolygonParameters();
-        canvas = new BufferedImage(CANVAS_SIZE, CANVAS_SIZE, BufferedImage.TYPE_INT_ARGB);
+        canvas = new BufferedImage(CANVAS_SIZE_WIDTH, CANVAS_SIZE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         this.createImage(canvas.getSource());
 
-        canvas.getGraphics().fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+        canvas.getGraphics().fillRect(0, 0, CANVAS_SIZE_WIDTH, CANVAS_SIZE_HEIGHT);
         paintMode = PaintMode.BRUSH;
         clicksCount = 0;
 
@@ -80,11 +84,6 @@ public class DrawablePanel extends JPanel implements MouseListener {
         return this.polygonParameters;
     }
 
-    public void resetPanelState() {
-        canvas.getGraphics().fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-        SwingUtilities.updateComponentTreeUI(this.getParent());
-    }
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -109,21 +108,24 @@ public class DrawablePanel extends JPanel implements MouseListener {
                 cg2.drawLine(trackedX, trackedY, e.getX(), e.getY());
                 cg2.dispose();
             }
-            SwingUtilities.updateComponentTreeUI(DrawablePanel.this.getParent());
             clicksCount = 0;
         } else if (paintMode == PaintMode.LINE && clicksCount == 0) {
             ++clicksCount;
         } else if (paintMode == PaintMode.FILL) {
             spanFillingAlgorithm(e.getX(), e.getY());
-            SwingUtilities.updateComponentTreeUI(DrawablePanel.this.getParent());
         } else if (paintMode == PaintMode.POLYGON) {
             drawPolygon(e.getX(), e.getY());
-            SwingUtilities.updateComponentTreeUI(DrawablePanel.this.getParent());
+        } else if (paintMode == PaintMode.ERASER) {
+            resetPanelState();
+        } else if (paintMode == PaintMode.SETTINGS) {
+            ParametersDialog parametersDialog = new ParametersDialog(ownerFrame, "Settings", this);
+            parametersDialog.setVisible(true);
         } else {
             clicksCount = 0;
         }
         trackedX = e.getX();
         trackedY = e.getY();
+        SwingUtilities.updateComponentTreeUI(this.getParent());
     }
 
     @Override
@@ -139,6 +141,10 @@ public class DrawablePanel extends JPanel implements MouseListener {
     @Override
     public void mouseExited(MouseEvent e) {
 
+    }
+
+    private void resetPanelState() {
+        canvas.getGraphics().fillRect(0, 0, CANVAS_SIZE_WIDTH, CANVAS_SIZE_HEIGHT);
     }
 
     private void drawPolygon(int centerX, int centerY) {
@@ -227,7 +233,7 @@ public class DrawablePanel extends JPanel implements MouseListener {
     }
 
     private boolean isPointInBounds(int x, int y) {
-        return x >= 0 && x < CANVAS_SIZE && y >= 0 && y < CANVAS_SIZE;
+        return x >= 0 && x < CANVAS_SIZE_WIDTH && y >= 0 && y < CANVAS_SIZE_HEIGHT;
     }
 
     private boolean isSpanPoint(int x, int y, int oldColor) {
@@ -251,7 +257,7 @@ public class DrawablePanel extends JPanel implements MouseListener {
             spanCoords.setLeftBorderX(currentX + 1);
         }
         currentX = x;
-        while (currentX < CANVAS_SIZE) {
+        while (currentX < CANVAS_SIZE_WIDTH) {
             if (isSpanPoint(currentX, y, oldColor)) {
                 ++currentX;
             } else {
@@ -373,18 +379,7 @@ public class DrawablePanel extends JPanel implements MouseListener {
         }
     }
 
-    private int normalizeCoordinate(int coordinate) {
-        if (coordinate < 0 || coordinate >= CANVAS_SIZE) {
-            return Math.abs(coordinate - CANVAS_SIZE) < Math.abs(coordinate) ? (CANVAS_SIZE - 1) : 0;
-        }
-        return coordinate;
-    }
-
     private void bresenhamLineAlgorithm(int x0, int y0, int x1, int y1) {
-        x0 = normalizeCoordinate(x0);
-        y0 = normalizeCoordinate(y0);
-        x1 = normalizeCoordinate(x1);
-        y1 = normalizeCoordinate(y1);
         if (Math.abs(y1 - y0) < Math.abs(x1 - x0)) {
             if (x0 > x1) {
                 drawLineLow(x1, y1, x0, y0);

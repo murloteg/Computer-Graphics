@@ -1,5 +1,9 @@
 package ru.nsu.bolotov.model.polygon;
 
+import static ru.nsu.bolotov.util.UtilConsts.PolygonConsts.DEFAULT_POLYGON_VERTICES;
+import static ru.nsu.bolotov.util.UtilConsts.PolygonConsts.DEFAULT_POLYGON_RADIUS;
+import static ru.nsu.bolotov.util.UtilConsts.PolygonConsts.DEFAULT_POLYGON_ROTATION;
+
 public class PolygonParameters {
     private PolygonForm polygonForm;
     private int rotationInDegrees;
@@ -8,9 +12,9 @@ public class PolygonParameters {
 
     public PolygonParameters() {
         this.polygonForm = PolygonForm.CONVEX;
-        this.numberOfVertices = 3; // TODO
-        this.radiusInPx = 45;
-        this.rotationInDegrees = 0;
+        this.numberOfVertices = DEFAULT_POLYGON_VERTICES;
+        this.radiusInPx = DEFAULT_POLYGON_RADIUS;
+        this.rotationInDegrees = DEFAULT_POLYGON_ROTATION;
     }
 
     public PolygonForm getPolygonForm() {

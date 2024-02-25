@@ -4,5 +4,7 @@ public enum PaintMode {
     BRUSH,
     LINE,
     FILL,
-    POLYGON
+    POLYGON,
+    ERASER,
+    SETTINGS
 }

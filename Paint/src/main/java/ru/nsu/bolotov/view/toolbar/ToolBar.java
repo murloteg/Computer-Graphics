@@ -1,8 +1,6 @@
 package ru.nsu.bolotov.view.toolbar;
 
-import ru.nsu.bolotov.model.paintmode.PaintMode;
-import ru.nsu.bolotov.model.polygon.PolygonForm;
-import ru.nsu.bolotov.view.dialog.ParametersDialog;
+import ru.nsu.bolotov.model.instrument.PaintInstrument;
 import ru.nsu.bolotov.view.panel.DrawablePanel;
 
 import javax.swing.*;
@@ -12,122 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.STANDARD_BUTTON_SIZE;
+
 public class ToolBar {
     private final JToolBar instrumentsToolBar;
 
-    public ToolBar(JFrame frame, DrawablePanel drawablePanel) {
+    public ToolBar(JFrame frame, DrawablePanel drawablePanel, List<PaintInstrument> instruments) {
         this.instrumentsToolBar = new JToolBar("Instruments");
-        ClassLoader guiClassLoader = this.getClass().getClassLoader();
-
-        URL fillIconUrl = guiClassLoader.getResource("icons/fill-icon.png");
-        ImageIcon fillIcon = new ImageIcon(Objects.requireNonNull(fillIconUrl));
-
-        URL eraserIconUrl = guiClassLoader.getResource("icons/eraser-icon.png");
-        ImageIcon eraserIcon = new ImageIcon(Objects.requireNonNull(eraserIconUrl));
-
-        URL polygonStampIconUrl = guiClassLoader.getResource("icons/stamp-icon.png");
-        ImageIcon polygonStampIcon = new ImageIcon(Objects.requireNonNull(polygonStampIconUrl));
-
-        URL starStampIconUrl = guiClassLoader.getResource("icons/star-icon.png");
-        ImageIcon starStampIcon = new ImageIcon(Objects.requireNonNull(starStampIconUrl));
-
-        URL lineIconUrl = guiClassLoader.getResource("icons/line-icon.png");
-        ImageIcon lineIcon = new ImageIcon(Objects.requireNonNull(lineIconUrl));
-
-        URL brushIconUrl = guiClassLoader.getResource("icons/brush-icon.png");
-        ImageIcon brushIcon = new ImageIcon(Objects.requireNonNull(brushIconUrl));
-
-        URL settingsIconUrl = guiClassLoader.getResource("icons/settings-icon.png");
-        ImageIcon settingsIcon = new ImageIcon(Objects.requireNonNull(settingsIconUrl));
-
-        JButton brushButton = new JButton(brushIcon);
-        JButton lineButton = new JButton(lineIcon);
-        JButton polygonStampButton = new JButton(polygonStampIcon);
-        JButton starStampButton = new JButton(starStampIcon);
-        JButton fillButton = new JButton(fillIcon);
-        JButton eraserButton = new JButton(eraserIcon);
-        JButton settingsButton = new JButton(settingsIcon);
-
-        List<JButton> instruments = new ArrayList<>();
-        instruments.add(brushButton);
-        instruments.add(lineButton);
-        instruments.add(polygonStampButton);
-        instruments.add(starStampButton);
-        instruments.add(fillButton);
-        instruments.add(eraserButton);
-        instruments.add(settingsButton);
-
-        eraserButton.addActionListener(event -> {
-            drawablePanel.resetPanelState();
-        });
-
-        brushButton.addActionListener(event -> {
-            drawablePanel.setPaintMode(PaintMode.BRUSH);
-            brushButton.getModel().setSelected(true);
-            brushButton.setOpaque(true);
-            unselectOtherInstrumentsButtons(instruments, brushButton);
-        });
-
-        lineButton.addActionListener(event -> {
-            drawablePanel.setPaintMode(PaintMode.LINE);
-            lineButton.getModel().setSelected(true);
-            lineButton.setOpaque(true);
-            unselectOtherInstrumentsButtons(instruments, lineButton);
-        });
-
-        polygonStampButton.addActionListener(event -> {
-            drawablePanel.setPaintMode(PaintMode.POLYGON);
-            drawablePanel.setPolygonForm(PolygonForm.CONVEX);
-            polygonStampButton.getModel().setSelected(true);
-            polygonStampButton.setOpaque(true);
-            unselectOtherInstrumentsButtons(instruments, polygonStampButton);
-        });
-
-        starStampButton.addActionListener(event -> {
-            drawablePanel.setPaintMode(PaintMode.POLYGON);
-            drawablePanel.setPolygonForm(PolygonForm.STAR);
-            starStampButton.getModel().setSelected(true);
-            starStampButton.setOpaque(true);
-            unselectOtherInstrumentsButtons(instruments, starStampButton);
-        });
-
-        fillButton.addActionListener(event -> {
-            drawablePanel.setPaintMode(PaintMode.FILL);
-            fillButton.getModel().setSelected(true);
-            fillButton.setOpaque(true);
-            unselectOtherInstrumentsButtons(instruments, fillButton);
-        });
-
-        settingsButton.addActionListener(event -> {
-            ParametersDialog parametersDialog = new ParametersDialog(frame, "Settings", drawablePanel);
-            parametersDialog.setVisible(true);
-        });
-
-        brushButton.setToolTipText("Brush");
-        lineButton.setToolTipText("Line");
-        polygonStampButton.setToolTipText("Polygon Stamp");
-        starStampButton.setToolTipText("Star Stamp");
-        fillButton.setToolTipText("Fill");
-        eraserButton.setToolTipText("Clean");
-        settingsButton.setToolTipText("Settings");
 
         JPanel toolBarPanel = new JPanel();
-        brushButton.setPreferredSize(new Dimension(40, 40));
-        lineButton.setPreferredSize(new Dimension(40, 40));
-        polygonStampButton.setPreferredSize(new Dimension(40, 40));
-        starStampButton.setPreferredSize(new Dimension(40, 40));
-        fillButton.setPreferredSize(new Dimension(40, 40));
-        eraserButton.setPreferredSize(new Dimension(40, 40));
-        settingsButton.setPreferredSize(new Dimension(40, 40));
-
-        toolBarPanel.add(brushButton);
-        toolBarPanel.add(lineButton);
-        toolBarPanel.add(polygonStampButton);
-        toolBarPanel.add(starStampButton);
-        toolBarPanel.add(fillButton);
-        toolBarPanel.add(eraserButton);
-        toolBarPanel.add(settingsButton);
-
+        for (PaintInstrument instrument : instruments) {
+            toolBarPanel.add(instrument.getToolBarButton());
+        }
         JSeparator separator = new JToolBar.Separator(new Dimension(50, 32));
         toolBarPanel.add(separator);
 
@@ -139,20 +33,12 @@ public class ToolBar {
         return this.instrumentsToolBar;
     }
 
-    private void unselectOtherInstrumentsButtons(List<JButton> instruments, JButton callerButton) {
-        for (JButton instrumentButton : instruments) {
-            if (!instrumentButton.equals(callerButton)) {
-                instrumentButton.getModel().setSelected(false);
-            }
-        }
-    }
-
     private void addColorsToToolBarPanel(JPanel toolBarPanel, JFrame frame, DrawablePanel drawablePanel) {
         List<JButton> colors = prepareColorButtons();
         for (JButton colorButton: colors) {
             colorButton.setBorderPainted(false);
             colorButton.setOpaque(true);
-            colorButton.setPreferredSize(new Dimension(40, 40));
+            colorButton.setPreferredSize(new Dimension(STANDARD_BUTTON_SIZE, STANDARD_BUTTON_SIZE));
             colorButton.addActionListener(event -> {
                 drawablePanel.setGeneralColor(colorButton.getBackground());
                 frame.update(frame.getGraphics());
@@ -215,7 +101,7 @@ public class ToolBar {
 
         JButton chooseColorButton = new JButton(paletteIcon);
         chooseColorButton.setToolTipText("Choose color");
-        chooseColorButton.setPreferredSize(new Dimension(40, 40));
+        chooseColorButton.setPreferredSize(new Dimension(STANDARD_BUTTON_SIZE, STANDARD_BUTTON_SIZE));
 
         chooseColorButton.addActionListener(event -> {
             Color selectedColor = JColorChooser.showDialog(frame, "Choose color", Color.BLACK);
