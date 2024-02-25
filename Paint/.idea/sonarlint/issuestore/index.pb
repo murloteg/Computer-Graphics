@@ -55,3 +55,7 @@ q
 Asrc/main/java/ru/nsu/bolotov/model/instrument/impl/StarStamp.java,1/c/1c7c202cf4a0f76914c4b96b80590eab210de75d
 p
 @src/main/java/ru/nsu/bolotov/model/instrument/impl/Settings.java,1/e/1e35f2e34ea7c41b8a529cac66f08c224007ebe1
+k
+;src/main/java/ru/nsu/bolotov/exception/FailedLoadImage.java,3/2/325a3c8345bfa14cebddd6310c3418c960ced225
+k
+;src/main/java/ru/nsu/bolotov/exception/FailedSaveImage.java,4/f/4f718d2bc9ddeca7c31a0b02583d602bc00f1ab1

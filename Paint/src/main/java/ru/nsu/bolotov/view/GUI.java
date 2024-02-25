@@ -7,7 +7,9 @@ import ru.nsu.bolotov.view.panel.DrawablePanel;
 import ru.nsu.bolotov.view.toolbar.ToolBar;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.*;
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +49,7 @@ public class GUI {
 
         mainFrame.add(scrollPane, BorderLayout.CENTER);
 
-        addMenuBar(mainFrame);
+        addMenuBar(mainFrame, mainPanel);
         addInstrumentsToolBar(mainFrame, mainPanel);
 
         mainFrame.setPreferredSize(minimalDimension);
@@ -81,10 +83,10 @@ public class GUI {
         frame.add(toolBar.getInstrumentsToolBar(), BorderLayout.PAGE_START);
     }
 
-    private void addMenuBar(JFrame frame) {
+    private void addMenuBar(JFrame frame, DrawablePanel drawablePanel) {
         JMenuBar menuBar = new JMenuBar();
-        JMenu helpBar = new JMenu("Help");
 
+        JMenu helpBar = new JMenu("Help");
         JMenuItem aboutItem = new JMenuItem("About");
         aboutItem.addActionListener(event -> {
             JDialog aboutDialogWindow = new JDialog(frame, UtilConsts.ButtonNameConsts.ABOUT_BUTTON);
@@ -99,13 +101,62 @@ public class GUI {
         });
         helpBar.add(aboutItem);
 
+        JMenu fileBar = new JMenu("File");
+        JMenuItem saveFileItem = new JMenuItem("Save");
+        saveFileItem.addActionListener(event -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new FileFilter() {
+                @Override
+                public boolean accept(File file) {
+                    return file.getName().endsWith(".png");
+                }
+
+                @Override
+                public String getDescription() {
+                    return "PNG";
+                }
+            });
+
+            fileChooser.showSaveDialog(mainFrame);
+            File selectedFile = fileChooser.getSelectedFile();
+            if (!selectedFile.getName().endsWith(".png")) {
+                JOptionPane.showMessageDialog(mainFrame, "Указано некорректное расширение файла", "Ошибка!", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            drawablePanel.saveCanvasContent(selectedFile);
+        });
+        fileBar.add(saveFileItem);
+
+        JMenuItem openFileItem = new JMenuItem("Open");
+        openFileItem.addActionListener(event -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new FileFilter() {
+                @Override
+                public boolean accept(File file) {
+                    return file.getName().endsWith(".png") || file.getName().endsWith(".jpg") ||
+                            file.getName().endsWith(".bmp") || file.getName().endsWith(".gif");
+                }
+
+                @Override
+                public String getDescription() {
+                    return "PNG, JPG, BMP, GIF";
+                }
+            });
+
+            fileChooser.showOpenDialog(mainFrame);
+            File selectedFile = fileChooser.getSelectedFile();
+            drawablePanel.loadFileContent(selectedFile);
+        });
+        fileBar.add(openFileItem);
+
         JMenu instrumentsBar = new JMenu("Instruments");
         for (PaintInstrument instrument : instruments) {
             instrumentsBar.add(instrument.getMenuBarButton());
         }
 
-        menuBar.add(helpBar);
+        menuBar.add(fileBar);
         menuBar.add(instrumentsBar);
+        menuBar.add(helpBar);
         frame.setJMenuBar(menuBar);
     }
 }

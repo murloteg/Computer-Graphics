@@ -1,23 +1,28 @@
 package ru.nsu.bolotov.view.panel;
 
+import ru.nsu.bolotov.exception.FailedLoadImage;
+import ru.nsu.bolotov.exception.FailedSaveImage;
 import ru.nsu.bolotov.model.data.SpanCoords;
 import ru.nsu.bolotov.model.paintmode.PaintMode;
 import ru.nsu.bolotov.model.polygon.PolygonForm;
 import ru.nsu.bolotov.model.polygon.PolygonParameters;
 import ru.nsu.bolotov.view.dialog.ParametersDialog;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.CANVAS_SIZE_WIDTH;
 import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.CANVAS_SIZE_HEIGHT;
+import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.CANVAS_SIZE_WIDTH;
 
 public class DrawablePanel extends JPanel implements MouseListener {
     private int trackedX;
@@ -26,7 +31,7 @@ public class DrawablePanel extends JPanel implements MouseListener {
     private Color generalColor;
     private int lineSize;
     private final transient PolygonParameters polygonParameters;
-    private final transient BufferedImage canvas;
+    private transient BufferedImage canvas;
     private short clicksCount;
     private final JFrame ownerFrame;
 
@@ -82,6 +87,23 @@ public class DrawablePanel extends JPanel implements MouseListener {
 
     public PolygonParameters getPolygonParameters() {
         return this.polygonParameters;
+    }
+
+    public void loadFileContent(File file) {
+        try {
+            canvas = ImageIO.read(file);
+        } catch (IOException exception) {
+            throw new FailedLoadImage(exception);
+        }
+        SwingUtilities.updateComponentTreeUI(this.getParent());
+    }
+
+    public void saveCanvasContent(File file) {
+        try {
+            ImageIO.write(canvas, "png", file);
+        } catch (IOException exception) {
+            throw new FailedSaveImage(exception);
+        }
     }
 
     @Override
@@ -144,6 +166,9 @@ public class DrawablePanel extends JPanel implements MouseListener {
     }
 
     private void resetPanelState() {
+        if (canvas.getWidth() != CANVAS_SIZE_WIDTH || canvas.getHeight() != CANVAS_SIZE_HEIGHT) {
+            canvas = new BufferedImage(CANVAS_SIZE_WIDTH, CANVAS_SIZE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        }
         canvas.getGraphics().fillRect(0, 0, CANVAS_SIZE_WIDTH, CANVAS_SIZE_HEIGHT);
     }
 
