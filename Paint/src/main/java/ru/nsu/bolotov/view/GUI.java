@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.*;
-import static ru.nsu.bolotov.util.UtilConsts.StringConsts.APPLICATION_TITLE;
+import static ru.nsu.bolotov.util.UtilConsts.StringConsts.*;
 
 public class GUI {
     private final JFrame mainFrame;
@@ -27,10 +27,6 @@ public class GUI {
         Dimension minimalDimension = new Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT);
         mainFrame.setMinimumSize(minimalDimension);
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        URL applicationIconUrl = this.getClass().getClassLoader().getResource("paint-logo.png");
-        ImageIcon applicationIcon = new ImageIcon(Objects.requireNonNull(applicationIconUrl));
-        mainFrame.setIconImage(applicationIcon.getImage());
 
         mainFrame.setLayout(new BorderLayout());
         DrawablePanel mainPanel = new DrawablePanel(mainFrame);
@@ -52,7 +48,7 @@ public class GUI {
         addMenuBar(mainFrame, mainPanel);
         addInstrumentsToolBar(mainFrame, mainPanel);
 
-        mainFrame.setPreferredSize(minimalDimension);
+        mainFrame.setPreferredSize(new Dimension(PREFERRED_WINDOW_WIDTH, MIN_WINDOW_HEIGHT));
         mainFrame.pack();
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
@@ -90,10 +86,12 @@ public class GUI {
         JMenuItem aboutItem = new JMenuItem("About");
         aboutItem.addActionListener(event -> {
             JDialog aboutDialogWindow = new JDialog(frame, UtilConsts.ButtonNameConsts.ABOUT_BUTTON);
-            JLabel aboutLabel = new JLabel(UtilConsts.StringConsts.ABOUT_PROGRAM_TEXT);
+            JTextArea aboutTextArea = new JTextArea(ABOUT_PROGRAM_TEXT);
+            aboutTextArea.setEnabled(false);
+            aboutTextArea.setDisabledTextColor(Color.BLACK);
 
             aboutDialogWindow.setMinimumSize(new Dimension(STANDARD_DIALOG_SIZE, STANDARD_DIALOG_SIZE));
-            aboutDialogWindow.add(aboutLabel);
+            aboutDialogWindow.add(aboutTextArea);
 
             aboutDialogWindow.pack();
             aboutDialogWindow.setLocationRelativeTo(null);
@@ -120,7 +118,7 @@ public class GUI {
             fileChooser.showSaveDialog(mainFrame);
             File selectedFile = fileChooser.getSelectedFile();
             if (!selectedFile.getName().endsWith(".png")) {
-                JOptionPane.showMessageDialog(mainFrame, "Указано некорректное расширение файла", "Ошибка!", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(mainFrame, INCORRECT_FILE_EXTENSION_MESSAGE, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
                 return;
             }
             drawablePanel.saveCanvasContent(selectedFile);

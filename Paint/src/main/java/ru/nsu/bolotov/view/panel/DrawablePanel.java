@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 
 import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.CANVAS_SIZE_HEIGHT;
 import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.CANVAS_SIZE_WIDTH;

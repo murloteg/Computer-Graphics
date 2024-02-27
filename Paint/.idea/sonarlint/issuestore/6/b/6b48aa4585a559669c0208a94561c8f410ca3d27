@@ -1,15 +1,17 @@
 
 £
-java:S1186t"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ä Ïúüÿÿÿÿ8ĞÄ¢‰Ş1
+java:S1186u"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ä Ïúüÿÿÿÿ8·åµ Ş1
 Ÿ
-java:S1186š"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ãÆĞÂ8ĞÄ¢‰Ş1
+java:S1186›"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ãÆĞÂ8¸åµ Ş1
 ¤
-java:S1186Ÿ"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ö„˜şúÿÿÿÿ8ÑÄ¢‰Ş1
+java:S1186 "€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ö„˜şúÿÿÿÿ8¸åµ Ş1
 ¤
-java:S1186¤"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(•ßçùÿÿÿÿ8ÑÄ¢‰Ş1
+java:S1186¥"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(•ßçùÿÿÿÿ8¸åµ Ş1
 u
-java:S3776Â"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(ç®Ğîşÿÿÿÿ8ÿÄ¢‰Ş1
+java:S3776Ã"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(ç®Ğîşÿÿÿÿ8ååµ Ş1
 €
-java:S2234š"]Parameters to drawLineLow have the same names but not the same order as the method arguments.(ñèèıøÿÿÿÿ8‹Å¢‰Ş1
+java:S2234›"]Parameters to drawLineLow have the same names but not the same order as the method arguments.(ñèèıøÿÿÿÿ8ïåµ Ş1
 
-java:S2234 "^Parameters to drawLineHigh have the same names but not the same order as the method arguments.(¿š¥Øıÿÿÿÿ8‹Å¢‰Ş1
+java:S2234¡"^Parameters to drawLineHigh have the same names but not the same order as the method arguments.(¿š¥Øıÿÿÿÿ8ğåµ Ş1
+N
+java:S1128",Remove this unused import 'java.util.Stack'.(ŞÈ†üúÿÿÿÿ8òåµ Ş1

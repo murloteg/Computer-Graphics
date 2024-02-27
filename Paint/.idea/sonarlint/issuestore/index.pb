@@ -35,10 +35,6 @@ k
 ;src/main/java/ru/nsu/bolotov/model/polygon/PolygonForm.java,9/a/9aa57b4bfd05fada1d366f67d2364619dabf8e0c
 f
 6src/main/java/ru/nsu/bolotov/view/toolbar/ToolBar.java,c/b/cb42e37772975ed210199e49e7c11e06c28e8796
-b
-2src/main/java/ru/nsu/bolotov/model/Instrument.java,7/c/7cc35d281d5172e067197fd34da120b4fe7e7fc6
-m
-=src/main/java/ru/nsu/bolotov/model/instrument/Instrument.java,7/c/7cdba6486b2f09700d4d3abc42ff9f3fae74d9e8
 r
 Bsrc/main/java/ru/nsu/bolotov/model/instrument/PaintInstrument.java,2/7/270949303138283e3151a2ceac21815c7e215694
 m
