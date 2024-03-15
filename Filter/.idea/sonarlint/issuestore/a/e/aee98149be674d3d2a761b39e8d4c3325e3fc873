@@ -1,0 +1,39 @@
+
+ˆ	java:S112 "FDefine and throw a dedicated exception instead of using a generic one.(ùØêº8Çäóâ1J$91b3f289-1ff2-4af4-a27b-313f2c2005a9
+ˆ	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(Öº¾®8Çäóâ1J$083fd5f2-9f79-4b05-be88-e58177580f09
+‡	java:S112="FDefine and throw a dedicated exception instead of using a generic one.(ñèÓX8Ìäóâ1J$6ed7e44d-9edf-49c8-82c5-51791c4e5811
+Ê
+java:S1186•"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ö„˜şúÿÿÿÿ8£¡äóâ1J$739a9116-dd9d-48f2-9fe0-1b3d95f358fc
+Ê
+java:S1186™"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(•ßçùÿÿÿÿ8£¡äóâ1J$93c2c863-9c9b-42de-b059-86653b2c0efb
+Å
+java:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ç¨Î§8£¡äóâ1J$e27f19c0-6466-407c-ac23-5c18108d7532
+k
+java:S1659"#Declare "lastY" on a separate line.(Í Œüÿÿÿÿ8§¡äóâ1J$4ef0dbb5-a096-4d5e-89c8-63ef1b58c2f8
+m
+java:S1948"%Make "img" transient or serializable.(Û¿éÃşÿÿÿÿ8©¡äóâ1J$34e2f68d-7428-45f2-8147-68dd2e190355
+ƒ	java:S125+"<This block of commented-out lines of code should be removed.(¥”Ûõùÿÿÿÿ8°¡äóâ1J$01e7d395-44ce-4096-8664-90191fd8684d
+~	java:S125L"<This block of commented-out lines of code should be removed.(Ú°à¬8¶¡äóâ1J$4f06228d-06e2-4581-be58-5d7d9b62ab31
+~	java:S125s"<This block of commented-out lines of code should be removed.(ë¾‹8¼¡äóâ1J$36740f2d-8d6a-485c-aae7-75608876b6e9
+ƒ	java:S125u"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8¼¡äóâ1J$b667228b-41ba-420e-bc4e-1ee8c8474b7c
+
+java:S1871~"MThis branch's code block is the same as the block for the branch on line 124.(Ğ³¸Ñ8¾¡äóâ1J$36f6d375-e509-4275-831d-5db871b63c15
+	java:S125ƒ"<This block of commented-out lines of code should be removed.(ë¾‹8¿¡äóâ1J$77a087c4-c7db-439a-969f-04a2d877f9de
+	java:S125‹"<This block of commented-out lines of code should be removed.(Ÿï²°8À¡äóâ1J$294c798f-8b22-46e9-b653-ffd705f215df
+	java:S125"<This block of commented-out lines of code should be removed.(÷µ¹8À¡äóâ1J$4df9d2c2-144c-4b86-a615-070ecde12010
+	java:S125"<This block of commented-out lines of code should be removed.(·å¢»8À¡äóâ1J$c94a5c0f-7474-4147-8e2b-a310d8bdedfa
+„	java:S125‘"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8Á¡äóâ1J$31bc1d45-3567-4e05-9591-0ee803dd80d3
+	java:S125–"<This block of commented-out lines of code should be removed.(÷µ¹8Á¡äóâ1J$a4214ebd-2789-45b8-bf06-7a7df054e3e5
+	java:S125±"<This block of commented-out lines of code should be removed.(÷µ¹8Ã¡äóâ1J$a76e51b8-6e61-4c60-803e-b0074a435f97
+„	java:S125²"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8Ä¡äóâ1J$6aae7390-79a4-4a41-9f6a-f25ae31088c7
+	java:S125µ"<This block of commented-out lines of code should be removed.(´èİŠ8È¡äóâ1J$d3b62300-7f50-42a2-8474-45265e2b8620
+i
+java:S1659ù" Declare "yc" on a separate line.(ÿÉ‹¢øÿÿÿÿ8Î¡äóâ1J$b8d122b0-eb8c-4ce7-8723-14b2c032c47b
+„	java:S125ü"<This block of commented-out lines of code should be removed.(“Ò”Óûÿÿÿÿ8Ñ¡äóâ1J$20d5f5f1-42d9-4903-bbff-7701dd2a84cf
+„	java:S125ş"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8Ò¡äóâ1J$f087fb57-4c85-4a8d-a1db-48f291d4fbf0
+„	java:S125˜"<This block of commented-out lines of code should be removed.(İˆÕúÿÿÿÿ8×¡äóâ1J$412ac235-f87b-46bd-851f-07814369afb4
+„	java:S125¨"<This block of commented-out lines of code should be removed.(øö¢¬üÿÿÿÿ8Ù¡äóâ1J$df37f96d-dab7-4d8a-85cb-8b74693b91ba
+„	java:S125Ô"<This block of commented-out lines of code should be removed.(´×çíşÿÿÿÿ8Ş¡äóâ1J$b8061638-ce4a-4aad-ba42-cd09991f1eb8
+„	java:S125‚"<This block of commented-out lines of code should be removed.(ÚáŞ›şÿÿÿÿ8ã¡äóâ1J$dccbb866-1cb3-430e-898b-3cb03d8845a5
+{
+java:S1068"3Remove this unused "parentComponent" private field.(çñ£·ùÿÿÿÿ8ç¡äóâ1J$3063a3b3-df60-4560-b033-e165ae38ebfe
