@@ -468,7 +468,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 negativeFilter();
             }
             case EMBOSSING -> {
-                double[][] matrix = {
+                int[][] matrix = {
                         {0, 1, 0},
                         {-1, 0, 1},
                         {0, -1, 0}
@@ -477,20 +477,20 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 for (int x = 0; x < originImage.getWidth(); ++x) {
                     for (int y = 0; y < originImage.getHeight(); ++y) {
                         int pixelColor = changedImage.getRGB(x, y);
-                        int redComponent = pixelColor & 0x000000FF;
-                        int greenComponent = (pixelColor >> 8) & 0x000000FF;
-                        int blueComponent = (pixelColor >> 16) & 0x000000FF;
+                        int redComponent = (pixelColor >> 16) & 0xFF;
+                        int greenComponent = (pixelColor >> 8) & 0xFF;
+                        int blueComponent = pixelColor & 0xFF;
 
-                        int newRedComponent = Math.min((redComponent + 128), 255);
-                        int newGreenComponent = Math.min((greenComponent + 128), 255);
-                        int newBlueComponent = Math.min((blueComponent + 128), 255);
-                        int updatedColor = (newRedComponent + 128) | ((newGreenComponent + 128) << 8) | ((newBlueComponent + 128) << 16);
+                        int newRedComponent = Math.min(redComponent + 128, 255);
+                        int newGreenComponent = Math.min(greenComponent + 128, 255);
+                        int newBlueComponent = Math.min(blueComponent + 128, 255);
+                        int updatedColor = (newBlueComponent) | ((newGreenComponent) << 8) | ((newRedComponent) << 16);
                         changedImage.setRGB(x, y, updatedColor);
                     }
                 }
             }
             case SHARPNESS_INCREASING -> {
-                double[][] matrix = {
+                int[][] matrix = {
                         {0, -1, 0},
                         {-1, 5, -1},
                         {0, -1, 0}
@@ -498,26 +498,34 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 applyMatrixFilter(matrix);
             }
             case GAUSS_SMOOTHING -> {
-                double[][] matrix = {
+                int[][] matrix = {
                         {1, 1, 1},
                         {1, 1, 1},
                         {1, 1, 1}
                 };
                 applyMatrixFilter(matrix);
+                // TODO
             }
             case GAMMA_CORRECTION -> {
-
+                gammaCorrection(2); // FIXME
             }
             case ROBERTS_OPERATOR -> {
-                double[][] matrix = {
+                int[][] matrix = {
                         {1, 1, 1},
                         {1, -5, 1},
                         {1, 1, 1}
                 };
                 applyMatrixFilter(matrix);
+                // TODO
             }
             case SOBEL_OPERATOR -> {
-
+                int[][] matrix = {
+                        {-1, 0, 1},
+                        {-2, 0, 2},
+                        {-1, 0, 1}
+                };
+                applyMatrixFilter(matrix);
+                // TODO
             }
             case FLOYD_STEINBERG_DITHERING -> {
 
@@ -531,9 +539,9 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     }
 
     private int getMiddleColorForPixel(int pixelColor) {
-        int redComponent = pixelColor & 0x000000FF;
-        int greenComponent = (pixelColor >> 8) & 0x000000FF;
-        int blueComponent = (pixelColor >> 16) & 0x000000FF;
+        int redComponent = (pixelColor >> 16) & 0xFF;
+        int greenComponent = (pixelColor >> 8) & 0xFF;
+        int blueComponent = pixelColor & 0xFF;
 
         double redCoefficient = 0.299;
         double greenCoefficient = 0.587;
@@ -556,75 +564,92 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         for (int x = 0; x < originImage.getWidth(); ++x) {
             for (int y = 0; y < originImage.getHeight(); ++y) {
                 int pixelColor = originImage.getRGB(x, y);
-                int redComponent = pixelColor & 0x000000FF;
-                int greenComponent = (pixelColor >> 8) & 0x000000FF;
-                int blueComponent = (pixelColor >> 16) & 0x000000FF;
+                int redComponent = (pixelColor >> 16) & 0xFF;
+                int greenComponent = (pixelColor >> 8) & 0xFF;
+                int blueComponent = pixelColor & 0xFF;
 
-                int updatedColor = (255 - redComponent) | ((255 - greenComponent) << 8) | ((255 - blueComponent) << 16);
+                int updatedColor = (255 - blueComponent) | ((255 - greenComponent) << 8) | ((255 - redComponent) << 16);
                 changedImage.setRGB(x, y, updatedColor);
             }
         }
     }
 
-//    private int calculateXShiftFromCentralPosition(int currentPosition, int centralPosition, int matrixSize) {
-//
-//    }
+    private void gammaCorrection(double gamma) {
+        double gammaCorrection = 1.0 / gamma;
+        for (int x = 0; x < originImage.getWidth(); ++x) {
+            for (int y = 0; y < originImage.getHeight(); ++y) {
+                int pixelColor = originImage.getRGB(x, y);
+                int redComponent = (pixelColor >> 16) & 0xFF;
+                int greenComponent = (pixelColor >> 8) & 0xFF;
+                int blueComponent = pixelColor & 0xFF;
 
-    // Gaussian blur 3x3
-    private void gaussSmoothing3x3(int matrixSize) {
-        double[] smoothingMatrix = new double[matrixSize * matrixSize];
-        int centralPosition = (matrixSize * matrixSize - 1) / 2;
-
-
+                int newRedComponent = Math.min((int) (255 * (Math.pow(redComponent / 255.0, gammaCorrection))), 255);
+                int newGreenComponent = Math.min((int) (255 * (Math.pow(greenComponent / 255.0, gammaCorrection))), 255);
+                int newBlueComponent = Math.min((int) (255 * (Math.pow(blueComponent / 255.0, gammaCorrection))), 255);
+                int updatedColor = newBlueComponent | (newGreenComponent << 8) | (newRedComponent << 16);
+                changedImage.setRGB(x, y, updatedColor);
+            }
+        }
     }
 
-    private boolean isBorderedValue(int position, int width, int height) {
-        return position < width || position >= (width * (height - 1)) || position % width == 0
-                || position % width == (width - 1);
+    private boolean isBorderedValue(int position, int width, int height, int matrixRows) {
+        int matrixRadius = matrixRows / 2;
+        return position < matrixRadius * width || position >= (width * (height - matrixRadius)) || position % width < matrixRadius
+                || position % width >= (width - matrixRadius);
     }
 
-    private double calcDivisor(double[][] filterMatrix) {
-        double divisor = 0;
+    private int calculateDivisorForMatrix(int[][] filterMatrix) {
+        int divisor = 0;
         int matrixRows = filterMatrix.length;
-        for (int i = 0; i < matrixRows; ++i) {
+        for (int[] matrix : filterMatrix) {
             for (int j = 0; j < matrixRows; ++j) {
-                divisor += filterMatrix[i][j];
+                divisor += matrix[j];
             }
         }
         return Math.max(divisor, 1);
     }
 
-    private int calculateMultiplicationResultForFilterMatrix(double[][] filterMatrix, int x, int y) {
-        double result = 0;
+    private int calculateMultiplicationResultForFilterMatrix(int[][] filterMatrix, int x, int y) {
         int matrixRows = filterMatrix.length;
         int matrixRadius = matrixRows / 2;
+
+        int redSum = 0;
+        int greenSum = 0;
+        int blueSum = 0;
         for (int i = 0; i < matrixRows; ++i) {
             for (int j = 0; j < matrixRows; ++j) {
-                int currentY = y + i - matrixRadius;
-                int currentX = x + j - matrixRadius;
-//                int currentPosition = currentY * originImage.getWidth() + currentX;
-//                if (currentPosition < 0 || currentPosition >= originImage.getWidth()) {
-//                    continue;
-//                }
-                int pixelColor = originImage.getRGB(currentX, currentY);
-//                int redComponent = pixelColor & 0x000000FF;
-//                int greenComponent = (pixelColor >> 8) & 0x000000FF;
-//                int blueComponent = (pixelColor >> 16) & 0x000000FF;
-//                result += filterMatrix[i][j] * (redComponent | (greenComponent << 8) | (blueComponent << 16));
+                int currentY = Math.min(Math.max(y + i - matrixRadius, 0), originImage.getHeight() - 1);
+                int currentX = Math.min(Math.max(x + j - matrixRadius, 0), originImage.getWidth() - 1);
 
-                result += filterMatrix[i][j] * pixelColor / calcDivisor(filterMatrix);
+                int pixelColor = originImage.getRGB(currentX, currentY);
+                int redComponent = (pixelColor >> 16) & 0xFF;
+                int greenComponent = (pixelColor >> 8) & 0xFF;
+                int blueComponent = pixelColor & 0xFF;
+
+                redSum += redComponent * filterMatrix[i][j];
+                greenSum += greenComponent * filterMatrix[i][j];
+                blueSum += blueComponent * filterMatrix[i][j];
             }
         }
-        return (int) result;
+
+        int divisor = calculateDivisorForMatrix(filterMatrix);
+        redSum /= divisor;
+        greenSum /= divisor;
+        blueSum /= divisor;
+
+        redSum = Math.min(Math.max(redSum, 0), 255);
+        greenSum = Math.min(Math.max(greenSum, 0), 255);
+        blueSum = Math.min(Math.max(blueSum, 0), 255);
+        return blueSum | (greenSum << 8) | (redSum << 16);
     }
 
-    private void applyMatrixFilter(double[][] filterMatrix) {
+    private void applyMatrixFilter(int[][] filterMatrix) {
         int imageWidth = originImage.getWidth();
         int imageHeight = originImage.getHeight();
         for (int x = 0; x < imageWidth; ++x) {
             for (int y = 0; y < imageHeight; ++y) {
                 int position = y * imageWidth + x;
-                if (isBorderedValue(position, imageWidth, imageHeight)) {
+                if (isBorderedValue(position, imageWidth, imageHeight, filterMatrix.length)) {
                     continue;
                 }
                 int updatedColor = calculateMultiplicationResultForFilterMatrix(filterMatrix, x, y);
@@ -632,8 +657,5 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             }
         }
     }
-
-    // Sharpness increase - sum of matrix values is 1
-
-    // Embossing - sum of matrix values is 0
+    
 }
