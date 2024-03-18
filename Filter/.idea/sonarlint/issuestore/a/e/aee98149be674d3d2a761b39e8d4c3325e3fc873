@@ -1,39 +1,71 @@
 
-ˆ	java:S112 "FDefine and throw a dedicated exception instead of using a generic one.(ùØêº8Çäóâ1J$91b3f289-1ff2-4af4-a27b-313f2c2005a9
-ˆ	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(Öº¾®8Çäóâ1J$083fd5f2-9f79-4b05-be88-e58177580f09
-‡	java:S112="FDefine and throw a dedicated exception instead of using a generic one.(ñèÓX8Ìäóâ1J$6ed7e44d-9edf-49c8-82c5-51791c4e5811
+ˆ	java:S112%"FDefine and throw a dedicated exception instead of using a generic one.(ùØêº8í´Ôå1J$2c412a11-bfa6-4e6b-9eaa-e83f197f246d
+ˆ	java:S112#"FDefine and throw a dedicated exception instead of using a generic one.(Öº¾®8î´Ôå1J$cb7080b4-721a-40e7-89fb-6d4802082978
+‡	java:S112B"FDefine and throw a dedicated exception instead of using a generic one.(ñèÓX8ñ´Ôå1J$3e687f34-ed2f-4700-889b-31867b719d5d
+‡
+java:S3518ç"CMake sure this expression can't be zero before doing this division.(Á¦…´8‹ªÿå1J$54203d5f-a337-4c09-9d2f-0164a4e85fc4
+ˆ
+java:S2583"DChange this condition so that it does not always evaluate to "false"(šÁ‚æ8Æ·Ôå1J$39b5d900-781b-4cb7-89bf-3dfb20a4cd75
 Ê
-java:S1186•"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ö„˜şúÿÿÿÿ8£¡äóâ1J$739a9116-dd9d-48f2-9fe0-1b3d95f358fc
+java:S1186À"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ö„˜şúÿÿÿÿ8Ê·Ôå1J$ebb84975-4676-4bb5-b180-e27e81c2e583
 Ê
-java:S1186™"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(•ßçùÿÿÿÿ8£¡äóâ1J$93c2c863-9c9b-42de-b059-86653b2c0efb
+java:S1186Ä"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(•ßçùÿÿÿÿ8Ê·Ôå1J$32bb61bf-2668-4ac7-8015-83c05ee70654
 Å
-java:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ç¨Î§8£¡äóâ1J$e27f19c0-6466-407c-ac23-5c18108d7532
+java:S1186È"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ç¨Î§8Ê·Ôå1J$bfbe89c5-7eaa-4d4d-8f6f-c7b5bd8f3af6
 k
-java:S1659"#Declare "lastY" on a separate line.(Í Œüÿÿÿÿ8§¡äóâ1J$4ef0dbb5-a096-4d5e-89c8-63ef1b58c2f8
-m
-java:S1948"%Make "img" transient or serializable.(Û¿éÃşÿÿÿÿ8©¡äóâ1J$34e2f68d-7428-45f2-8147-68dd2e190355
-ƒ	java:S125+"<This block of commented-out lines of code should be removed.(¥”Ûõùÿÿÿÿ8°¡äóâ1J$01e7d395-44ce-4096-8664-90191fd8684d
-~	java:S125L"<This block of commented-out lines of code should be removed.(Ú°à¬8¶¡äóâ1J$4f06228d-06e2-4581-be58-5d7d9b62ab31
-~	java:S125s"<This block of commented-out lines of code should be removed.(ë¾‹8¼¡äóâ1J$36740f2d-8d6a-485c-aae7-75608876b6e9
-ƒ	java:S125u"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8¼¡äóâ1J$b667228b-41ba-420e-bc4e-1ee8c8474b7c
-
-java:S1871~"MThis branch's code block is the same as the block for the branch on line 124.(Ğ³¸Ñ8¾¡äóâ1J$36f6d375-e509-4275-831d-5db871b63c15
-	java:S125ƒ"<This block of commented-out lines of code should be removed.(ë¾‹8¿¡äóâ1J$77a087c4-c7db-439a-969f-04a2d877f9de
-	java:S125‹"<This block of commented-out lines of code should be removed.(Ÿï²°8À¡äóâ1J$294c798f-8b22-46e9-b653-ffd705f215df
-	java:S125"<This block of commented-out lines of code should be removed.(÷µ¹8À¡äóâ1J$4df9d2c2-144c-4b86-a615-070ecde12010
-	java:S125"<This block of commented-out lines of code should be removed.(·å¢»8À¡äóâ1J$c94a5c0f-7474-4147-8e2b-a310d8bdedfa
-„	java:S125‘"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8Á¡äóâ1J$31bc1d45-3567-4e05-9591-0ee803dd80d3
-	java:S125–"<This block of commented-out lines of code should be removed.(÷µ¹8Á¡äóâ1J$a4214ebd-2789-45b8-bf06-7a7df054e3e5
-	java:S125±"<This block of commented-out lines of code should be removed.(÷µ¹8Ã¡äóâ1J$a76e51b8-6e61-4c60-803e-b0074a435f97
-„	java:S125²"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8Ä¡äóâ1J$6aae7390-79a4-4a41-9f6a-f25ae31088c7
-	java:S125µ"<This block of commented-out lines of code should be removed.(´èİŠ8È¡äóâ1J$d3b62300-7f50-42a2-8474-45265e2b8620
+java:S1659"#Declare "lastY" on a separate line.(Í Œüÿÿÿÿ8Î·Ôå1J$156559c0-3739-4e71-94f4-b2240be3712b
+p
+java:S1948"-Make "originImage" transient or serializable.(‰¹¾¦8Ï·Ôå1J$af95eebc-a081-4193-892c-cf2086857fc5
+q
+java:S1948".Make "changedImage" transient or serializable.(ªîô8Ï·Ôå1J$03027cb8-c745-485e-8753-e3689b1d4886
+u
+java:S1948"2Make "currentViewImage" transient or serializable.(­ìÎÌ8Ğ·Ôå1J$e91b3919-e4bb-49ad-80e8-e1211c7dd992
+ƒ	java:S1250"<This block of commented-out lines of code should be removed.(¥”Ûõùÿÿÿÿ8Ô·Ôå1J$4907fd8a-640d-4c3c-833b-e8ba12ab655e
+~	java:S125H"<This block of commented-out lines of code should be removed.(óÆÒ8Õ·Ôå1J$6e654d7c-ab12-46e3-9e91-cd64bdf4b943
+~	java:S125Z"<This block of commented-out lines of code should be removed.(Ú°à¬8×·Ôå1J$95e967c5-51ed-4f69-ae63-a752c48acc85
+	java:S125”"<This block of commented-out lines of code should be removed.(ë¾‹8Û·Ôå1J$a21b16d4-9565-49fa-b1d1-6d8d40c4ba5c
+„	java:S125–"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8Û·Ôå1J$0db8e36c-c327-430a-b76d-ef271d4ef7fe
+‘
+java:S1871 "MThis branch's code block is the same as the block for the branch on line 158.(Ğ³¸Ñ8Ü·Ôå1J$f17b1da5-0484-46b2-b3e4-08e8f453b0d5
+	java:S125¥"<This block of commented-out lines of code should be removed.(ë¾‹8İ·Ôå1J$4eb98f92-909b-4f5e-ab4f-224ec48490fe
+	java:S125­"<This block of commented-out lines of code should be removed.(Ÿï²°8Ş·Ôå1J$5c72df03-528a-4770-8f53-5e11f348628a
+	java:S125¯"<This block of commented-out lines of code should be removed.(÷µ¹8Ş·Ôå1J$df81c36c-11ac-4028-bc96-54c410612c33
+	java:S125±"<This block of commented-out lines of code should be removed.(·å¢»8ß·Ôå1J$61bbb2ff-5d3b-417a-a685-e46c73b0f6ab
+„	java:S125³"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8ß·Ôå1J$6d81a70f-3b81-4c5a-917b-0f9411d88fbc
+	java:S125¸"<This block of commented-out lines of code should be removed.(÷µ¹8ß·Ôå1J$d0a1225a-2b7c-4c4d-91b5-a71fa5d46614
+	java:S125Ô"<This block of commented-out lines of code should be removed.(÷µ¹8á·Ôå1J$7904e8ed-eb10-484a-9ca9-fbaaa0cc9ad2
+„	java:S125Õ"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8á·Ôå1J$9744cd8d-04b9-4ec1-aea5-70c7e026dd07
+	java:S125Ø"<This block of commented-out lines of code should be removed.(´èİŠ8â·Ôå1J$60ea2a51-469c-4bc3-948d-9e597752fff5
 i
-java:S1659ù" Declare "yc" on a separate line.(ÿÉ‹¢øÿÿÿÿ8Î¡äóâ1J$b8d122b0-eb8c-4ce7-8723-14b2c032c47b
-„	java:S125ü"<This block of commented-out lines of code should be removed.(“Ò”Óûÿÿÿÿ8Ñ¡äóâ1J$20d5f5f1-42d9-4903-bbff-7701dd2a84cf
-„	java:S125ş"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8Ò¡äóâ1J$f087fb57-4c85-4a8d-a1db-48f291d4fbf0
-„	java:S125˜"<This block of commented-out lines of code should be removed.(İˆÕúÿÿÿÿ8×¡äóâ1J$412ac235-f87b-46bd-851f-07814369afb4
-„	java:S125¨"<This block of commented-out lines of code should be removed.(øö¢¬üÿÿÿÿ8Ù¡äóâ1J$df37f96d-dab7-4d8a-85cb-8b74693b91ba
-„	java:S125Ô"<This block of commented-out lines of code should be removed.(´×çíşÿÿÿÿ8Ş¡äóâ1J$b8061638-ce4a-4aad-ba42-cd09991f1eb8
-„	java:S125‚"<This block of commented-out lines of code should be removed.(ÚáŞ›şÿÿÿÿ8ã¡äóâ1J$dccbb866-1cb3-430e-898b-3cb03d8845a5
+java:S1659œ" Declare "yc" on a separate line.(ÿÉ‹¢øÿÿÿÿ8å·Ôå1J$d84802fa-6b18-4d36-98f7-29e8fd26cac2
+„	java:S125Ÿ"<This block of commented-out lines of code should be removed.(“Ò”Óûÿÿÿÿ8æ·Ôå1J$11cc2cee-9fd4-48ef-875e-d9553a6d7e21
+„	java:S125¡"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8ç·Ôå1J$dc20d634-46a1-4ef2-92b2-0e93fdbaa7a8
+„	java:S125»"<This block of commented-out lines of code should be removed.(İˆÕúÿÿÿÿ8è·Ôå1J$2362d7e9-5295-4242-a379-32599f428dee
+„	java:S125Ë"<This block of commented-out lines of code should be removed.(øö¢¬üÿÿÿÿ8è·Ôå1J$d2c1b5d0-957e-4d41-bd6e-532885cb06d7
+„	java:S125ô"<This block of commented-out lines of code should be removed.(´×çíşÿÿÿÿ8ë·Ôå1J$5c500c4d-1a6d-4ed6-9b38-5962eb60b9de
+„	java:S125¥"<This block of commented-out lines of code should be removed.(ÚáŞ›şÿÿÿÿ8ï·Ôå1J$0cd0094c-4f9c-4c3b-8089-a7e60398de5e
+„	java:S125¨"<This block of commented-out lines of code should be removed.(Ï”Ã†úÿÿÿÿ8ï·Ôå1J$8c8a9ff6-bab2-4a52-bcdc-dc4c03081b1d
+l	java:S108Í")Either remove or fill this block of code.(Â€Ü8ò·Ôå1J$54f31912-4fe7-45ae-957d-8321a3e35336
+`
+java:S6205Ğ"Remove this redundant block.(ê‡¹ª8ó·Ôå1J$006b1c07-c6b1-425e-a38a-6f9cce0237d1
+e
+java:S6205Ó"Remove this redundant block.(Î„åÓùÿÿÿÿ8ó·Ôå1J$d5012fbe-2d95-4cad-a437-20ff445a3c82
+l	java:S108ü")Either remove or fill this block of code.(¡ûÔò8õ·Ôå1J$efbb3051-6a52-4fe5-84d7-b8176375f9ce
+q	java:S108‡")Either remove or fill this block of code.(‡¿§™ûÿÿÿÿ8õ·Ôå1J$0c28c8d8-931b-4b47-ad80-ce4e8c3dde7b
+l	java:S108Š")Either remove or fill this block of code.(¾Ö ¡8õ·Ôå1J$5db8448d-1766-4287-967c-58d700102ec3
+q	java:S108")Either remove or fill this block of code.(‹‡õ¥şÿÿÿÿ8õ·Ôå1J$92b90234-ac66-4a9b-aaf7-d382a7348952
+‡
+java:S1854À"CRemove this useless assignment to local variable "centralPosition".(¦œÙ«8ù·Ôå1J$5a8a8565-aa9c-4ca1-a421-04c0a1392def
+Œ
+java:S1854¿"CRemove this useless assignment to local variable "smoothingMatrix".(Í¶“ªúÿÿÿÿ8ù·Ôå1J$e704f7a4-0a77-48e3-8208-540c245c76bd
+	java:S125¹"<This block of commented-out lines of code should be removed.(¦¹–ì8ù·Ôå1J$d300ce66-b72c-433c-bc19-ee15ea231e69
+}
+java:S1481¿"4Remove this unused "smoothingMatrix" local variable.(Í¶“ªúÿÿÿÿ8ú·Ôå1J$27210857-dfd5-4158-ae68-353fa5763d33
+x
+java:S1481À"4Remove this unused "centralPosition" local variable.(¦œÙ«8ú·Ôå1J$c5ede3bc-c35e-4b46-84df-ac5c00bac936
+„	java:S125İ"<This block of commented-out lines of code should be removed.(€âŒ·ÿÿÿÿÿ8ü·Ôå1J$6df15b68-c9ab-4334-9863-369a63c1a1aa
+„	java:S125â"<This block of commented-out lines of code should be removed.(Ú­æñúÿÿÿÿ8œÊÿå1J$6c2cb276-ddd6-4b70-97a5-0e3d6c634ef5
 {
-java:S1068"3Remove this unused "parentComponent" private field.(çñ£·ùÿÿÿÿ8ç¡äóâ1J$3063a3b3-df60-4560-b033-e165ae38ebfe
+java:S1068"3Remove this unused "parentComponent" private field.(çñ£·ùÿÿÿÿ8¸Ôå1J$b9f130f8-2cf2-4744-89f4-30b37a3088d0
+
+java:S1144¾"6Remove this unused private "gaussSmoothing3x3" method.(‹Èæöşÿÿÿÿ8‚¸Ôå1J$d3be654c-e9ff-411b-9a55-5222603897f4

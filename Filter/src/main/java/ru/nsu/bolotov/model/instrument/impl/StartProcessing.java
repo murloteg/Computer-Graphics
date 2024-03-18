@@ -1,18 +1,17 @@
 package ru.nsu.bolotov.model.instrument.impl;
 
 import ru.nsu.bolotov.model.instrument.Instrument;
-import ru.nsu.bolotov.model.mode.FilterMode;
 import ru.nsu.bolotov.view.imagepanel.ImagePanel;
 
 import javax.swing.*;
 import java.util.List;
 
-public class OrderlyDithering implements Instrument {
+public class StartProcessing implements Instrument {
     private final ImagePanel imagePanel;
     private final JButton instrumentButton;
     private final JRadioButtonMenuItem menuButton;
 
-    public OrderlyDithering(ImagePanel imagePanel) {
+    public StartProcessing(ImagePanel imagePanel) {
         this.imagePanel = imagePanel;
         String instrumentName = this.getInstrumentName();
 
@@ -40,14 +39,15 @@ public class OrderlyDithering implements Instrument {
     @Override
     public void injectActionListeners(List<Instrument> instrumentList, ButtonGroup buttonGroup) {
         instrumentButton.addActionListener(event -> {
-            imagePanel.setFilterMode(FilterMode.ORDERLY_DITHERING);
+            instrumentButton.setSelected(true);
             menuButton.setSelected(true);
+            imagePanel.startImageProcessing();
         });
 
         menuButton.addActionListener(event -> {
-            imagePanel.setFilterMode(FilterMode.ORDERLY_DITHERING);
             menuButton.setSelected(true);
             instrumentButton.setSelected(true);
+            imagePanel.startImageProcessing();
         });
     }
 }

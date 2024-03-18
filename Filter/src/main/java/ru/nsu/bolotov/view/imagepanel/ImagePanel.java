@@ -2,6 +2,7 @@ package ru.nsu.bolotov.view.imagepanel;
 
 import ru.nsu.bolotov.exception.FailedLoadImage;
 import ru.nsu.bolotov.exception.FailedSaveImage;
+import ru.nsu.bolotov.model.mode.FilterMode;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -10,15 +11,19 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class ImagePanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener {
     private Dimension panelSize;        // visible image size
     private JScrollPane spIm;
     private JFrame parentComponent;
-    private BufferedImage img = null;    // image to view
+    private BufferedImage originImage = null;    // image to view
+    private BufferedImage changedImage;
+    private BufferedImage currentViewImage;
     private Dimension imSize = null;    // real image size
     private int lastX = 0, lastY = 0;        // last captured mouse coordinates
     private double zoomK = 0.05;        // scroll zoom coefficient
+    private FilterMode filterMode = FilterMode.CHANGE_VIEW_MODE;
 
     /**
      * Creates default Image-viewer in the given JScrollPane.
@@ -63,13 +68,22 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         setImage(newIm, true);
     }
 
+//    @Override
+//    public void paint(Graphics g) {
+//        if (currentViewImage == null) {
+//            g.setColor(Color.WHITE);
+//            g.fillRect(0, 0, getWidth(), getHeight());
+//        } else
+//            g.drawImage(currentViewImage, 0, 0, panelSize.width, panelSize.height, null);
+//    }
+
     @Override
-    public void paint(Graphics g) {
-        if (img == null) {
-            g.setColor(Color.black);
+    public void paintComponent(Graphics g) {
+        if (currentViewImage == null) {
+            g.setColor(Color.WHITE);
             g.fillRect(0, 0, getWidth(), getHeight());
         } else
-            g.drawImage(img, 0, 0, panelSize.width, panelSize.height, null);
+            g.drawImage(currentViewImage, 0, 0, panelSize.width, panelSize.height, null);
     }
 
 //	public void update(Graphics g)
@@ -81,6 +95,13 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         try {
             BufferedImage openedImage = ImageIO.read(file);
             setImage(openedImage, isDefaultView);
+            originImage = openedImage;
+            currentViewImage = originImage;
+
+            changedImage = new BufferedImage(originImage.getWidth(), originImage.getHeight(), originImage.getType());
+            Graphics2D g2d = changedImage.createGraphics();
+            g2d.drawImage(currentViewImage, 0, 0, null);
+            g2d.dispose();
         } catch (IOException exception) {
             throw new FailedLoadImage(exception);
         }
@@ -89,9 +110,21 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
 
     public void saveCanvasContent(File file) {
         try {
-            ImageIO.write(img, "png", file);
+            ImageIO.write(originImage, "png", file);
         } catch (IOException exception) {
             throw new FailedSaveImage(exception);
+        }
+    }
+
+    public void setFilterMode(FilterMode filterMode) {
+        this.filterMode = filterMode;
+    }
+
+    public void startImageProcessing() {
+        if (Objects.nonNull(originImage)) {
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            applyFilter();
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
 
@@ -109,8 +142,8 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         // defaultView means "fit screen (panel)"
 
         // Draw black screen for no image
-        img = newIm;
-        if (img == null) {
+        currentViewImage = newIm;
+        if (currentViewImage == null) {
             // make full defaultView
             setMaxVisibleRectSize();    // panelSize = getVisibleRectSize();
             repaint();
@@ -118,8 +151,9 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             return;
         }
 
+        imSize = new Dimension(currentViewImage.getWidth(), currentViewImage.getHeight());
         // Check if it is possible to use defaultView
-        Dimension newImSize = new Dimension(img.getWidth(), img.getHeight());
+        Dimension newImSize = new Dimension(currentViewImage.getWidth(), currentViewImage.getHeight());
         if (imSize == null)
             defaultView = true;
         else if ((newImSize.height != imSize.height) || (newImSize.width != imSize.width))
@@ -148,16 +182,17 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         } else {
             // just change image
             //repaint();
+            spIm.getViewport().setViewPosition(new Point(0, 0));
             spIm.paintAll(spIm.getGraphics());
         }
-
+        SwingUtilities.updateComponentTreeUI(this.getParent());
     }
 
     /**
      * Sets "fit-screen" view.
      */
     public void fitScreen() {
-        setImage(img, true);
+        setImage(originImage, true);
     }
 
     /**
@@ -212,7 +247,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
 
     private boolean setView(Rectangle rect, int minSize) {
         // should also take into account ScrollBars size
-        if (img == null)
+        if (originImage == null)
             return false;
         if (imSize.width < minSize || imSize.height < minSize)
             return false;
@@ -267,7 +302,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
      */
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        if (img == null)
+        if (originImage == null)
             return;
 
         // Zoom
@@ -305,10 +340,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         scroll.x += x;
         scroll.y += y;
 
-        repaint();    // можно и убрать
-        revalidate();
-        spIm.validate();
-        // сначала нужно, чтобы scroll понял новый размер, потом сдвигать
+        SwingUtilities.updateComponentTreeUI(this.getParent());
 
         //spIm.getViewport().setViewPosition(scroll);	// так верхний левый угол может выйти за рамки изображения
         spIm.getHorizontalScrollBar().setValue(scroll.x);
@@ -340,7 +372,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         //spIm.getViewport().setViewPosition(scroll);
         spIm.getHorizontalScrollBar().setValue(scroll.x);
         spIm.getVerticalScrollBar().setValue(scroll.y);
-        spIm.repaint();
+        SwingUtilities.updateComponentTreeUI(this.getParent());
 
         // We changed the position of the underlying picture, take it into account
         //lastX = e.getX() + (lastX - e.getX());	// lastX = lastX
@@ -383,9 +415,12 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
      */
     @Override
     public void mouseClicked(MouseEvent e) {
+        if (SwingUtilities.isRightMouseButton(e) && Objects.nonNull(imSize)) {
+            changeViewImage();
+        }
 //        if ((e.getModifiers() == InputEvent.BUTTON2_MASK) || (e.getModifiers() == InputEvent.BUTTON3_MASK))
 //            parentComponent.changeViewedImage();
-//
+
 //        if (e.getModifiers() == InputEvent.BUTTON1_MASK) {
 //            if (imSize == null) {
 //                // Клик по пустому изображению
@@ -401,6 +436,14 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
 //        }
     }
 
+    private void changeViewImage() {
+        if (currentViewImage.equals(originImage)) {
+            setImage(changedImage, true);
+        } else if (currentViewImage.equals(changedImage)) {
+            setImage(originImage, true);
+        }
+    }
+
     @Override
     public void mouseEntered(MouseEvent e) {
     }
@@ -412,4 +455,185 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     @Override
     public void mouseMoved(MouseEvent e) {
     }
+
+    private void applyFilter() {
+        switch (filterMode) {
+            case CHANGE_VIEW_MODE -> {
+
+            }
+            case WHITE_AND_BLACK -> {
+                whiteAndBlackFilter();
+            }
+            case NEGATIVE -> {
+                negativeFilter();
+            }
+            case EMBOSSING -> {
+                double[][] matrix = {
+                        {0, 1, 0},
+                        {-1, 0, 1},
+                        {0, -1, 0}
+                };
+                applyMatrixFilter(matrix);
+                for (int x = 0; x < originImage.getWidth(); ++x) {
+                    for (int y = 0; y < originImage.getHeight(); ++y) {
+                        int pixelColor = changedImage.getRGB(x, y);
+                        int redComponent = pixelColor & 0x000000FF;
+                        int greenComponent = (pixelColor >> 8) & 0x000000FF;
+                        int blueComponent = (pixelColor >> 16) & 0x000000FF;
+
+                        int newRedComponent = Math.min((redComponent + 128), 255);
+                        int newGreenComponent = Math.min((greenComponent + 128), 255);
+                        int newBlueComponent = Math.min((blueComponent + 128), 255);
+                        int updatedColor = (newRedComponent + 128) | ((newGreenComponent + 128) << 8) | ((newBlueComponent + 128) << 16);
+                        changedImage.setRGB(x, y, updatedColor);
+                    }
+                }
+            }
+            case SHARPNESS_INCREASING -> {
+                double[][] matrix = {
+                        {0, -1, 0},
+                        {-1, 5, -1},
+                        {0, -1, 0}
+                };
+                applyMatrixFilter(matrix);
+            }
+            case GAUSS_SMOOTHING -> {
+                double[][] matrix = {
+                        {1, 1, 1},
+                        {1, 1, 1},
+                        {1, 1, 1}
+                };
+                applyMatrixFilter(matrix);
+            }
+            case GAMMA_CORRECTION -> {
+
+            }
+            case ROBERTS_OPERATOR -> {
+                double[][] matrix = {
+                        {1, 1, 1},
+                        {1, -5, 1},
+                        {1, 1, 1}
+                };
+                applyMatrixFilter(matrix);
+            }
+            case SOBEL_OPERATOR -> {
+
+            }
+            case FLOYD_STEINBERG_DITHERING -> {
+
+            }
+            case ORDERLY_DITHERING -> {
+
+            }
+        }
+        currentViewImage = changedImage;
+        setImage(currentViewImage, true);
+    }
+
+    private int getMiddleColorForPixel(int pixelColor) {
+        int redComponent = pixelColor & 0x000000FF;
+        int greenComponent = (pixelColor >> 8) & 0x000000FF;
+        int blueComponent = (pixelColor >> 16) & 0x000000FF;
+
+        double redCoefficient = 0.299;
+        double greenCoefficient = 0.587;
+        double blueCoefficient = 0.114;
+        return (int) ((redCoefficient * redComponent + greenCoefficient * greenComponent + blueCoefficient * blueComponent) / 3);
+    }
+
+    private void whiteAndBlackFilter() {
+        for (int x = 0; x < originImage.getWidth(); ++x) {
+            for (int y = 0; y < originImage.getHeight(); ++y) {
+                int pixelColor = originImage.getRGB(x, y);
+                int middleColor = getMiddleColorForPixel(pixelColor);
+                int updatedColor = middleColor | (middleColor << 8) | (middleColor << 16);
+                changedImage.setRGB(x, y, updatedColor);
+            }
+        }
+    }
+
+    private void negativeFilter() {
+        for (int x = 0; x < originImage.getWidth(); ++x) {
+            for (int y = 0; y < originImage.getHeight(); ++y) {
+                int pixelColor = originImage.getRGB(x, y);
+                int redComponent = pixelColor & 0x000000FF;
+                int greenComponent = (pixelColor >> 8) & 0x000000FF;
+                int blueComponent = (pixelColor >> 16) & 0x000000FF;
+
+                int updatedColor = (255 - redComponent) | ((255 - greenComponent) << 8) | ((255 - blueComponent) << 16);
+                changedImage.setRGB(x, y, updatedColor);
+            }
+        }
+    }
+
+//    private int calculateXShiftFromCentralPosition(int currentPosition, int centralPosition, int matrixSize) {
+//
+//    }
+
+    // Gaussian blur 3x3
+    private void gaussSmoothing3x3(int matrixSize) {
+        double[] smoothingMatrix = new double[matrixSize * matrixSize];
+        int centralPosition = (matrixSize * matrixSize - 1) / 2;
+
+
+    }
+
+    private boolean isBorderedValue(int position, int width, int height) {
+        return position < width || position >= (width * (height - 1)) || position % width == 0
+                || position % width == (width - 1);
+    }
+
+    private double calcDivisor(double[][] filterMatrix) {
+        double divisor = 0;
+        int matrixRows = filterMatrix.length;
+        for (int i = 0; i < matrixRows; ++i) {
+            for (int j = 0; j < matrixRows; ++j) {
+                divisor += filterMatrix[i][j];
+            }
+        }
+        return Math.max(divisor, 1);
+    }
+
+    private int calculateMultiplicationResultForFilterMatrix(double[][] filterMatrix, int x, int y) {
+        double result = 0;
+        int matrixRows = filterMatrix.length;
+        int matrixRadius = matrixRows / 2;
+        for (int i = 0; i < matrixRows; ++i) {
+            for (int j = 0; j < matrixRows; ++j) {
+                int currentY = y + i - matrixRadius;
+                int currentX = x + j - matrixRadius;
+//                int currentPosition = currentY * originImage.getWidth() + currentX;
+//                if (currentPosition < 0 || currentPosition >= originImage.getWidth()) {
+//                    continue;
+//                }
+                int pixelColor = originImage.getRGB(currentX, currentY);
+//                int redComponent = pixelColor & 0x000000FF;
+//                int greenComponent = (pixelColor >> 8) & 0x000000FF;
+//                int blueComponent = (pixelColor >> 16) & 0x000000FF;
+//                result += filterMatrix[i][j] * (redComponent | (greenComponent << 8) | (blueComponent << 16));
+
+                result += filterMatrix[i][j] * pixelColor / calcDivisor(filterMatrix);
+            }
+        }
+        return (int) result;
+    }
+
+    private void applyMatrixFilter(double[][] filterMatrix) {
+        int imageWidth = originImage.getWidth();
+        int imageHeight = originImage.getHeight();
+        for (int x = 0; x < imageWidth; ++x) {
+            for (int y = 0; y < imageHeight; ++y) {
+                int position = y * imageWidth + x;
+                if (isBorderedValue(position, imageWidth, imageHeight)) {
+                    continue;
+                }
+                int updatedColor = calculateMultiplicationResultForFilterMatrix(filterMatrix, x, y);
+                changedImage.setRGB(x, y, updatedColor);
+            }
+        }
+    }
+
+    // Sharpness increase - sum of matrix values is 1
+
+    // Embossing - sum of matrix values is 0
 }

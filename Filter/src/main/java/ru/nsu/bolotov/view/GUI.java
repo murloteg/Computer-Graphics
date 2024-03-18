@@ -29,7 +29,6 @@ public class GUI {
         JScrollPane scrollPane = new JScrollPane();
         ImagePanel imagePanel = new ImagePanel(scrollPane, mainFrame);
         imagePanel.setMinimumSize(new Dimension(600, 600));
-        imagePanel.setBorder(BorderFactory.createLineBorder(Color.RED, 40));
         imagePanel.setVisible(true);
 
         scrollPane.createHorizontalScrollBar();
@@ -40,11 +39,20 @@ public class GUI {
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 //        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
-        mainFrame.add(scrollPane, BorderLayout.CENTER);
-        initializeInstruments();
+        scrollPane.setBorder(BorderFactory.createDashedBorder(Color.BLACK, 2f, 1.5f, 1.5f, true));
 
+        mainFrame.add(scrollPane, BorderLayout.CENTER);
+        JSeparator leftSeparator = new JSeparator(SwingConstants.VERTICAL);
+        JSeparator rightSeparator = new JSeparator(SwingConstants.VERTICAL);
+        mainFrame.add(leftSeparator, BorderLayout.WEST);
+        mainFrame.add(rightSeparator, BorderLayout.EAST);
+        JSeparator downSeparator = new JSeparator(SwingConstants.HORIZONTAL);
+        mainFrame.add(downSeparator, BorderLayout.SOUTH);
+
+        ButtonGroup buttonGroup = new ButtonGroup();
+        initializeInstruments(imagePanel, buttonGroup);
         addMenuBar(mainFrame, imagePanel);
-        addToolBar(mainFrame);
+        addToolBar(mainFrame, imagePanel);
 
         mainFrame.pack();
         mainFrame.setLocationRelativeTo(null);
@@ -54,20 +62,21 @@ public class GUI {
         mainFrame.setVisible(true);
     }
 
-    private void initializeInstruments() {
-        OpenFile openFile = new OpenFile();
-        SaveFile saveFile = new SaveFile();
-        ChangeViewMode changeViewMode = new ChangeViewMode();
-        WhiteAndBlack whiteAndBlack = new WhiteAndBlack();
-        Negative negative = new Negative();
-        GaussSmoothing gaussSmoothing = new GaussSmoothing();
-        SharpnessIncrease sharpnessIncrease = new SharpnessIncrease();
-        Embossing embossing = new Embossing();
-        GammaCorrection gammaCorrection = new GammaCorrection();
-        RobertsOperator robertsOperator = new RobertsOperator();
-        SobelOperator sobelOperator = new SobelOperator();
-        FloydSteinbergDithering floydSteinbergDithering = new FloydSteinbergDithering();
-        OrderlyDithering orderlyDithering = new OrderlyDithering();
+    private void initializeInstruments(ImagePanel imagePanel, ButtonGroup buttonGroup) {
+        OpenFile openFile = new OpenFile(imagePanel);
+        SaveFile saveFile = new SaveFile(imagePanel);
+        ChangeViewMode changeViewMode = new ChangeViewMode(imagePanel);
+        WhiteAndBlack whiteAndBlack = new WhiteAndBlack(imagePanel);
+        Negative negative = new Negative(imagePanel);
+        GaussSmoothing gaussSmoothing = new GaussSmoothing(imagePanel);
+        SharpnessIncrease sharpnessIncrease = new SharpnessIncrease(imagePanel);
+        Embossing embossing = new Embossing(imagePanel);
+        GammaCorrection gammaCorrection = new GammaCorrection(imagePanel);
+        RobertsOperator robertsOperator = new RobertsOperator(imagePanel);
+        SobelOperator sobelOperator = new SobelOperator(imagePanel);
+        FloydSteinbergDithering floydSteinbergDithering = new FloydSteinbergDithering(imagePanel);
+        OrderlyDithering orderlyDithering = new OrderlyDithering(imagePanel);
+        StartProcessing startProcessing = new StartProcessing(imagePanel);
 
         instrumentList.add(openFile);
         instrumentList.add(saveFile);
@@ -82,6 +91,11 @@ public class GUI {
         instrumentList.add(sobelOperator);
         instrumentList.add(floydSteinbergDithering);
         instrumentList.add(orderlyDithering);
+        instrumentList.add(startProcessing);
+
+        for (Instrument instrument : instrumentList) {
+            instrument.injectActionListeners(instrumentList, buttonGroup);
+        }
     }
 
     private void addMenuBar(JFrame frame, ImagePanel imagePanel) {
@@ -152,30 +166,34 @@ public class GUI {
         });
         fileBar.add(openFileItem);
 
-//        JMenu instrumentsBar = new JMenu("Instruments");
-//        for (PaintInstrument instrument : instruments) {
-//            instrumentsBar.add(instrument.getMenuBarButton());
-//        }
+        JMenu instrumentsBar = new JMenu("Instruments");
+        for (Instrument instrument : instrumentList) {
+            instrumentsBar.add(instrument.getMenuButton());
+        }
 
         menuBar.add(fileBar);
-//        menuBar.add(instrumentsBar);
+        menuBar.add(instrumentsBar);
         menuBar.add(helpBar);
         frame.setJMenuBar(menuBar);
     }
 
-    private void addToolBar(JFrame frame) {
+    private void addToolBar(JFrame frame, ImagePanel imagePanel) { // FIXME
         ClassLoader currentClassLoader = this.getClass().getClassLoader();
 
         JToolBar toolBar = new JToolBar("Instruments");
         JPanel toolBarPanel = new JPanel();
 
         for (Instrument instrument : instrumentList) {
-            JButton instrumentButton = instrument.getButton();
+            JButton instrumentButton = instrument.getInstrumentButton();
             URL buttonFileURL = currentClassLoader.getResource("icons/icon-" + instrument.getInstrumentName().toLowerCase() + ".png");
             ImageIcon buttonIcon = new ImageIcon(Objects.requireNonNull(buttonFileURL));
             instrumentButton.setIcon(buttonIcon);
             instrumentButton.setPreferredSize(new Dimension(45, 45));
             instrumentButton.setBorderPainted(true);
+            if (instrument.equals(instrumentList.get(instrumentList.size() - 1))) {
+                JSeparator separator = new JToolBar.Separator(new Dimension(40, 40));
+                toolBarPanel.add(separator);
+            }
             toolBarPanel.add(instrumentButton);
         }
 

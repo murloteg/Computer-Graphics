@@ -43,3 +43,9 @@ x
 Hsrc/main/java/ru/nsu/bolotov/model/instrument/impl/OrderlyDithering.java,6/3/6386952c5752c2fcbea0729422c58733e1f6a70a
 k
 ;src/main/java/ru/nsu/bolotov/exception/FailedSaveImage.java,4/f/4f718d2bc9ddeca7c31a0b02583d602bc00f1ab1
+g
+7src/main/java/ru/nsu/bolotov/model/mode/FilterMode.java,8/8/88b9accbe4dec282f467846cdfc39a3fb6448dae
+p
+@src/main/java/ru/nsu/bolotov/model/instrument/DialogEnabled.java,3/d/3d50945f2d910cea30ef01c8601cf0c0c66a9dd4
+w
+Gsrc/main/java/ru/nsu/bolotov/model/instrument/impl/StartProcessing.java,9/3/93d9e77d50c21a18030c604918ee954c40eac4ae
