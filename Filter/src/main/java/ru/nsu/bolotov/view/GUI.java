@@ -76,6 +76,9 @@ public class GUI {
         SobelOperator sobelOperator = new SobelOperator(imagePanel);
         FloydSteinbergDithering floydSteinbergDithering = new FloydSteinbergDithering(imagePanel);
         OrderlyDithering orderlyDithering = new OrderlyDithering(imagePanel);
+        AquaRealization aquaRealization = new AquaRealization(imagePanel);
+        Rotate rotate = new Rotate(imagePanel);
+        RetroEffect retroEffect = new RetroEffect(imagePanel);
         StartProcessing startProcessing = new StartProcessing(imagePanel);
 
         instrumentList.add(openFile);
@@ -91,6 +94,9 @@ public class GUI {
         instrumentList.add(sobelOperator);
         instrumentList.add(floydSteinbergDithering);
         instrumentList.add(orderlyDithering);
+        instrumentList.add(aquaRealization);
+        instrumentList.add(rotate);
+        instrumentList.add(retroEffect);
         instrumentList.add(startProcessing);
 
         for (Instrument instrument : instrumentList) {

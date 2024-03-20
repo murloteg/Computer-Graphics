@@ -19,6 +19,14 @@ public class UtilConsts {
         }
     }
 
+    public static final class ProgramConfigurationConsts {
+        public static final int THREADS_NUMBERS = 8;
+
+        private ProgramConfigurationConsts() {
+            throw new IllegalStateException(StringConsts.INSTANTIATION_MESSAGE);
+        }
+    }
+
     public static final class StringConsts {
         public static final String INSTANTIATION_MESSAGE = "Instantiation of util class";
         public static final String APPLICATION_TITLE = "Custom Filter";

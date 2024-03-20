@@ -51,3 +51,11 @@ w
 Gsrc/main/java/ru/nsu/bolotov/model/instrument/impl/StartProcessing.java,9/3/93d9e77d50c21a18030c604918ee954c40eac4ae
 f
 6src/main/java/ru/nsu/bolotov/model/FilterMatrices.java,f/0/f085b352575893f78a7739ae9b5d1a99a0fbf034
+w
+Gsrc/main/java/ru/nsu/bolotov/model/instrument/impl/Aquarealization.java,f/a/fac33687368d27c4fda85775aeeb75a31253d76b
+s
+Csrc/main/java/ru/nsu/bolotov/model/instrument/impl/RetroEffect.java,e/6/e6a9854087c9c29b7a2d63603b92096ec958585e
+w
+Gsrc/main/java/ru/nsu/bolotov/model/instrument/impl/AquaRealization.java,2/f/2f6625775eed9aabc39d5f9411ea6d46a215b719
+n
+>src/main/java/ru/nsu/bolotov/model/instrument/impl/Rotate.java,4/b/4b8c9f3a21487e9e89bf106af2992297335e8a42
