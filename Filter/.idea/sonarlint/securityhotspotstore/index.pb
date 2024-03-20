@@ -49,3 +49,5 @@ p
 @src/main/java/ru/nsu/bolotov/model/instrument/DialogEnabled.java,3/d/3d50945f2d910cea30ef01c8601cf0c0c66a9dd4
 w
 Gsrc/main/java/ru/nsu/bolotov/model/instrument/impl/StartProcessing.java,9/3/93d9e77d50c21a18030c604918ee954c40eac4ae
+f
+6src/main/java/ru/nsu/bolotov/model/FilterMatrices.java,f/0/f085b352575893f78a7739ae9b5d1a99a0fbf034

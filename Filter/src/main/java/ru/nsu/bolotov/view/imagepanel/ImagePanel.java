@@ -2,6 +2,7 @@ package ru.nsu.bolotov.view.imagepanel;
 
 import ru.nsu.bolotov.exception.FailedLoadImage;
 import ru.nsu.bolotov.exception.FailedSaveImage;
+import ru.nsu.bolotov.model.FilterMatrices;
 import ru.nsu.bolotov.model.mode.FilterMode;
 
 import javax.imageio.ImageIO;
@@ -11,7 +12,10 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Objects;
+import java.util.Random;
 
 public class ImagePanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener {
     private Dimension panelSize;        // visible image size
@@ -468,11 +472,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 negativeFilter();
             }
             case EMBOSSING -> {
-                int[][] matrix = {
-                        {0, 1, 0},
-                        {-1, 0, 1},
-                        {0, -1, 0}
-                };
+                int[][] matrix = FilterMatrices.EMBOSSING_MATRIX;
                 applyMatrixFilter(matrix);
                 for (int x = 0; x < originImage.getWidth(); ++x) {
                     for (int y = 0; y < originImage.getHeight(); ++y) {
@@ -490,52 +490,88 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 }
             }
             case SHARPNESS_INCREASING -> {
-                int[][] matrix = {
-                        {0, -1, 0},
-                        {-1, 5, -1},
-                        {0, -1, 0}
-                };
+                int[][] matrix = FilterMatrices.SHARPEN_MATRIX;
                 applyMatrixFilter(matrix);
             }
             case GAUSS_SMOOTHING -> {
-                int[][] matrix = {
-                        {1, 1, 1},
-                        {1, 1, 1},
-                        {1, 1, 1}
-                };
+                int matrixSize = 11; // FIXME: it's parameter
+                int[][] matrix = null;
+                if (matrixSize == 3) {
+                    matrix = FilterMatrices.GAUSS_3X3_MATRIX;
+                } else if (matrixSize == 5) {
+                    matrix = FilterMatrices.GAUSS_5X5_MATRIX;
+                } else if (matrixSize >= 7 && matrixSize % 2 != 0) {
+                    medianFilter(matrixSize);
+                    break;
+                }
                 applyMatrixFilter(matrix);
-                // TODO
             }
             case GAMMA_CORRECTION -> {
-                gammaCorrection(2); // FIXME
+                gammaCorrection(2); // FIXME: check limits
             }
             case ROBERTS_OPERATOR -> {
-                int[][] matrix = {
-                        {1, 1, 1},
-                        {1, -5, 1},
-                        {1, 1, 1}
+                int[][] verticalMatrix = { // FIXME: extract as static field
+                        {1, 0},
+                        {0, -1}
                 };
-                applyMatrixFilter(matrix);
-                // TODO
+                int[][] horizontalMatrix = {
+                        {0, 1},
+                        {-1, 0}
+                };
+                twoDimensionalEdgeDetectionFilter(horizontalMatrix, verticalMatrix);
             }
             case SOBEL_OPERATOR -> {
-                int[][] matrix = {
-                        {-1, 0, 1},
-                        {-2, 0, 2},
-                        {-1, 0, 1}
+                int[][] verticalMatrix = { // FIXME: extract as static field
+                        {1, 2, 1},
+                        {0, 0, 0},
+                        {-1, -2, -1}
                 };
-                applyMatrixFilter(matrix);
-                // TODO
+                int[][] horizontalMatrix = {
+                        {1, 0, -1},
+                        {2, 0, -2},
+                        {1, 0, -1}
+                };
+                twoDimensionalEdgeDetectionFilter(horizontalMatrix, verticalMatrix);
             }
             case FLOYD_STEINBERG_DITHERING -> {
-
+                int noiseParameter = 30;
+                addNoise(noiseParameter);
+                // FIXME
             }
             case ORDERLY_DITHERING -> {
-
+                int[][] matrix = FilterMatrices.CUSTOM_MATRIX;
+                applyMatrixFilter(matrix);
             }
         }
         currentViewImage = changedImage;
         setImage(currentViewImage, true);
+    }
+
+    private int cropColorComponent(int colorComponent) {
+        return (colorComponent < 0) ? 0 : Math.min(colorComponent, 255);
+    }
+
+    private void addNoise(int noiseLimit) {
+        Random generator = new Random();
+        for (int x = 0; x < originImage.getWidth(); ++x) {
+            for (int y = 0; y < originImage.getHeight(); ++y) {
+                int pixelColor = originImage.getRGB(x, y);
+                int redComponent = (pixelColor >> 16) & 0xFF;
+                int greenComponent = (pixelColor >> 8) & 0xFF;
+                int blueComponent = pixelColor & 0xFF;
+
+                redComponent += generator.nextInt(-noiseLimit, noiseLimit);
+                greenComponent += generator.nextInt(-noiseLimit, noiseLimit);
+                blueComponent += generator.nextInt(-noiseLimit, noiseLimit);
+
+                redComponent = cropColorComponent(redComponent);
+                greenComponent = cropColorComponent(greenComponent);
+                blueComponent = cropColorComponent(blueComponent);
+
+                int updatedColor = blueComponent | (greenComponent << 8) | (redComponent << 16);
+                changedImage.setRGB(x, y, updatedColor);
+            }
+        }
     }
 
     private int getMiddleColorForPixel(int pixelColor) {
@@ -598,6 +634,40 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 || position % width >= (width - matrixRadius);
     }
 
+    private int calculateMedianValue(int x, int y, int matrixSize, java.util.List<Integer> pixels) {
+        int matrixRadius = matrixSize / 2;
+
+        for (int i = 0; i < matrixSize; ++i) {
+            for (int j = 0; j < matrixSize; ++j) {
+                int currentY = Math.min(Math.max(y + i - matrixRadius, 0), originImage.getHeight() - 1);
+                int currentX = Math.min(Math.max(x + j - matrixRadius, 0), originImage.getWidth() - 1);
+
+                int pixelColor = originImage.getRGB(currentX, currentY);
+                pixels.add(pixelColor);
+            }
+        }
+        pixels.sort(Comparator.naturalOrder());
+        int medianValue = pixels.get(matrixSize / 2);
+        pixels.clear();
+        return medianValue;
+    }
+
+    private void medianFilter(int matrixSize) {
+        int imageWidth = originImage.getWidth();
+        int imageHeight = originImage.getHeight();
+        java.util.List<Integer> pixels = new ArrayList<>();
+        for (int x = 0; x < imageWidth; ++x) {
+            for (int y = 0; y < imageHeight; ++y) {
+                int position = y * imageWidth + x;
+                if (isBorderedValue(position, imageWidth, imageHeight, matrixSize)) {
+                    continue;
+                }
+                int updatedColor = calculateMedianValue(x, y, matrixSize, pixels);
+                changedImage.setRGB(x, y, updatedColor);
+            }
+        }
+    }
+
     private int calculateDivisorForMatrix(int[][] filterMatrix) {
         int divisor = 0;
         int matrixRows = filterMatrix.length;
@@ -606,10 +676,10 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 divisor += matrix[j];
             }
         }
-        return Math.max(divisor, 1);
+        return (divisor == 0) ? 1 : divisor;
     }
 
-    private int calculateMultiplicationResultForFilterMatrix(int[][] filterMatrix, int x, int y) {
+    private int calculateMultiplicationResultForFilterMatrix(BufferedImage sourceImage, int[][] filterMatrix, int x, int y, int divisor) {
         int matrixRows = filterMatrix.length;
         int matrixRadius = matrixRows / 2;
 
@@ -618,10 +688,10 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         int blueSum = 0;
         for (int i = 0; i < matrixRows; ++i) {
             for (int j = 0; j < matrixRows; ++j) {
-                int currentY = Math.min(Math.max(y + i - matrixRadius, 0), originImage.getHeight() - 1);
-                int currentX = Math.min(Math.max(x + j - matrixRadius, 0), originImage.getWidth() - 1);
+                int currentY = Math.min(Math.max(y + i - matrixRadius, 0), sourceImage.getHeight() - 1);
+                int currentX = Math.min(Math.max(x + j - matrixRadius, 0), sourceImage.getWidth() - 1);
 
-                int pixelColor = originImage.getRGB(currentX, currentY);
+                int pixelColor = sourceImage.getRGB(currentX, currentY);
                 int redComponent = (pixelColor >> 16) & 0xFF;
                 int greenComponent = (pixelColor >> 8) & 0xFF;
                 int blueComponent = pixelColor & 0xFF;
@@ -632,30 +702,51 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             }
         }
 
-        int divisor = calculateDivisorForMatrix(filterMatrix);
         redSum /= divisor;
         greenSum /= divisor;
         blueSum /= divisor;
 
-        redSum = Math.min(Math.max(redSum, 0), 255);
-        greenSum = Math.min(Math.max(greenSum, 0), 255);
-        blueSum = Math.min(Math.max(blueSum, 0), 255);
+        redSum = cropColorComponent(redSum);
+        greenSum = cropColorComponent(greenSum);
+        blueSum = cropColorComponent(blueSum);
         return blueSum | (greenSum << 8) | (redSum << 16);
+    }
+
+    private void twoDimensionalEdgeDetectionFilter(int[][] horizontalMatrix, int[][] verticalMatrix) {
+        // TODO: use binarization parameter
+        whiteAndBlackFilter();
+        BufferedImage grayscaleImage = new BufferedImage(originImage.getWidth(), originImage.getHeight(), originImage.getType());
+        changedImage.copyData(grayscaleImage.getRaster());
+        int imageWidth = originImage.getWidth();
+        int imageHeight = originImage.getHeight();
+        for (int x = 0; x < imageWidth; ++x) {
+            for (int y = 0; y < imageHeight; ++y) {
+                int position = y * imageWidth + x;
+                if (isBorderedValue(position, imageWidth, imageHeight, verticalMatrix.length) ||
+                        isBorderedValue(position, imageWidth, imageHeight, horizontalMatrix.length)) {
+                    continue;
+                }
+                int verticalColor = calculateMultiplicationResultForFilterMatrix(grayscaleImage, verticalMatrix, x, y, 1);
+                int horizontalColor = calculateMultiplicationResultForFilterMatrix(grayscaleImage, horizontalMatrix, x, y, 1);
+                int result = Math.abs(verticalColor) + Math.abs(horizontalColor);
+                changedImage.setRGB(x, y, result);
+            }
+        }
     }
 
     private void applyMatrixFilter(int[][] filterMatrix) {
         int imageWidth = originImage.getWidth();
         int imageHeight = originImage.getHeight();
+        int divisor = calculateDivisorForMatrix(filterMatrix);
         for (int x = 0; x < imageWidth; ++x) {
             for (int y = 0; y < imageHeight; ++y) {
                 int position = y * imageWidth + x;
                 if (isBorderedValue(position, imageWidth, imageHeight, filterMatrix.length)) {
                     continue;
                 }
-                int updatedColor = calculateMultiplicationResultForFilterMatrix(filterMatrix, x, y);
+                int updatedColor = calculateMultiplicationResultForFilterMatrix(originImage, filterMatrix, x, y, divisor);
                 changedImage.setRGB(x, y, updatedColor);
             }
         }
     }
-    
 }
