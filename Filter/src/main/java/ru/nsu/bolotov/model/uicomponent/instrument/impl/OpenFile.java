@@ -81,6 +81,6 @@ public class OpenFile implements Instrument {
 
         fileChooser.showOpenDialog(imagePanel);
         File selectedFile = fileChooser.getSelectedFile();
-        imagePanel.loadFileContent(selectedFile, true);
+        imagePanel.loadFileContent(selectedFile);
     }
 }

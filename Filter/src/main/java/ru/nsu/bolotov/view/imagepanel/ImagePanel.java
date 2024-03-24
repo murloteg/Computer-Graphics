@@ -2,10 +2,11 @@ package ru.nsu.bolotov.view.imagepanel;
 
 import ru.nsu.bolotov.exception.FailedLoadImage;
 import ru.nsu.bolotov.exception.FailedSaveImage;
-import ru.nsu.bolotov.model.FilterMatrices;
+import ru.nsu.bolotov.model.filter.matrices.FilterMatrices;
 import ru.nsu.bolotov.model.uicomponent.instrument.Instrument;
-import ru.nsu.bolotov.model.mode.FilterMode;
+import ru.nsu.bolotov.model.filter.mode.FilterMode;
 import ru.nsu.bolotov.util.UtilConsts;
+import ru.nsu.bolotov.view.mode.ViewMode;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -21,49 +22,43 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ImagePanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener {
-    private Dimension panelSize;        // visible image size
-    private JScrollPane spIm;
-    private JFrame parentComponent;
-    private BufferedImage originImage = null;    // image to view
-    private BufferedImage changedImage;
-    private BufferedImage currentViewImage;
-    private Dimension imSize = null;    // real image size
-    private int lastX = 0, lastY = 0;        // last captured mouse coordinates
-    private double zoomK = 0.05;        // scroll zoom coefficient
+    private Dimension panelSize;
+    private final JScrollPane spIm;
+    private transient BufferedImage originImage = null;
+    private transient BufferedImage changedImage;
+    private transient BufferedImage currentViewImage;
+    private Dimension imSize = null;
+    private int lastX = 0;
+    private int lastY = 0;
     private FilterMode filterMode = FilterMode.IDENTITY;
-    private Instrument currentInstrument;
+    private ViewMode viewMode = ViewMode.REAL_SIZE;
+    private transient Instrument currentInstrument;
     private final Map<String, List<?>> applicationParameters = new HashMap<>();
     private final Random generator = new Random();
+    private static final double ZOOM_COEFFICIENT = 0.05;
 
     /**
      * Creates default Image-viewer in the given JScrollPane.
      * Visible space will be painted in black.
      *
      * @param scrollPane - JScrollPane to add a new Image-viewer
-     * @throws Exception - given JScrollPane must not be null
      */
-    public ImagePanel(JScrollPane scrollPane, JFrame parentComponent) throws RuntimeException {
-        if (scrollPane == null)
-            throw new RuntimeException("Отсутствует scroll panel для просмотрщика изображений!");
+    public ImagePanel(JScrollPane scrollPane) {
+        if (Objects.isNull(scrollPane)) {
+            throw new IllegalArgumentException("ScrollPane wasn't specified");
+        }
 
         spIm = scrollPane;
         spIm.setWheelScrollingEnabled(false);
         spIm.setDoubleBuffered(true);
         spIm.setViewportView(this);
 
-        this.parentComponent = parentComponent;
-
-        panelSize = getVisibleRectSize();    // adjust panel size to maximum visible in scrollPane
-        spIm.validate();                    // added panel to scrollPane
-        // setMaxVisibleRectSize();
+        panelSize = getVisibleRectSize();
+        spIm.validate();
 
         addMouseListener(this);
         addMouseMotionListener(this);
         addMouseWheelListener(this);
-    }
-
-    public JScrollPane getScrollPane() {
-        return spIm;
     }
 
     @Override
@@ -72,14 +67,25 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             g.setColor(Color.WHITE);
             g.fillRect(0, 0, getWidth(), getHeight());
         } else
-            g.drawImage(currentViewImage, 0, 0, panelSize.width, panelSize.height, null);
-//            g.drawImage(currentViewImage, 0, 0, null);
+            if (ViewMode.REAL_SIZE.equals(viewMode)) {
+                g.drawImage(currentViewImage, 0, 0, null);
+            } else {
+                g.drawImage(currentViewImage, 0, 0, panelSize.width, panelSize.height, null);
+            }
     }
 
-    public void loadFileContent(File file, boolean isDefaultView) {
+    public void setViewMode(ViewMode viewMode) {
+        this.viewMode = viewMode;
+    }
+
+    public void updateImageOnPanel() {
+        setImage(currentViewImage);
+    }
+
+    public void loadFileContent(File file) {
         try {
             BufferedImage openedImage = ImageIO.read(file);
-            setImage(openedImage, isDefaultView);
+            setImage(openedImage);
             originImage = openedImage;
             currentViewImage = originImage;
 
@@ -121,85 +127,32 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
      * But only if both of the images have the same size.
      *
      * @param newIm       - new image to view
-     * @param defaultView - view the image in the default view, or save the view on the image
      */
-    public void setImage(BufferedImage newIm, boolean defaultView) {
+    private void setImage(BufferedImage newIm) {
         // defaultView means "fit screen (panel)"
 
         // Draw black screen for no image
         currentViewImage = newIm;
-        if (currentViewImage == null) {
-            // make full defaultView
-            setMaxVisibleRectSize();    // panelSize = getVisibleRectSize();
+        if (Objects.isNull(currentViewImage)) {
+            setMaxVisibleRectSize();
             repaint();
-            revalidate();    // spIm.validate();
+            revalidate();
             return;
         }
 
         imSize = new Dimension(currentViewImage.getWidth(), currentViewImage.getHeight());
-        // Check if it is possible to use defaultView
-        Dimension newImSize = new Dimension(currentViewImage.getWidth(), currentViewImage.getHeight());
-        if (imSize == null)
-            defaultView = true;
-        else if ((newImSize.height != imSize.height) || (newImSize.width != imSize.width))
-            defaultView = true;
+        setMaxVisibleRectSize();
+        double kh = (double) imSize.height / panelSize.height;
+        double kw = (double) imSize.width / panelSize.width;
+        double k = Math.max(kh, kw);
 
-        imSize = newImSize;
+        panelSize.width = (int) (imSize.width / k);
+        panelSize.height = (int) (imSize.height / k);
 
-        if (defaultView) {
-            setMaxVisibleRectSize();    // panelSize = getVisibleRectSize();
-
-            double kh = (double) imSize.height / panelSize.height;
-            double kw = (double) imSize.width / panelSize.width;
-            double k = Math.max(kh, kw);
-
-            panelSize.width = (int) (imSize.width / k);
-            panelSize.height = (int) (imSize.height / k);
-            //this.setSize(panelSize);
-
-            //repaint();
-            spIm.getViewport().setViewPosition(new Point(0, 0));
-            //spIm.getHorizontalScrollBar().setValue(0);
-            //spIm.getVerticalScrollBar().setValue(0);
-            revalidate();    // spIm.validate();
-            //spIm.repaint();	// wipe off the old picture in "spare" space
-            spIm.paintAll(spIm.getGraphics());
-        } else {
-            // just change image
-            //repaint();
-            spIm.getViewport().setViewPosition(new Point(0, 0));
-            spIm.paintAll(spIm.getGraphics());
-        }
-        SwingUtilities.updateComponentTreeUI(this.getParent());
-    }
-
-    /**
-     * Sets "fit-screen" view.
-     */
-    public void fitScreen() {
-        setImage(originImage, true);
-    }
-
-    /**
-     * Sets "real-size" view.
-     */
-    public void realSize() {
-        if (imSize == null)
-            return;
-
-        double k = (double) imSize.width / panelSize.width;
-        Point scroll = spIm.getViewport().getViewPosition();
-        scroll.x *= k;
-        scroll.y *= k;
-
-        panelSize.setSize(imSize);
-
-        //repaint();
-        revalidate();    // spIm.validate();
-        spIm.getHorizontalScrollBar().setValue(scroll.x);
-        spIm.getVerticalScrollBar().setValue(scroll.y);
-        //spIm.repaint();
+        spIm.getViewport().setViewPosition(new Point(0, 0));
+        revalidate();
         spIm.paintAll(spIm.getGraphics());
+        SwingUtilities.updateComponentTreeUI(this.getParent());
     }
 
     /**
@@ -226,8 +179,8 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         revalidate();
     }
 
-    public boolean setView(Rectangle rect) {
-        return setView(rect, 10);
+    private void setView(Rectangle rect) {
+        setView(rect, 10);
     }
 
     private boolean setView(Rectangle rect, int minSize) {
@@ -257,21 +210,20 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         int newPW = (int) (imSize.width / k);
         int newPH = (int) (imSize.height / k);
         // Check for size whether we can still zoom out
-        if (newPW == (int) (newPW * (1 - 2 * zoomK)))
+        if (newPW == (int) (newPW * (1 - 2 * ZOOM_COEFFICIENT)))
             return setView(rect, minSize * 2);
         panelSize.width = newPW;
         panelSize.height = newPH;
 
         revalidate();
         spIm.validate();
-        // сначала нужно, чтобы scroll понял новый размер, потом сдвигать
 
-        int xc = rect.x + rect.width / 2, yc = rect.y + rect.height / 2;
+        int xc = rect.x + rect.width / 2;
+        int yc = rect.y + rect.height / 2;
         xc = (int) (xc / k);
-        yc = (int) (yc / k);    // we need to center new view
-        //int x0 = (int)(rect.x/k), y0 = (int)(rect.y/k);
+        yc = (int) (yc / k);
         spIm.getViewport().setViewPosition(new Point(xc - viewSize.width / 2, yc - viewSize.height / 2));
-        revalidate();    // spIm.validate();
+        revalidate();
         spIm.paintAll(spIm.getGraphics());
 
         return true;
@@ -303,18 +255,16 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
      */
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        if (originImage == null)
+        if (Objects.isNull(originImage) || ViewMode.REAL_SIZE.equals(viewMode)) {
             return;
+        }
 
-        // Zoom
-        double k = 1 - e.getWheelRotation() * zoomK;
-
-        // Check for minimum size where we can still increase size
+        double k = 1 - e.getWheelRotation() * ZOOM_COEFFICIENT;
         int newPW = (int) (panelSize.width * k);
-        if (newPW == (int) (newPW * (1 + zoomK)))
+        if (newPW == (int) (newPW * (1 + ZOOM_COEFFICIENT))) {
             return;
-//		if (newW/imSize.width > 50)
-//			return;
+        }
+
         if (k > 1) {
             int newPH = (int) (panelSize.height * k);
             Dimension viewSize = getVisibleRectSize();
@@ -329,10 +279,8 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         }
 
         panelSize.width = newPW;
-        // panelSize.height *= k;
-        panelSize.height = (int) ((long) panelSize.width * imSize.height / imSize.width);    // not to loose ratio
+        panelSize.height = (int) ((long) panelSize.width * imSize.height / imSize.width);
 
-        // Move so that mouse position doesn't visibly change
         int x = (int) (e.getX() * k);
         int y = (int) (e.getY() * k);
         Point scroll = spIm.getViewport().getViewPosition();
@@ -341,12 +289,10 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         scroll.x += x;
         scroll.y += y;
 
-        SwingUtilities.updateComponentTreeUI(this.getParent());
-
-        //spIm.getViewport().setViewPosition(scroll);	// так верхний левый угол может выйти за рамки изображения
         spIm.getHorizontalScrollBar().setValue(scroll.x);
         spIm.getVerticalScrollBar().setValue(scroll.y);
         spIm.repaint();
+        SwingUtilities.updateComponentTreeUI(this.getParent());
     }
 
     @Override
@@ -360,24 +306,23 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
      */
     @Override
     public void mouseDragged(MouseEvent e) {
-        // Move image with mouse
-
-        if (e.getModifiersEx() == InputEvent.BUTTON3_DOWN_MASK)        // ( (e.getModifiers() & MouseEvent.BUTTON3_MASK) == 0)
+        if (e.getModifiersEx() == InputEvent.BUTTON3_DOWN_MASK) {
             return;
+        }
 
-        // move picture using scroll
+        if (ViewMode.REAL_SIZE.equals(viewMode)) {
+            panelSize.width = imSize.width;
+            panelSize.height = imSize.height;
+        }
+
         Point scroll = spIm.getViewport().getViewPosition();
         scroll.x += (lastX - e.getX());
         scroll.y += (lastY - e.getY());
 
-        //spIm.getViewport().setViewPosition(scroll);
+
         spIm.getHorizontalScrollBar().setValue(scroll.x);
         spIm.getVerticalScrollBar().setValue(scroll.y);
         SwingUtilities.updateComponentTreeUI(this.getParent());
-
-        // We changed the position of the underlying picture, take it into account
-        //lastX = e.getX() + (lastX - e.getX());	// lastX = lastX
-        //lastY = e.getY() + (lastY - e.getY());	// lastY = lastY
     }
 
     /**
@@ -411,6 +356,14 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         setView(rect);
     }
 
+    public void changeViewImage() {
+        if (currentViewImage.equals(originImage)) {
+            setImage(changedImage);
+        } else if (currentViewImage.equals(changedImage)) {
+            setImage(originImage);
+        }
+    }
+
     /**
      * Process image click and call parrent's methods
      */
@@ -418,30 +371,6 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     public void mouseClicked(MouseEvent e) {
         if (SwingUtilities.isRightMouseButton(e) && Objects.nonNull(imSize)) {
             changeViewImage();
-        }
-//        if ((e.getModifiers() == InputEvent.BUTTON2_MASK) || (e.getModifiers() == InputEvent.BUTTON3_MASK))
-//            parentComponent.changeViewedImage();
-
-//        if (e.getModifiers() == InputEvent.BUTTON1_MASK) {
-//            if (imSize == null) {
-//                // Клик по пустому изображению
-//                parentComponent.clickImage(e.getX(), e.getY());
-//                return;
-//            }
-//
-//            double k = (double) imSize.width / panelSize.width;
-//            int x = (int) (k * e.getX());
-//            int y = (int) (k * e.getY());
-//            if ((x < imSize.width) && (y < imSize.height))
-//                parentComponent.clickImage(x, y);
-//        }
-    }
-
-    private void changeViewImage() {
-        if (currentViewImage.equals(originImage)) {
-            setImage(changedImage, true);
-        } else if (currentViewImage.equals(changedImage)) {
-            setImage(originImage, true);
         }
     }
 
@@ -537,7 +466,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             }
         }
         currentViewImage = changedImage;
-        setImage(currentViewImage, true);
+        setImage(currentViewImage);
     }
 
     private int clampColorComponent(int colorComponent) {
@@ -552,9 +481,9 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 int greenComponent = (pixelColor >> 8) & 0xFF;
                 int blueComponent = pixelColor & 0xFF;
 
-                int newRedComponent = Math.min(redComponent + 128, 255);
-                int newGreenComponent = Math.min(greenComponent + 128, 255);
-                int newBlueComponent = Math.min(blueComponent + 128, 255);
+                int newRedComponent = clampColorComponent(redComponent + 128);
+                int newGreenComponent = clampColorComponent(greenComponent + 128);
+                int newBlueComponent = clampColorComponent(blueComponent + 128);
                 int updatedColor = (newBlueComponent) | ((newGreenComponent) << 8) | ((newRedComponent) << 16);
                 changedImage.setRGB(x, y, updatedColor);
             }

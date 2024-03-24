@@ -1,53 +1,13 @@
 
-ˆ	java:S112/"FDefine and throw a dedicated exception instead of using a generic one.(ùØêº8Ì©´÷æ1J$fba2ee6c-518e-40b7-941d-b462cdcd0a3b
-ˆ	java:S112-"FDefine and throw a dedicated exception instead of using a generic one.(Öº¾®8Í©´÷æ1J$4cf30e2e-78d2-404e-808f-04c269b55f6f
-ˆ
-java:S2583"DChange this condition so that it does not always evaluate to "false"(šÁ‚æ8Ø¼´÷æ1J$13744ecc-0db4-41a2-9237-7293fa43ba07
 Ê
-java:S1186Á"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ö„˜şúÿÿÿÿ8â¼´÷æ1J$695824f7-8953-4528-b5b3-50b4db80aab6
+java:S1186ú"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ö„˜şúÿÿÿÿ8©ç„ç1J$0d61aa71-c799-410a-88a8-31e0892f7e2c
 Ê
-java:S1186Å"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(•ßçùÿÿÿÿ8â¼´÷æ1J$fa2599a6-b00b-4fa8-9995-d0f49e7d2306
+java:S1186ş"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(•ßçùÿÿÿÿ8Ÿ©ç„ç1J$3b02cf98-4a1d-4356-9e7c-34f2b5f8196b
 Å
-java:S1186É"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ç¨Î§8â¼´÷æ1J$2cba22bb-69b8-4322-ae4d-067e17939480
-k
-java:S1659"#Declare "lastY" on a separate line.(Í Œüÿÿÿÿ8è¼´÷æ1J$1d141bdd-a607-4a08-8c65-ee2bc7190db6
-p
-java:S1948"-Make "originImage" transient or serializable.(‰¹¾¦8ë¼´÷æ1J$0bbf4ec0-54a7-4992-98f8-5339b086c131
-q
-java:S1948".Make "changedImage" transient or serializable.(ªîô8ì¼´÷æ1J$af8e3d3a-ffb1-4732-a13b-1faadf861f08
-u
-java:S1948"2Make "currentViewImage" transient or serializable.(­ìÎÌ8ì¼´÷æ1J$ef494839-e1dc-440e-a8d9-f33e23493c73
-{
-java:S1948""3Make "currentInstrument" transient or serializable.(§ÕşŸÿÿÿÿÿ8üÙÈøæ1J$d96e23f5-04c5-417c-be9b-b10a2bff637c
-ƒ	java:S125:"<This block of commented-out lines of code should be removed.(¥”Ûõùÿÿÿÿ8ø¼´÷æ1J$45a6a8b4-078b-4746-9234-bd9a81d34dda
-ƒ	java:S125L"<This block of commented-out lines of code should be removed.(¹ò¢éùÿÿÿÿ8û¼´÷æ1J$ca2dfb61-7fad-44dc-9515-3a65016c98de
-	java:S125…"<This block of commented-out lines of code should be removed.(ë¾‹8„½´÷æ1J$cd91c759-bd02-4720-883d-d7718bcd9a63
-„	java:S125‡"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8„½´÷æ1J$08356e69-13d5-416f-b4d1-45e1a83c2852
-‘
-java:S1871‘"MThis branch's code block is the same as the block for the branch on line 143.(Ğ³¸Ñ8†½´÷æ1J$197e8282-4e08-4fdc-9d7f-3b9dff1b586b
-	java:S125–"<This block of commented-out lines of code should be removed.(ë¾‹8‡½´÷æ1J$c1a0d496-effe-4054-b372-fddc15d5274c
-	java:S125"<This block of commented-out lines of code should be removed.(Ÿï²°8ˆ½´÷æ1J$003b0205-8404-4462-ad90-a4998d4e8b97
-	java:S125 "<This block of commented-out lines of code should be removed.(÷µ¹8ˆ½´÷æ1J$ac59830c-5817-412d-a457-e840c31d7f50
-	java:S125¢"<This block of commented-out lines of code should be removed.(·å¢»8ˆ½´÷æ1J$e104d14f-dff7-46f3-80cf-df8c23fb21f5
-„	java:S125¤"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8‰½´÷æ1J$ad743bfd-4a28-4ee4-bb9f-4c758caeb8e5
-	java:S125©"<This block of commented-out lines of code should be removed.(÷µ¹8‰½´÷æ1J$d75790e5-dbb9-4a0a-9e8d-5c4e2feda35c
-	java:S125Å"<This block of commented-out lines of code should be removed.(÷µ¹8Œ½´÷æ1J$04582b65-f2d7-4345-8216-6f5e46558052
-„	java:S125Æ"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8Œ½´÷æ1J$761c33ea-8391-4b1b-a98a-5b93642c519a
-	java:S125É"<This block of commented-out lines of code should be removed.(´èİŠ8½´÷æ1J$aa03ad5b-d9a9-4906-8a15-cff98360229f
-i
-java:S1659" Declare "yc" on a separate line.(ÿÉ‹¢øÿÿÿÿ8“½´÷æ1J$8214edf4-4f99-4907-8324-4a81132ec6f3
-„	java:S125"<This block of commented-out lines of code should be removed.(“Ò”Óûÿÿÿÿ8–½´÷æ1J$a6672b99-01db-4de3-aef8-fa58a9ca86c1
-„	java:S125’"<This block of commented-out lines of code should be removed.(¥Š³²úÿÿÿÿ8–½´÷æ1J$345e7bc7-b17f-440d-b59b-064c459a9e2e
+java:S1186‚"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ç¨Î§8Ÿ©ç„ç1J$b5e71e17-9883-4882-ae9a-30965d0921f3
 o
-java:S1452 "&Remove usage of generic wildcard type.(šĞ©œşÿÿÿÿ8™½´÷æ1J$e14a1f4c-e703-4da8-8982-6ee6ab39cf8d
-„	java:S125¼"<This block of commented-out lines of code should be removed.(İˆÕúÿÿÿÿ8œ½´÷æ1J$bc769d00-af47-48ec-a743-5e50943343bd
-„	java:S125Ì"<This block of commented-out lines of code should be removed.(øö¢¬üÿÿÿÿ8œ½´÷æ1J$b725c388-502d-4de8-842c-bc029457f7e8
-„	java:S125õ"<This block of commented-out lines of code should be removed.(´×çíşÿÿÿÿ8¡½´÷æ1J$4e05a1f8-4176-49eb-86a6-06694989df57
-„	java:S125¦"<This block of commented-out lines of code should be removed.(ÚáŞ›şÿÿÿÿ8§½´÷æ1J$3acf08a6-1414-4c42-947f-1cfc77a0e74c
-„	java:S125©"<This block of commented-out lines of code should be removed.(Ï”Ã†úÿÿÿÿ8§½´÷æ1J$ea3e0f9b-d9d7-4c50-802f-3fe349a7f98d
+java:S1452ğ"&Remove usage of generic wildcard type.(šĞ©œşÿÿÿÿ8¸©ç„ç1J$ca83f1c2-c8fc-4628-a950-a3bab5c2054b
 `
-java:S6205Ò"Remove this redundant block.(ê‡¹ª8­½´÷æ1J$4f0c586b-d35b-4540-b18c-b6440756b15a
+java:S6205‹"Remove this redundant block.(ê‡¹ª8Â©ç„ç1J$84ac21ab-cc90-42e5-8547-0f8536918cc5
 e
-java:S6205Õ"Remove this redundant block.(Î„åÓùÿÿÿÿ8®½´÷æ1J$3ced2a1e-3839-4948-a345-d24b70a3ef4b
-{
-java:S1068"3Remove this unused "parentComponent" private field.(çñ£·ùÿÿÿÿ8ú½´÷æ1J$52862992-3871-4b83-a546-62fb673d750c
+java:S6205"Remove this redundant block.(Î„åÓùÿÿÿÿ8Â©ç„ç1J$7a5ed338-5b55-45ec-96b7-61c7c6e377a9

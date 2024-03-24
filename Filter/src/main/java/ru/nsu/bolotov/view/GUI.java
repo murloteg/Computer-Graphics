@@ -27,8 +27,8 @@ public class GUI {
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         JScrollPane scrollPane = new JScrollPane();
-        ImagePanel imagePanel = new ImagePanel(scrollPane, mainFrame);
-        imagePanel.setMinimumSize(new Dimension(600, 600));
+        ImagePanel imagePanel = new ImagePanel(scrollPane);
+        imagePanel.setMinimumSize(new Dimension(IMAGE_PANEL_SIZE, IMAGE_PANEL_SIZE));
         imagePanel.setVisible(true);
 
         scrollPane.createHorizontalScrollBar();
@@ -49,7 +49,7 @@ public class GUI {
 
         ButtonGroup buttonGroup = new ButtonGroup();
         initializeInstruments(imagePanel, buttonGroup);
-        addMenuBar(mainFrame);
+        addMenuBar(mainFrame, imagePanel);
         addToolBar(mainFrame);
 
         mainFrame.pack();
@@ -108,9 +108,35 @@ public class GUI {
         imagePanel.setCurrentInstrument(openFile);
     }
 
-    private void addMenuBar(JFrame frame) {
+    private void addMenuBar(JFrame frame, ImagePanel imagePanel) {
         JMenuBar menuBar = new JMenuBar();
 
+        JMenu fileBar = new JMenu("File");
+        JMenu runBar = new JMenu("Run");
+        JMenu instrumentsBar = new JMenu("Instruments");
+        for (Instrument instrument : instrumentList) {
+            if (instrument.getInstrumentName().endsWith("File")) {
+                fileBar.add(instrument.getMenuButton());
+                continue;
+            }
+            if (instrument.getInstrumentName().endsWith("Processing")) {
+                runBar.add(instrument.getMenuButton());
+                continue;
+            }
+            instrumentsBar.add(instrument.getMenuButton());
+        }
+        JMenu viewBar = createViewBar(imagePanel);
+        JMenu helpBar = createHelpBar(frame);
+
+        menuBar.add(fileBar);
+        menuBar.add(viewBar);
+        menuBar.add(instrumentsBar);
+        menuBar.add(runBar);
+        menuBar.add(helpBar);
+        frame.setJMenuBar(menuBar);
+    }
+
+    private static JMenu createHelpBar(JFrame frame) {
         JMenu helpBar = new JMenu("Help");
         JMenuItem aboutItem = new JMenuItem("About");
         aboutItem.addActionListener(event -> {
@@ -127,19 +153,18 @@ public class GUI {
             aboutDialogWindow.setVisible(true);
         });
         helpBar.add(aboutItem);
+        return helpBar;
+    }
 
-        JMenu fileBar = new JMenu("File");
-        JMenu instrumentsBar = new JMenu("Instruments");
-        for (Instrument instrument : instrumentList) {
-            instrumentsBar.add(instrument.getMenuButton());
-            if (instrument.getInstrumentName().endsWith("File")) {
-                fileBar.add(instrument.getMenuButton());
-            }
-        }
-        menuBar.add(fileBar);
-        menuBar.add(instrumentsBar);
-        menuBar.add(helpBar);
-        frame.setJMenuBar(menuBar);
+    private static JMenu createViewBar(ImagePanel imagePanel) {
+        JMenuItem changeImageItem = new JMenuItem("Change displayed image");
+        changeImageItem.addActionListener(event -> {
+            imagePanel.changeViewImage();
+        });
+
+        JMenu viewBar = new JMenu("View");
+        viewBar.add(changeImageItem);
+        return viewBar;
     }
 
     private void addToolBar(JFrame frame) {
@@ -165,3 +190,5 @@ public class GUI {
         frame.add(toolBar, BorderLayout.PAGE_START);
     }
 }
+
+// TODO: слайдеры, интерполяции

@@ -99,3 +99,11 @@ Lsrc/main/java/ru/nsu/bolotov/model/uicomponent/instrument/impl/Negative.java,6
 Usrc/main/java/ru/nsu/bolotov/model/uicomponent/instrument/impl/SharpnessIncrease.java,f/3/f3c891be3dbb5b094aceb8cf482d7d49ed99436d
 
 Qsrc/main/java/ru/nsu/bolotov/model/uicomponent/instrument/impl/WhiteAndBlack.java,b/5/b5d13523d5f1120fa0c2d2e2c2091f8a7e922b0d
+v
+Fsrc/main/java/ru/nsu/bolotov/model/filter/matrices/FilterMatrices.java,0/9/0917391e4994af2834296774a668956ab15283f3
+n
+>src/main/java/ru/nsu/bolotov/model/filter/mode/FilterMode.java,b/7/b7e37178a881cedafe44c32e684c977e90c9ffc7
+d
+4src/main/java/ru/nsu/bolotov/view/mode/ViewMode.java,7/4/745fb77cc31e9f36c32695316fb0009cd4ce9b89
+m
+=src/main/java/ru/nsu/bolotov/view/imagepanel/EventSource.java,d/d/dddee6fae0964b7aa36a2707a48c387e5165e834

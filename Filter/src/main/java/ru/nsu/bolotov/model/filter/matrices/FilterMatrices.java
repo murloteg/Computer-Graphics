@@ -1,4 +1,4 @@
-package ru.nsu.bolotov.model;
+package ru.nsu.bolotov.model.filter.matrices;
 
 public final class FilterMatrices {
     public static final int[][] EMBOSSING_MATRIX = {

@@ -1,7 +1,7 @@
 package ru.nsu.bolotov.model.uicomponent.instrument.impl;
 
 import ru.nsu.bolotov.model.uicomponent.instrument.Instrument;
-import ru.nsu.bolotov.model.mode.FilterMode;
+import ru.nsu.bolotov.model.filter.mode.FilterMode;
 import ru.nsu.bolotov.view.imagepanel.ImagePanel;
 
 import javax.swing.*;

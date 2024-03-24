@@ -1,4 +1,4 @@
-package ru.nsu.bolotov.model.mode;
+package ru.nsu.bolotov.model.filter.mode;
 
 public enum FilterMode {
     IDENTITY,

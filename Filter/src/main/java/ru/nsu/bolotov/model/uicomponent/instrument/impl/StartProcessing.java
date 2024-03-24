@@ -37,19 +37,12 @@ public class StartProcessing implements Instrument {
 
     @Override
     public void injectActionListeners(List<Instrument> instrumentList, ButtonGroup buttonGroup) {
-        buttonGroup.add(menuButton);
         instrumentButton.addActionListener(event -> {
-            instrumentButton.getModel().setSelected(true);
-            instrumentButton.setOpaque(true);
-            menuButton.setSelected(true);
             imagePanel.startImageProcessing();
             unselectOtherInstrumentsButtons(instrumentList, this);
         });
 
         menuButton.addActionListener(event -> {
-            menuButton.setSelected(true);
-            instrumentButton.getModel().setSelected(true);
-            instrumentButton.setOpaque(true);
             imagePanel.startImageProcessing();
             unselectOtherInstrumentsButtons(instrumentList, this);
         });
