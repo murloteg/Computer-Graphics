@@ -7,6 +7,8 @@ import ru.nsu.bolotov.view.imagepanel.ImagePanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Objects;
 
@@ -113,12 +115,26 @@ public class GaussSmoothing implements Instrument, DialogEnabled {
         parameterPanel.add(labelPanel, BorderLayout.NORTH);
         parameterPanel.add(gaussComboBox, BorderLayout.SOUTH);
 
+        JSlider parameterSlider = new JSlider(3, 11);
+        parameterSlider.setValue(matrixSize);
+        parameterSlider.addChangeListener(event -> {
+            gaussComboBox.setSelectedItem(parameterSlider.getValue());
+        });
+
+        gaussComboBox.addItemListener(event -> {
+            parameterSlider.setValue((Integer) gaussComboBox.getSelectedItem());
+        });
+
+        JPanel sliderPanel = new JPanel();
+        sliderPanel.add(parameterSlider, BorderLayout.NORTH);
+
         JPanel confirmButtons = new JPanel();
         confirmButtons.add(cancelButton, BorderLayout.SOUTH);
         confirmButtons.add(okButton, BorderLayout.SOUTH);
         okButton.setVisible(true);
 
         parametersDialog.add(parameterPanel, BorderLayout.NORTH);
+        parametersDialog.add(sliderPanel, BorderLayout.CENTER);
         parametersDialog.add(confirmButtons, BorderLayout.SOUTH);
 
         parametersDialog.setMinimumSize(new Dimension(STANDARD_DIALOG_SIZE, CHOOSE_DIALOG_HEIGHT));

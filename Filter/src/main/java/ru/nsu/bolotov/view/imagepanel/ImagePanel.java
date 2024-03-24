@@ -3,10 +3,12 @@ package ru.nsu.bolotov.view.imagepanel;
 import ru.nsu.bolotov.exception.FailedLoadImage;
 import ru.nsu.bolotov.exception.FailedSaveImage;
 import ru.nsu.bolotov.model.filter.matrices.FilterMatrices;
-import ru.nsu.bolotov.model.uicomponent.instrument.Instrument;
 import ru.nsu.bolotov.model.filter.mode.FilterMode;
+import ru.nsu.bolotov.model.uicomponent.instrument.Instrument;
 import ru.nsu.bolotov.util.UtilConsts;
+import ru.nsu.bolotov.view.mode.imgsource.ImageSource;
 import ru.nsu.bolotov.view.mode.ViewMode;
+import ru.nsu.bolotov.view.mode.interpolation.InterpolationMode;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -15,8 +17,8 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,6 +34,8 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     private int lastY = 0;
     private FilterMode filterMode = FilterMode.IDENTITY;
     private ViewMode viewMode = ViewMode.REAL_SIZE;
+    private InterpolationMode interpolationMode = InterpolationMode.BILINEAR_INTERPOLATION;
+    private ImageSource imageSource = ImageSource.ORIGINAL_SOURCE;
     private transient Instrument currentInstrument;
     private final Map<String, List<?>> applicationParameters = new HashMap<>();
     private final Random generator = new Random();
@@ -66,12 +70,11 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         if (Objects.isNull(currentViewImage)) {
             g.setColor(Color.WHITE);
             g.fillRect(0, 0, getWidth(), getHeight());
-        } else
-            if (ViewMode.REAL_SIZE.equals(viewMode)) {
+        } else if (ViewMode.REAL_SIZE.equals(viewMode)) {
                 g.drawImage(currentViewImage, 0, 0, null);
-            } else {
-                g.drawImage(currentViewImage, 0, 0, panelSize.width, panelSize.height, null);
-            }
+        } else {
+            g.drawImage(currentViewImage, 0, 0, panelSize.width, panelSize.height, null);
+        }
     }
 
     public void setViewMode(ViewMode viewMode) {
@@ -111,6 +114,10 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         this.filterMode = filterMode;
     }
 
+    public void setInterpolationMode(InterpolationMode interpolationMode) {
+        this.interpolationMode = interpolationMode;
+    }
+
     public void startImageProcessing() {
         if (Objects.nonNull(originImage)) {
             this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -129,9 +136,6 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
      * @param newIm       - new image to view
      */
     private void setImage(BufferedImage newIm) {
-        // defaultView means "fit screen (panel)"
-
-        // Draw black screen for no image
         currentViewImage = newIm;
         if (Objects.isNull(currentViewImage)) {
             setMaxVisibleRectSize();
@@ -149,17 +153,56 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         panelSize.width = (int) (imSize.width / k);
         panelSize.height = (int) (imSize.height / k);
 
+        if (viewMode == ViewMode.FIT_TO_SCREEN) {
+            switch (interpolationMode) {
+                case BILINEAR_INTERPOLATION -> {
+                    currentViewImage = imageInterpolationBilinear(currentViewImage, panelSize.width, panelSize.height);
+                }
+                case BICUBIC_INTERPOLATION -> {
+                    currentViewImage = imageInterpolationBicubic(currentViewImage, panelSize.width, panelSize.height);
+                }
+                case NEAREST_NEIGHBOR_INTERPOLATION -> {
+                    currentViewImage = imageInterpolationNearestNeighbor(currentViewImage, panelSize.width, panelSize.height);            
+                }
+            }
+        }
         spIm.getViewport().setViewPosition(new Point(0, 0));
         revalidate();
         spIm.paintAll(spIm.getGraphics());
         SwingUtilities.updateComponentTreeUI(this.getParent());
+    }
+    
+    private BufferedImage imageInterpolationBilinear(BufferedImage image, int newWidth, int newHeight) {
+        BufferedImage scaledImage = new BufferedImage(newWidth, newHeight, image.getType());
+        Graphics2D g2d = scaledImage.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.drawImage(image, 0, 0, newWidth, newHeight, null);
+        g2d.dispose();
+        return scaledImage;
+    }
+
+    private BufferedImage imageInterpolationNearestNeighbor(BufferedImage image, int newWidth, int newHeight) {
+        BufferedImage scaledImage = new BufferedImage(newWidth, newHeight, image.getType());
+        Graphics2D g2d = scaledImage.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        g2d.drawImage(image, 0, 0, newWidth, newHeight, null);
+        g2d.dispose();
+        return scaledImage;
+    }
+
+    private BufferedImage imageInterpolationBicubic(BufferedImage image, int newWidth, int newHeight) {
+        BufferedImage scaledImage = new BufferedImage(newWidth, newHeight, image.getType());
+        Graphics2D g2d = scaledImage.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2d.drawImage(image, 0, 0, newWidth, newHeight, null);
+        g2d.dispose();
+        return scaledImage;
     }
 
     /**
      * @return Dimension object with the current view-size
      */
     private Dimension getVisibleRectSize() {
-        // maximum size for panel with or without scrolling (inner border of the ScrollPane)
         Dimension viewportSize = spIm.getViewport().getSize();
         if (viewportSize.height == 0)
             return new Dimension(spIm.getWidth() - 3, spIm.getHeight() - 3);
@@ -171,11 +214,10 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
      * Sets panelSize to the maximum avaible view-size with hidden scroll bars.
      */
     private void setMaxVisibleRectSize() {
-        // maximum size for panel without scrolling (inner border of the ScrollPane)
-        panelSize = getVisibleRectSize();    // max size, but possibly with enabled scroll-bars
+        panelSize = getVisibleRectSize();
         revalidate();
         spIm.validate();
-        panelSize = getVisibleRectSize();    // max size, without enabled scroll-bars
+        panelSize = getVisibleRectSize();
         revalidate();
     }
 
@@ -184,7 +226,6 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     }
 
     private boolean setView(Rectangle rect, int minSize) {
-        // should also take into account ScrollBars size
         if (originImage == null)
             return false;
         if (imSize.width < minSize || imSize.height < minSize)
@@ -210,8 +251,9 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         int newPW = (int) (imSize.width / k);
         int newPH = (int) (imSize.height / k);
         // Check for size whether we can still zoom out
-        if (newPW == (int) (newPW * (1 - 2 * ZOOM_COEFFICIENT)))
+        if (newPW == (int) (newPW * (1 - 2 * ZOOM_COEFFICIENT))) {
             return setView(rect, minSize * 2);
+        }
         panelSize.width = newPW;
         panelSize.height = newPH;
 
@@ -225,7 +267,6 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         spIm.getViewport().setViewPosition(new Point(xc - viewSize.width / 2, yc - viewSize.height / 2));
         revalidate();
         spIm.paintAll(spIm.getGraphics());
-
         return true;
     }
 
@@ -357,15 +398,17 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     }
 
     public void changeViewImage() {
-        if (currentViewImage.equals(originImage)) {
+        if (ImageSource.ORIGINAL_SOURCE.equals(imageSource)) {
+            imageSource = ImageSource.CHANGED_SOURCE;
             setImage(changedImage);
-        } else if (currentViewImage.equals(changedImage)) {
+        } else if (ImageSource.CHANGED_SOURCE.equals(imageSource)) {
+            imageSource = ImageSource.ORIGINAL_SOURCE;
             setImage(originImage);
         }
     }
 
     /**
-     * Process image click and call parrent's methods
+     * Process image click and call parent's methods
      */
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -466,6 +509,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             }
         }
         currentViewImage = changedImage;
+        imageSource = ImageSource.CHANGED_SOURCE;
         setImage(currentViewImage);
     }
 
@@ -861,7 +905,6 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 blueSum += blueComponent * filterMatrix[i][j];
             }
         }
-
         redSum /= divisor;
         greenSum /= divisor;
         blueSum /= divisor;

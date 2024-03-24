@@ -7,6 +7,8 @@ import ru.nsu.bolotov.view.imagepanel.ImagePanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Objects;
 
@@ -118,29 +120,9 @@ public class FloydSteinbergDithering implements Instrument, DialogEnabled {
             parametersDialog.dispose();
         });
 
-        JPanel redLabelPanel = new JPanel();
-        JLabel redLabel = new JLabel("Choose red quantization:");
-        redLabelPanel.add(redLabel);
-
-        JPanel redPanel = new JPanel(new BorderLayout());
-        redPanel.add(redLabelPanel, BorderLayout.NORTH);
-        redPanel.add(redQuantizationField, BorderLayout.SOUTH);
-
-        JPanel greenLabelPanel = new JPanel();
-        JLabel greenLabel = new JLabel("Choose green quantization:");
-        greenLabelPanel.add(greenLabel);
-
-        JPanel greenPanel = new JPanel(new BorderLayout());
-        greenPanel.add(greenLabelPanel, BorderLayout.NORTH);
-        greenPanel.add(greenQuantizationField, BorderLayout.SOUTH);
-
-        JPanel blueLabelPanel = new JPanel();
-        JLabel blueLabel = new JLabel("Choose blue quantization:");
-        blueLabelPanel.add(blueLabel);
-
-        JPanel bluePanel = new JPanel(new BorderLayout());
-        bluePanel.add(blueLabelPanel, BorderLayout.NORTH);
-        bluePanel.add(blueQuantizationField, BorderLayout.SOUTH);
+        JPanel redPanel = createColorPanel(redQuantizationField, redQuantization, "red");
+        JPanel greenPanel = createColorPanel(greenQuantizationField, greenQuantization, "green");
+        JPanel bluePanel = createColorPanel(blueQuantizationField, blueQuantization, "blue");
 
         JPanel rgbPanel = new JPanel();
         rgbPanel.add(redPanel, BorderLayout.NORTH);
@@ -159,6 +141,36 @@ public class FloydSteinbergDithering implements Instrument, DialogEnabled {
         parametersDialog.pack();
         parametersDialog.setLocationRelativeTo(null);
         parametersDialog.setVisible(true);
+    }
+
+    private JPanel createColorPanel(JTextField colorQuantizationField, String colorQuantization, String colorName) {
+        JPanel colorLabelPanel = new JPanel();
+        JLabel colorLabel = new JLabel(String.format("Choose %s quantization:", colorName));
+        colorLabelPanel.add(colorLabel);
+
+        JSlider colorQuantizationSlider = new JSlider(2, 128);
+        colorQuantizationSlider.setValue(Integer.parseInt(colorQuantization));
+        colorQuantizationSlider.addChangeListener(event -> {
+            colorQuantizationField.setText(String.valueOf(colorQuantizationSlider.getValue()));
+        });
+
+        colorQuantizationField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                super.keyReleased(e);
+                int value = Integer.parseInt(colorQuantizationField.getText());
+                colorQuantizationSlider.setValue(value);
+            }
+        });
+
+        JPanel colorSliderPanel = new JPanel();
+        colorSliderPanel.add(colorQuantizationSlider, BorderLayout.NORTH);
+
+        JPanel colorPanel = new JPanel(new BorderLayout());
+        colorPanel.add(colorLabelPanel, BorderLayout.NORTH);
+        colorPanel.add(colorQuantizationField, BorderLayout.CENTER);
+        colorPanel.add(colorSliderPanel, BorderLayout.SOUTH);
+        return colorPanel;
     }
 
     private boolean checkIfInputIsValid(String input, JDialog dialog) {

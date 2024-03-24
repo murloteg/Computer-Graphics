@@ -45,7 +45,6 @@ public class OpenFile implements Instrument {
             instrumentButton.getModel().setSelected(true);
             instrumentButton.setOpaque(true);
             menuButton.setSelected(true);
-            imagePanel.setCurrentInstrument(this);
             unselectOtherInstrumentsButtons(instrumentList, this);
         });
 

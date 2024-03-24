@@ -4,6 +4,7 @@ import ru.nsu.bolotov.model.uicomponent.instrument.DialogEnabled;
 import ru.nsu.bolotov.model.uicomponent.instrument.Instrument;
 import ru.nsu.bolotov.model.uicomponent.instrument.impl.*;
 import ru.nsu.bolotov.view.imagepanel.ImagePanel;
+import ru.nsu.bolotov.view.mode.interpolation.InterpolationMode;
 
 import javax.swing.*;
 import java.awt.*;
@@ -127,16 +128,21 @@ public class GUI {
         }
         JMenu viewBar = createViewBar(imagePanel);
         JMenu helpBar = createHelpBar(frame);
+        JMenu interpolationBar = createInterpolationBar(imagePanel);
 
         menuBar.add(fileBar);
         menuBar.add(viewBar);
         menuBar.add(instrumentsBar);
         menuBar.add(runBar);
         menuBar.add(helpBar);
+
+        JSeparator menuBarSeparator = new JSeparator();
+        menuBar.add(menuBarSeparator);
+        menuBar.add(interpolationBar);
         frame.setJMenuBar(menuBar);
     }
 
-    private static JMenu createHelpBar(JFrame frame) {
+    private JMenu createHelpBar(JFrame frame) {
         JMenu helpBar = new JMenu("Help");
         JMenuItem aboutItem = new JMenuItem("About");
         aboutItem.addActionListener(event -> {
@@ -156,7 +162,7 @@ public class GUI {
         return helpBar;
     }
 
-    private static JMenu createViewBar(ImagePanel imagePanel) {
+    private JMenu createViewBar(ImagePanel imagePanel) {
         JMenuItem changeImageItem = new JMenuItem("Change displayed image");
         changeImageItem.addActionListener(event -> {
             imagePanel.changeViewImage();
@@ -165,6 +171,37 @@ public class GUI {
         JMenu viewBar = new JMenu("View");
         viewBar.add(changeImageItem);
         return viewBar;
+    }
+
+    private JMenu createInterpolationBar(ImagePanel imagePanel) {
+        JMenu interpolationBar = new JMenu("Interpolation");
+        ButtonGroup interpolationGroup = new ButtonGroup();
+
+        JRadioButtonMenuItem bilinear = new JRadioButtonMenuItem("Bilinear");
+        JRadioButtonMenuItem bicubic = new JRadioButtonMenuItem("Bicubic");
+        JRadioButtonMenuItem nearestNeighbor = new JRadioButtonMenuItem("Nearest neighbor");
+
+        interpolationGroup.add(bilinear);
+        interpolationGroup.add(bicubic);
+        interpolationGroup.add(nearestNeighbor);
+        bilinear.setSelected(true);
+
+        bilinear.addActionListener(event -> {
+            imagePanel.setInterpolationMode(InterpolationMode.BILINEAR_INTERPOLATION);
+        });
+
+        bicubic.addActionListener(event -> {
+            imagePanel.setInterpolationMode(InterpolationMode.BICUBIC_INTERPOLATION);
+        });
+
+        nearestNeighbor.addActionListener(event -> {
+            imagePanel.setInterpolationMode(InterpolationMode.NEAREST_NEIGHBOR_INTERPOLATION);
+        });
+
+        interpolationBar.add(bilinear);
+        interpolationBar.add(bicubic);
+        interpolationBar.add(nearestNeighbor);
+        return interpolationBar;
     }
 
     private void addToolBar(JFrame frame) {
@@ -190,5 +227,3 @@ public class GUI {
         frame.add(toolBar, BorderLayout.PAGE_START);
     }
 }
-
-// TODO: слайдеры, интерполяции

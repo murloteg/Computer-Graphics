@@ -48,7 +48,6 @@ public class SaveFile implements Instrument {
             instrumentButton.getModel().setSelected(true);
             instrumentButton.setOpaque(true);
             menuButton.setSelected(true);
-            imagePanel.setCurrentInstrument(this);
             unselectOtherInstrumentsButtons(instrumentList, this);
         });
 
@@ -57,7 +56,6 @@ public class SaveFile implements Instrument {
             menuButton.setSelected(true);
             instrumentButton.getModel().setSelected(true);
             instrumentButton.setOpaque(true);
-            imagePanel.setCurrentInstrument(this);
             unselectOtherInstrumentsButtons(instrumentList, this);
         });
     }

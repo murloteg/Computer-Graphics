@@ -7,6 +7,8 @@ import ru.nsu.bolotov.view.imagepanel.ImagePanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Objects;
 
@@ -112,12 +114,31 @@ public class RetroEffect implements Instrument, DialogEnabled {
         parameterPanel.add(labelPanel, BorderLayout.NORTH);
         parameterPanel.add(textField, BorderLayout.SOUTH);
 
+        JSlider parameterSlider = new JSlider(0, 100);
+        parameterSlider.setValue(Integer.parseInt(noise));
+        parameterSlider.addChangeListener(event -> {
+            textField.setText(String.valueOf(parameterSlider.getValue()));
+        });
+
+        textField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                super.keyReleased(e);
+                int value = Integer.parseInt(textField.getText());
+                parameterSlider.setValue(value);
+            }
+        });
+
+        JPanel sliderPanel = new JPanel();
+        sliderPanel.add(parameterSlider, BorderLayout.NORTH);
+
         JPanel confirmButtons = new JPanel();
         confirmButtons.add(cancelButton, BorderLayout.SOUTH);
         confirmButtons.add(okButton, BorderLayout.SOUTH);
         okButton.setVisible(true);
 
         parametersDialog.add(parameterPanel, BorderLayout.NORTH);
+        parametersDialog.add(sliderPanel, BorderLayout.CENTER);
         parametersDialog.add(confirmButtons, BorderLayout.SOUTH);
 
         parametersDialog.setMinimumSize(new Dimension(STANDARD_DIALOG_SIZE, CHOOSE_DIALOG_HEIGHT));

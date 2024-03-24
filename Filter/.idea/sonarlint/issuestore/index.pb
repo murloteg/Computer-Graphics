@@ -107,3 +107,9 @@ d
 4src/main/java/ru/nsu/bolotov/view/mode/ViewMode.java,7/4/745fb77cc31e9f36c32695316fb0009cd4ce9b89
 m
 =src/main/java/ru/nsu/bolotov/view/imagepanel/EventSource.java,d/d/dddee6fae0964b7aa36a2707a48c387e5165e834
+z
+Jsrc/main/java/ru/nsu/bolotov/model/uicomponent/slider/FloatingJSlider.java,6/d/6d24870c89f787b53710ec701580b05b4491e416
+g
+7src/main/java/ru/nsu/bolotov/view/mode/ImageSource.java,4/3/4300162df952efafb228f65088fe917ebc363d1c
+{
+Ksrc/main/java/ru/nsu/bolotov/view/mode/interpolation/InterpolationMode.java,a/f/afe6f61768c9299a378ae33b3ac7857088f833b9

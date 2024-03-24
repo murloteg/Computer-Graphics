@@ -90,17 +90,17 @@ public class ChangeViewMode implements Instrument, DialogEnabled {
             parametersDialog.dispose();
         });
 
-        JButton firToScreenButton = new JButton("Fit to screen");
-        firToScreenButton.setPreferredSize(new Dimension(BUTTON_WITH_TEXT_WIDTH, STANDARD_BUTTON_SIZE));
+        JButton fitToScreenButton = new JButton("Fit to screen");
+        fitToScreenButton.setPreferredSize(new Dimension(BUTTON_WITH_TEXT_WIDTH, STANDARD_BUTTON_SIZE));
 
-        firToScreenButton.addActionListener(event -> {
+        fitToScreenButton.addActionListener(event -> {
             imagePanel.setViewMode(ViewMode.FIT_TO_SCREEN);
             parametersDialog.dispose();
         });
         
         JPanel viewModeButtons = new JPanel();
-        viewModeButtons.add(firToScreenButton, BorderLayout.SOUTH);
         viewModeButtons.add(realSizeButton, BorderLayout.SOUTH);
+        viewModeButtons.add(fitToScreenButton, BorderLayout.SOUTH);
         realSizeButton.setVisible(true);
 
         parametersDialog.add(labelPanel, BorderLayout.NORTH);
