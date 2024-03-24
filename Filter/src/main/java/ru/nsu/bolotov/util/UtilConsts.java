@@ -5,6 +5,10 @@ public class UtilConsts {
         public static final int MINIMAL_WEIGHT = 640;
         public static final int MINIMAL_HEIGHT = 480;
         public static final int STANDARD_DIALOG_SIZE = 220;
+        public static final int MINIMAL_DIALOG_SIZE = 120;
+        public static final int CONFIRM_BUTTON_WIDTH = 60;
+        public static final int STANDARD_BUTTON_SIZE = 40;
+        public static final int CHOOSE_DIALOG_HEIGHT = 90;
 
         private DimensionConsts() {
             throw new IllegalStateException(StringConsts.INSTANTIATION_MESSAGE);

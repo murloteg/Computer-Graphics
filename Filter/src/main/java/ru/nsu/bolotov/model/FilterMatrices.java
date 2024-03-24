@@ -45,13 +45,6 @@ public final class FilterMatrices {
             {0, 2},
             {3, 1}
     };
-    public static final int[][] CUSTOM_MATRIX = {
-            {0, 0, -2, 0, 0},
-            {0, -2, -1, 0, 0},
-            {-1, -1, 1, 1, 1},
-            {0, 0, 1, 2, 0},
-            {0, 0, 2, 0, 0}
-    };
 
     private FilterMatrices() {
         throw new IllegalStateException("Instantiation of util class");

@@ -1,20 +1,20 @@
 package ru.nsu.bolotov.view;
 
-import ru.nsu.bolotov.model.instrument.Instrument;
-import ru.nsu.bolotov.model.instrument.impl.*;
+import ru.nsu.bolotov.model.uicomponent.instrument.DialogEnabled;
+import ru.nsu.bolotov.model.uicomponent.instrument.Instrument;
+import ru.nsu.bolotov.model.uicomponent.instrument.impl.*;
 import ru.nsu.bolotov.view.imagepanel.ImagePanel;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import java.awt.*;
-import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.List;
+import java.util.*;
 
 import static ru.nsu.bolotov.util.UtilConsts.ButtonNameConsts.ABOUT_BUTTON;
 import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.*;
-import static ru.nsu.bolotov.util.UtilConsts.StringConsts.*;
+import static ru.nsu.bolotov.util.UtilConsts.StringConsts.ABOUT_PROGRAM_TEXT;
+import static ru.nsu.bolotov.util.UtilConsts.StringConsts.APPLICATION_TITLE;
 
 public class GUI {
     private final JFrame mainFrame;
@@ -32,12 +32,10 @@ public class GUI {
         imagePanel.setVisible(true);
 
         scrollPane.createHorizontalScrollBar();
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-//        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         scrollPane.createVerticalScrollBar();
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-//        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
         scrollPane.setBorder(BorderFactory.createDashedBorder(Color.BLACK, 2f, 1.5f, 1.5f, true));
 
@@ -51,8 +49,8 @@ public class GUI {
 
         ButtonGroup buttonGroup = new ButtonGroup();
         initializeInstruments(imagePanel, buttonGroup);
-        addMenuBar(mainFrame, imagePanel);
-        addToolBar(mainFrame, imagePanel);
+        addMenuBar(mainFrame);
+        addToolBar(mainFrame);
 
         mainFrame.pack();
         mainFrame.setLocationRelativeTo(null);
@@ -99,12 +97,18 @@ public class GUI {
         instrumentList.add(retroEffect);
         instrumentList.add(startProcessing);
 
+        Map<String, List<?>> defaultParameters = new HashMap<>();
         for (Instrument instrument : instrumentList) {
             instrument.injectActionListeners(instrumentList, buttonGroup);
+            if (instrument instanceof DialogEnabled instrumentWithParameters) {
+                defaultParameters.put(instrument.getInstrumentName(), instrumentWithParameters.getDefaultParameters());
+            }
         }
+        imagePanel.initializeDefaultApplicationState(defaultParameters);
+        imagePanel.setCurrentInstrument(openFile);
     }
 
-    private void addMenuBar(JFrame frame, ImagePanel imagePanel) {
+    private void addMenuBar(JFrame frame) {
         JMenuBar menuBar = new JMenuBar();
 
         JMenu helpBar = new JMenu("Help");
@@ -125,65 +129,20 @@ public class GUI {
         helpBar.add(aboutItem);
 
         JMenu fileBar = new JMenu("File");
-        JMenuItem saveFileItem = new JMenuItem("Save");
-        saveFileItem.addActionListener(event -> {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileFilter(new FileFilter() {
-                @Override
-                public boolean accept(File file) {
-                    return file.getName().endsWith(".png");
-                }
-
-                @Override
-                public String getDescription() {
-                    return "PNG";
-                }
-            });
-
-            fileChooser.showSaveDialog(mainFrame);
-            File selectedFile = fileChooser.getSelectedFile();
-            if (!selectedFile.getName().endsWith(".png")) {
-                JOptionPane.showMessageDialog(mainFrame, INCORRECT_FILE_EXTENSION_MESSAGE, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            imagePanel.saveCanvasContent(selectedFile);
-        });
-        fileBar.add(saveFileItem);
-
-        JMenuItem openFileItem = new JMenuItem("Open");
-        openFileItem.addActionListener(event -> {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileFilter(new FileFilter() {
-                @Override
-                public boolean accept(File file) {
-                    return file.getName().endsWith(".png") || file.getName().endsWith(".jpg") ||
-                            file.getName().endsWith(".bmp") || file.getName().endsWith(".gif");
-                }
-
-                @Override
-                public String getDescription() {
-                    return "PNG, JPG, BMP, GIF";
-                }
-            });
-
-            fileChooser.showOpenDialog(mainFrame);
-            File selectedFile = fileChooser.getSelectedFile();
-            imagePanel.loadFileContent(selectedFile, true);
-        });
-        fileBar.add(openFileItem);
-
         JMenu instrumentsBar = new JMenu("Instruments");
         for (Instrument instrument : instrumentList) {
             instrumentsBar.add(instrument.getMenuButton());
+            if (instrument.getInstrumentName().endsWith("File")) {
+                fileBar.add(instrument.getMenuButton());
+            }
         }
-
         menuBar.add(fileBar);
         menuBar.add(instrumentsBar);
         menuBar.add(helpBar);
         frame.setJMenuBar(menuBar);
     }
 
-    private void addToolBar(JFrame frame, ImagePanel imagePanel) { // FIXME
+    private void addToolBar(JFrame frame) {
         ClassLoader currentClassLoader = this.getClass().getClassLoader();
 
         JToolBar toolBar = new JToolBar("Instruments");
@@ -197,12 +156,11 @@ public class GUI {
             instrumentButton.setPreferredSize(new Dimension(45, 45));
             instrumentButton.setBorderPainted(true);
             if (instrument.equals(instrumentList.get(instrumentList.size() - 1))) {
-                JSeparator separator = new JToolBar.Separator(new Dimension(40, 40));
+                JSeparator separator = new JToolBar.Separator(new Dimension(STANDARD_BUTTON_SIZE, STANDARD_BUTTON_SIZE));
                 toolBarPanel.add(separator);
             }
             toolBarPanel.add(instrumentButton);
         }
-
         toolBar.add(toolBarPanel);
         frame.add(toolBar, BorderLayout.PAGE_START);
     }

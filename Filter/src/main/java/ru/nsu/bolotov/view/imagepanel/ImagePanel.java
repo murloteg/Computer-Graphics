@@ -3,6 +3,7 @@ package ru.nsu.bolotov.view.imagepanel;
 import ru.nsu.bolotov.exception.FailedLoadImage;
 import ru.nsu.bolotov.exception.FailedSaveImage;
 import ru.nsu.bolotov.model.FilterMatrices;
+import ru.nsu.bolotov.model.uicomponent.instrument.Instrument;
 import ru.nsu.bolotov.model.mode.FilterMode;
 import ru.nsu.bolotov.util.UtilConsts;
 
@@ -13,10 +14,8 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,7 +30,9 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     private Dimension imSize = null;    // real image size
     private int lastX = 0, lastY = 0;        // last captured mouse coordinates
     private double zoomK = 0.05;        // scroll zoom coefficient
-    private FilterMode filterMode = FilterMode.CHANGE_VIEW_MODE;
+    private FilterMode filterMode = FilterMode.IDENTITY;
+    private Instrument currentInstrument;
+    private final Map<String, List<?>> applicationParameters = new HashMap<>();
     private final Random generator = new Random();
 
     /**
@@ -65,18 +66,6 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         return spIm;
     }
 
-    /**
-     * Creates new Image-viewer of the given image in the given JScrollPane
-     *
-     * @param scrollPane - JScrollPane to add a new Image-viewer
-     * @param newIm      - image to view
-     * @throws Exception - given JScrollPane must nor be null
-     */
-    public ImagePanel(JScrollPane scrollPane, JFrame parentComponent, BufferedImage newIm) throws Exception {
-        this(scrollPane, parentComponent);
-        setImage(newIm, true);
-    }
-
     @Override
     public void paintComponent(Graphics g) {
         if (Objects.isNull(currentViewImage)) {
@@ -106,7 +95,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
 
     public void saveCanvasContent(File file) {
         try {
-            ImageIO.write(originImage, "png", file);
+            ImageIO.write(currentViewImage, "png", file);
         } catch (IOException exception) {
             throw new FailedSaveImage(exception);
         }
@@ -288,6 +277,22 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         return true;
     }
 
+    public void initializeDefaultApplicationState(Map<String, List<?>> defaultParameters) {
+        applicationParameters.putAll(defaultParameters);
+    }
+
+    public void setCurrentInstrument(Instrument currentInstrument) {
+        this.currentInstrument = currentInstrument;
+    }
+
+    public java.util.List<?> getPreviousParametersForInstrument(String instrumentName) {
+        return applicationParameters.get(instrumentName);
+    }
+
+    public void addStateToApplicationParameters(String instrumentName, java.util.List<?> parameters) {
+        applicationParameters.put(instrumentName, parameters);
+    }
+
     @Override
     public Dimension getPreferredSize() {
         return panelSize;
@@ -453,9 +458,10 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     }
 
     private void applyFilter() {
+        String currentInstrumentName = currentInstrument.getInstrumentName();
         switch (filterMode) {
-            case CHANGE_VIEW_MODE -> {
-
+            case IDENTITY -> {
+                return;
             }
             case WHITE_AND_BLACK -> {
                 whiteAndBlackFilter();
@@ -473,7 +479,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 applyMatrixFilter(matrix);
             }
             case GAUSS_SMOOTHING -> {
-                int matrixSize = 11; // FIXME: it's parameter
+                int matrixSize = (int) applicationParameters.get(currentInstrumentName).get(0);
                 int[][] matrix = null;
                 if (matrixSize == 3) {
                     matrix = FilterMatrices.GAUSS_3X3_MATRIX;
@@ -486,30 +492,31 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 applyMatrixFilter(matrix);
             }
             case GAMMA_CORRECTION -> {
-                gammaCorrection(2); // FIXME: check limits
+                double gamma = (double) applicationParameters.get(currentInstrumentName).get(0);
+                gammaCorrection(gamma);
             }
             case ROBERTS_OPERATOR -> {
                 int[][] horizontalMatrix = FilterMatrices.ROBERTS_HORIZONTAL_MATRIX;
                 int[][] verticalMatrix = FilterMatrices.ROBERTS_VERTICAL_MATRIX;
-                double threshold = 0.6;
+                double threshold = (double) applicationParameters.get(currentInstrumentName).get(0);
                 twoDimensionalEdgeDetectionFilter(horizontalMatrix, verticalMatrix, threshold);
             }
             case SOBEL_OPERATOR -> {
                 int[][] horizontalMatrix = FilterMatrices.SOBEL_HORIZONTAL_MATRIX;
                 int[][] verticalMatrix = FilterMatrices.SOBEL_VERTICAL_MATRIX;
-                double threshold = 0.6; // FIXME: it's parameter
+                double threshold = (double) applicationParameters.get(currentInstrumentName).get(0);
                 twoDimensionalEdgeDetectionFilter(horizontalMatrix, verticalMatrix, threshold);
             }
             case FLOYD_STEINBERG_DITHERING -> {
-                int redQuantization = 4; // FIXME: it's parameter
-                int greenQuantization = 8;
-                int blueQuantization = 32;
+                int redQuantization = (int) applicationParameters.get(currentInstrumentName).get(0);
+                int greenQuantization = (int) applicationParameters.get(currentInstrumentName).get(0);
+                int blueQuantization = (int) applicationParameters.get(currentInstrumentName).get(0);
                 floydSteinbergDithering(redQuantization, greenQuantization, blueQuantization);
             }
             case ORDERLY_DITHERING -> {
-                int redQuantization = 4; // FIXME: it's parameter
-                int greenQuantization = 8;
-                int blueQuantization = 32;
+                int redQuantization = (int) applicationParameters.get(currentInstrumentName).get(0);
+                int greenQuantization = (int) applicationParameters.get(currentInstrumentName).get(0);
+                int blueQuantization = (int) applicationParameters.get(currentInstrumentName).get(0);
                 orderlyDithering(redQuantization, greenQuantization, blueQuantization);
             }
             case AQUA_REALIZATION -> {
@@ -518,10 +525,11 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 applyMatrixFilter(changedImage, sharpenMatrix);
             }
             case ROTATE -> {
-
+                int angle = (int) applicationParameters.get(currentInstrumentName).get(0);
+                rotate(angle);
             }
             case RETRO_EFFECT -> {
-                int noiseLimit = 35; // FIXME
+                int noiseLimit = (int) applicationParameters.get(currentInstrumentName).get(0);
                 addNoise(noiseLimit);
                 int[][] matrixFilter = FilterMatrices.GAUSS_5X5_MATRIX;
                 applyMatrixFilter(changedImage, matrixFilter);
@@ -561,9 +569,9 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 int greenComponent = (pixelColor >> 8) & 0xFF;
                 int blueComponent = pixelColor & 0xFF;
 
-                redComponent += generator.nextInt(-noiseLimit, noiseLimit);
-                greenComponent += generator.nextInt(-noiseLimit, noiseLimit);
-                blueComponent += generator.nextInt(-noiseLimit, noiseLimit);
+                redComponent += generator.nextInt(-noiseLimit, noiseLimit + 1);
+                greenComponent += generator.nextInt(-noiseLimit, noiseLimit + 1);
+                blueComponent += generator.nextInt(-noiseLimit, noiseLimit + 1);
 
                 redComponent = clampColorComponent(redComponent);
                 greenComponent = clampColorComponent(greenComponent);
@@ -629,6 +637,60 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         }
     }
 
+    private double[][] generateRotationMatrix2D(double sin, double cos) {
+        return new double[][]{
+                {cos, (-1) * sin},
+                {sin, cos}
+        };
+    }
+
+    private int[] transformCoordinates(double[][] rotationMatrix, int x, int y) {
+        int rotatedX = (int) Math.round(rotationMatrix[0][0] * x + rotationMatrix[0][1] * y);
+        int rotatedY = (int) Math.round(rotationMatrix[1][0] * x + rotationMatrix[1][1] * y);
+        return new int[]{rotatedX, rotatedY};
+    }
+
+    private void rotate(int angleInDegrees) {
+        double angleSin = Math.sin(Math.toRadians(angleInDegrees));
+        double angleCos = Math.cos(Math.toRadians(angleInDegrees));
+        double[][] rotationMatrix = generateRotationMatrix2D(angleSin, angleCos);
+
+        int width = originImage.getWidth();
+        int height = originImage.getHeight();
+
+        int newWidth = width;
+        int newHeight = height;
+        if (angleInDegrees % 180 != 0) {
+            newWidth = (int) (Math.abs(width * angleCos) + Math.abs(height * angleSin));
+            newHeight = (int) (Math.abs(width * angleSin) + Math.abs(height * angleCos));
+        }
+
+        changedImage = new BufferedImage(newWidth, newHeight, originImage.getType());
+        changedImage.getGraphics().fillRect(0, 0, newWidth, newHeight);
+
+        int centerX = newWidth / 2;
+        int centerY = newHeight / 2;
+
+        int originalCenterX = width / 2;
+        int originalCenterY = height / 2;
+        int[] rotatedCenter = transformCoordinates(rotationMatrix, originalCenterX, originalCenterY);
+        int rotatedCenterX = rotatedCenter[0];
+        int rotatedCenterY = rotatedCenter[1];
+
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                int[] rotatedCoordinates = transformCoordinates(rotationMatrix, x, y);
+                int rotatedX = rotatedCoordinates[0] + centerX - rotatedCenterX;
+                int rotatedY = rotatedCoordinates[1] + centerY - rotatedCenterY;
+
+                if (rotatedX >= 0 && rotatedX < changedImage.getWidth() && rotatedY >= 0 && rotatedY < changedImage.getHeight()) {
+                    int pixelColor = originImage.getRGB(x, y);
+                    changedImage.setRGB(rotatedX, rotatedY, pixelColor);
+                }
+            }
+        }
+    }
+
     private void retroEffectFilter(BufferedImage source) {
         for (int x = 0; x < source.getWidth(); ++x) {
             for (int y = 0; y < source.getHeight(); ++y) {
@@ -657,7 +719,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     }
 
     private double calculatePaletteGroupCoefficient(int oldColor, int quantization) {
-        return oldColor * quantization / 256.0; // TODO: check later (255 or 256)?
+        return oldColor * quantization / 255.0;
     }
 
     private int findRightPaletteNeighborColor(int oldColor, int quantization) {

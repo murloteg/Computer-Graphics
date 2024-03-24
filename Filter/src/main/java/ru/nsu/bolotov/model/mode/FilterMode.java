@@ -1,7 +1,7 @@
 package ru.nsu.bolotov.model.mode;
 
 public enum FilterMode {
-    CHANGE_VIEW_MODE,
+    IDENTITY,
     WHITE_AND_BLACK,
     NEGATIVE,
     GAUSS_SMOOTHING,
