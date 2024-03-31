@@ -1,19 +1,21 @@
 
 Ê
-java:S1186¥"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ö„˜şúÿÿÿÿ8éÁüŠç1J$5c437b86-0be9-427d-b77c-194a8619b93f
+java:S1186§"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(Ö„˜şúÿÿÿÿ8À¥¥ªé1J$898f7e33-4b64-4bf7-bb9b-d87fa5c44e85
 Ê
-java:S1186©"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(•ßçùÿÿÿÿ8éÁüŠç1J$f863f61a-40c2-43d9-b927-865f6b334969
+java:S1186«"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(•ßçùÿÿÿÿ8À¥¥ªé1J$1ac0d250-52c8-437c-a4f6-7f188edf9e0c
 Å
-java:S1186­"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ç¨Î§8éÁüŠç1J$0021f322-aca2-4cb8-9718-60156d87ec51
+java:S1186¯"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ç¨Î§8Á¥¥ªé1J$0550b76f-33ac-4619-a700-abef584caac0
 e
-java:S6205"Remove this redundant block.(ıãŞïıÿÿÿÿ8‡ÑŠç1J$5a44c0ed-eebd-41d3-82ff-929d6fae969f
+java:S6205 "Remove this redundant block.(ıãŞïıÿÿÿÿ8Û¥¥ªé1J$742f52f2-3ac1-4b22-af72-4e87adec485e
 `
-java:S6205¡"Remove this redundant block.(‚ÚŞ”8ÂüŠç1J$38625571-1bd3-44eb-abe1-79025a9fd87f
-:
-java:S6205¤"Remove this redundant block.(ÃÅ‹È8’Š€‹ç1
+java:S6205£"Remove this redundant block.(‚ÚŞ”8Ü¥¥ªé1J$a5f03fb7-4373-4e45-a95a-2446fa49b0e3
+`
+java:S6205¦"Remove this redundant block.(ÃÅ‹È8Ü¥¥ªé1J$3dd10583-b2a1-45a7-a160-434fc497230d
 o
-java:S1452™"&Remove usage of generic wildcard type.(šĞ©œşÿÿÿÿ8…ÂüŠç1J$bf6bb825-34ab-45da-a7e9-0bc65b0b6d49
-:
-java:S6205¶"Remove this redundant block.(ê‡¹ª8¦Š€‹ç1
-?
-java:S6205¹"Remove this redundant block.(Î„åÓùÿÿÿÿ8¦Š€‹ç1
+java:S1452›"&Remove usage of generic wildcard type.(šĞ©œşÿÿÿÿ8è¥¥ªé1J$7297e4b7-0edf-4f84-90bd-23bebd41bfd6
+`
+java:S6205À"Remove this redundant block.(ê‡¹ª8÷¥¥ªé1J$d2295dd9-129b-47b3-9f07-2185d80665f7
+e
+java:S6205Ã"Remove this redundant block.(Î„åÓùÿÿÿÿ8÷¥¥ªé1J$122b38c1-41f7-4dee-8860-9c2f51d7ad8a
+–
+java:S3776¤"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(ß¼ü£8€¦¥ªé1J$297cbf39-7365-4ca7-8620-f8735e319585

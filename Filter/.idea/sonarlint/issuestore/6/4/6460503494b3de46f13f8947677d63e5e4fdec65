@@ -1,10 +1,10 @@
 
- 	java:S135v"YReduce the total number of break and continue statements in this loop to use at most one.(ƒ±­ƒşÿÿÿÿ8‰½ìŠç1J$85f80df8-a7e8-4fe4-b1ff-417e122458de
+ 	java:S135v"YReduce the total number of break and continue statements in this loop to use at most one.(ƒ±­ƒşÿÿÿÿ8‰½ìŠç1J$b0d0ccf9-84ef-49c5-98e2-5fccfc1ce44e
 u
-java:S1602§",Remove useless curly braces around statement(Ãçå˜ùÿÿÿÿ8º½ìŠç1J$2c4a05f0-1423-4809-987a-437bbc41b12f
+java:S1602§",Remove useless curly braces around statement(Ãçå˜ùÿÿÿÿ8º½ìŠç1J$1262e452-2b69-48a2-9e28-88461a0267eb
 u
-java:S1602½",Remove useless curly braces around statement(ù¬Œûÿÿÿÿ8¼½ìŠç1J$dceb2287-88d0-4c2a-9b9c-2751d59dd38d
+java:S1602½",Remove useless curly braces around statement(ù¬Œûÿÿÿÿ8¼½ìŠç1J$659ad88b-fa3c-4b29-af78-7688e7754efa
 p
-java:S1602Á",Remove useless curly braces around statement(İƒ«€8¼½ìŠç1J$87c2f4fe-505a-454d-9595-aaf2badb2d43
+java:S1602Á",Remove useless curly braces around statement(İƒ«€8¼½ìŠç1J$4cc7fc2c-4c6b-432c-bccc-d0c07f50c43e
 p
-java:S1602Å",Remove useless curly braces around statement(Ù˜¼8¼½ìŠç1J$735d81f3-956d-4f43-84c6-3b51f863fe05
+java:S1602Å",Remove useless curly braces around statement(Ù˜¼8¼½ìŠç1J$6f77e7c4-0600-4ef0-98ea-447bdc084b8c

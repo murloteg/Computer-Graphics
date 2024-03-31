@@ -41,7 +41,7 @@ public final class FilterMatrices {
             {0, 0, 0},
             {-1, -2, -1}
     };
-    public static final int[][] ORDERLY_DITHERING_BASE_MATRIX = {
+    public static final double[][] ORDERLY_DITHERING_BASE_MATRIX = {
             {0, 2},
             {3, 1}
     };

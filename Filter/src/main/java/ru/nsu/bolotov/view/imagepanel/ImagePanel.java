@@ -6,8 +6,8 @@ import ru.nsu.bolotov.model.filter.matrices.FilterMatrices;
 import ru.nsu.bolotov.model.filter.mode.FilterMode;
 import ru.nsu.bolotov.model.uicomponent.instrument.Instrument;
 import ru.nsu.bolotov.util.UtilConsts;
-import ru.nsu.bolotov.view.mode.imgsource.ImageSource;
 import ru.nsu.bolotov.view.mode.ViewMode;
+import ru.nsu.bolotov.view.mode.imgsource.ImageSource;
 import ru.nsu.bolotov.view.mode.interpolation.InterpolationMode;
 
 import javax.imageio.ImageIO;
@@ -71,7 +71,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             g.setColor(Color.WHITE);
             g.fillRect(0, 0, getWidth(), getHeight());
         } else if (ViewMode.REAL_SIZE.equals(viewMode)) {
-                g.drawImage(currentViewImage, 0, 0, null);
+            g.drawImage(currentViewImage, 0, 0, null);
         } else {
             g.drawImage(currentViewImage, 0, 0, panelSize.width, panelSize.height, null);
         }
@@ -121,6 +121,8 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     public void startImageProcessing() {
         if (Objects.nonNull(originImage)) {
             this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            changedImage = new BufferedImage(originImage.getWidth(), originImage.getHeight(), originImage.getType());
+            originImage.copyData(changedImage.getRaster());
             applyFilter();
             this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
@@ -133,7 +135,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
      * If defaultView is set to false, viewer will show the last viewed part of the previous image.
      * But only if both of the images have the same size.
      *
-     * @param newIm       - new image to view
+     * @param newIm - new image to view
      */
     private void setImage(BufferedImage newIm) {
         currentViewImage = newIm;
@@ -162,7 +164,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                     currentViewImage = imageInterpolationBicubic(currentViewImage, panelSize.width, panelSize.height);
                 }
                 case NEAREST_NEIGHBOR_INTERPOLATION -> {
-                    currentViewImage = imageInterpolationNearestNeighbor(currentViewImage, panelSize.width, panelSize.height);            
+                    currentViewImage = imageInterpolationNearestNeighbor(currentViewImage, panelSize.width, panelSize.height);
                 }
             }
         }
@@ -171,7 +173,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         spIm.paintAll(spIm.getGraphics());
         SwingUtilities.updateComponentTreeUI(this.getParent());
     }
-    
+
     private BufferedImage imageInterpolationBilinear(BufferedImage image, int newWidth, int newHeight) {
         BufferedImage scaledImage = new BufferedImage(newWidth, newHeight, image.getType());
         Graphics2D g2d = scaledImage.createGraphics();
@@ -429,7 +431,15 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     public void mouseMoved(MouseEvent e) {
     }
 
+    private void alignBufferedImagesSizesIfPossible() {
+        if (changedImage.getWidth() != originImage.getWidth() || changedImage.getHeight() != originImage.getHeight()) {
+            changedImage = new BufferedImage(originImage.getWidth(), originImage.getHeight(), originImage.getType());
+            originImage.copyData(changedImage.getRaster());
+        }
+    }
+
     private void applyFilter() {
+        alignBufferedImagesSizesIfPossible();
         String currentInstrumentName = currentInstrument.getInstrumentName();
         switch (filterMode) {
             case IDENTITY -> {
@@ -458,7 +468,8 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 } else if (matrixSize == 5) {
                     matrix = FilterMatrices.GAUSS_5X5_MATRIX;
                 } else if (matrixSize >= 7 && matrixSize % 2 != 0) {
-                    medianFilter(matrixSize);
+                    medianBlurFilter(matrixSize);
+                    postProcessingMedianBlur(matrixSize);
                     break;
                 }
                 applyMatrixFilter(matrix);
@@ -481,14 +492,14 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             }
             case FLOYD_STEINBERG_DITHERING -> {
                 int redQuantization = (int) applicationParameters.get(currentInstrumentName).get(0);
-                int greenQuantization = (int) applicationParameters.get(currentInstrumentName).get(0);
-                int blueQuantization = (int) applicationParameters.get(currentInstrumentName).get(0);
+                int greenQuantization = (int) applicationParameters.get(currentInstrumentName).get(1);
+                int blueQuantization = (int) applicationParameters.get(currentInstrumentName).get(2);
                 floydSteinbergDithering(redQuantization, greenQuantization, blueQuantization);
             }
             case ORDERLY_DITHERING -> {
                 int redQuantization = (int) applicationParameters.get(currentInstrumentName).get(0);
-                int greenQuantization = (int) applicationParameters.get(currentInstrumentName).get(0);
-                int blueQuantization = (int) applicationParameters.get(currentInstrumentName).get(0);
+                int greenQuantization = (int) applicationParameters.get(currentInstrumentName).get(1);
+                int blueQuantization = (int) applicationParameters.get(currentInstrumentName).get(2);
                 orderlyDithering(redQuantization, greenQuantization, blueQuantization);
             }
             case AQUA_REALIZATION -> {
@@ -534,6 +545,34 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         }
     }
 
+    private void postProcessingMedianBlur(int matrixSize) {
+        int shiftFromBorderInPx = matrixSize / 2;
+
+        int width = originImage.getWidth();
+        int height = originImage.getHeight();
+        for (int x = 0; x < originImage.getWidth(); ++x) {
+            for (int y = 0; y < originImage.getHeight(); ++y) {
+                int position = y * originImage.getHeight() + x;
+                if (isBorderedValue(position, width, height, shiftFromBorderInPx)) {
+                    int newX = x;
+                    int newY = y;
+                    if (position < shiftFromBorderInPx * width) {
+                        newY = y + shiftFromBorderInPx;
+                    } else if (position >= (width * (height - shiftFromBorderInPx))) {
+                        newY = y - shiftFromBorderInPx;
+                    }
+                    if (position % width < shiftFromBorderInPx) {
+                        newX = x + shiftFromBorderInPx;
+                    } else if (position % width >= (width - shiftFromBorderInPx)) {
+                        newX = x - shiftFromBorderInPx;
+                    }
+                    int updatedColor = changedImage.getRGB(newX, newY);
+                    changedImage.setRGB(x, y, updatedColor);
+                }
+            }
+        }
+    }
+
     private void addNoise(int noiseLimit) {
         for (int x = 0; x < originImage.getWidth(); ++x) {
             for (int y = 0; y < originImage.getHeight(); ++y) {
@@ -564,7 +603,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         double redCoefficient = 0.299;
         double greenCoefficient = 0.587;
         double blueCoefficient = 0.114;
-        return (int) ((redCoefficient * redComponent + greenCoefficient * greenComponent + blueCoefficient * blueComponent) / 3);
+        return (int) Math.round(redCoefficient * redComponent + greenCoefficient * greenComponent + blueCoefficient * blueComponent);
     }
 
     private void whiteAndBlackFilter() {
@@ -610,58 +649,58 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         }
     }
 
-    private double[][] generateRotationMatrix2D(double sin, double cos) {
+    private double[][] generate2DRotationMatrix(double cos, double sin) {
         return new double[][]{
                 {cos, (-1) * sin},
                 {sin, cos}
         };
     }
 
-    private int[] transformCoordinates(double[][] rotationMatrix, int x, int y) {
-        int rotatedX = (int) Math.round(rotationMatrix[0][0] * x + rotationMatrix[0][1] * y);
-        int rotatedY = (int) Math.round(rotationMatrix[1][0] * x + rotationMatrix[1][1] * y);
-        return new int[]{rotatedX, rotatedY};
-    }
-
     private void rotate(int angleInDegrees) {
-        double angleSin = Math.sin(Math.toRadians(angleInDegrees));
-        double angleCos = Math.cos(Math.toRadians(angleInDegrees));
-        double[][] rotationMatrix = generateRotationMatrix2D(angleSin, angleCos);
+        double angleRadians = Math.toRadians(angleInDegrees);
+        double sin = Math.sin(angleRadians);
+        double cos = Math.cos(angleRadians);
+        double[][] rotationMatrix = generate2DRotationMatrix(cos, sin);
 
         int width = originImage.getWidth();
         int height = originImage.getHeight();
 
-        int newWidth = width;
-        int newHeight = height;
-        if (angleInDegrees % 180 != 0) {
-            newWidth = (int) (Math.abs(width * angleCos) + Math.abs(height * angleSin));
-            newHeight = (int) (Math.abs(width * angleSin) + Math.abs(height * angleCos));
-        }
-
+        int newWidth = (int) Math.ceil(Math.abs(width * cos) + Math.abs(height * sin));
+        int newHeight = (int) Math.ceil(Math.abs(width * sin) + Math.abs(height * cos));
         changedImage = new BufferedImage(newWidth, newHeight, originImage.getType());
         changedImage.getGraphics().fillRect(0, 0, newWidth, newHeight);
 
-        int centerX = newWidth / 2;
-        int centerY = newHeight / 2;
+        int originCenterX = width / 2;
+        int originCenterY = height / 2;
 
-        int originalCenterX = width / 2;
-        int originalCenterY = height / 2;
-        int[] rotatedCenter = transformCoordinates(rotationMatrix, originalCenterX, originalCenterY);
-        int rotatedCenterX = rotatedCenter[0];
-        int rotatedCenterY = rotatedCenter[1];
+        int newCenterX = newWidth / 2;
+        int newCenterY = newHeight / 2;
+        for (int x = 0; x < newWidth; ++x) {
+            for (int y = 0; y < newHeight; ++y) {
+                int[] originalCoordinates = transformCoordinatesByInverseRotationMatrix(x - newCenterX, y - newCenterY, rotationMatrix);
 
-        for (int x = 0; x < width; ++x) {
-            for (int y = 0; y < height; ++y) {
-                int[] rotatedCoordinates = transformCoordinates(rotationMatrix, x, y);
-                int rotatedX = rotatedCoordinates[0] + centerX - rotatedCenterX;
-                int rotatedY = rotatedCoordinates[1] + centerY - rotatedCenterY;
-
-                if (rotatedX >= 0 && rotatedX < changedImage.getWidth() && rotatedY >= 0 && rotatedY < changedImage.getHeight()) {
-                    int pixelColor = originImage.getRGB(x, y);
-                    changedImage.setRGB(rotatedX, rotatedY, pixelColor);
+                int originalX = originalCoordinates[0] + originCenterX;
+                int originalY = originalCoordinates[1] + originCenterY;
+                if (originalX >= 0 && originalX < width && originalY >= 0 && originalY < height) {
+                    int pixelColor = originImage.getRGB(originalX, originalY);
+                    changedImage.setRGB(x, y, pixelColor);
                 }
             }
         }
+    }
+
+    /**
+     * Note: inverse rotation matrix is used from origin matrix by transposition.
+     *
+     * @param x
+     * @param y
+     * @param rotationMatrix - origin rotation matrix
+     * @return new coordinates
+     */
+    private int[] transformCoordinatesByInverseRotationMatrix(int x, int y, double[][] rotationMatrix) {
+        int newX = (int) Math.round(x * rotationMatrix[0][0] + y * rotationMatrix[1][0]);
+        int newY = (int) Math.round(x * rotationMatrix[0][1] + y * rotationMatrix[1][1]);
+        return new int[]{newX, newY};
     }
 
     private void retroEffectFilter(BufferedImage source) {
@@ -691,23 +730,6 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 || position % width < shiftFromBorderInPx || position % width >= (width - shiftFromBorderInPx);
     }
 
-    private double calculatePaletteGroupCoefficient(int oldColor, int quantization) {
-        return oldColor * quantization / 255.0;
-    }
-
-    private int findRightPaletteNeighborColor(int oldColor, int quantization) {
-        int paletteGroupCoefficient = (int) Math.round(calculatePaletteGroupCoefficient(oldColor, quantization));
-        int step = (int) Math.round(255.0 / quantization);
-        int rightNeighborCoefficient = Math.max(paletteGroupCoefficient + 1, quantization - 1);
-        return Math.min(step * rightNeighborCoefficient, 255);
-    }
-
-    private int findClosestPaletteColor(int oldColor, int quantization) {
-        int paletteGroupCoefficient = (int) Math.round(calculatePaletteGroupCoefficient(oldColor, quantization));
-        int step = (int) Math.round(255.0 / quantization);
-        return Math.min(step * paletteGroupCoefficient, 255);
-    }
-
     private void fillRGBBuffers(double[][] redBuffer, double[][] greenBuffer, double[][] blueBuffer) {
         for (int x = 0; x < originImage.getWidth(); ++x) {
             for (int y = 0; y < originImage.getHeight(); ++y) {
@@ -723,14 +745,48 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         }
     }
 
-    private void floydSteinbergErrorPropagation(double[][] colorBuffer, int x, int y, int quantization) {
+    private void floydSteinbergErrorPropagation(double[][] colorBuffer, int x, int y, int newComponent) {
         double component = colorBuffer[y][x];
-        int newComponent = findClosestPaletteColor((int) Math.round(component), quantization);
         double error = component - newComponent;
-        colorBuffer[y][x + 1] += error * 7 / 16;
-        colorBuffer[y + 1][x - 1] += error * 3 / 16;
-        colorBuffer[y + 1][x] += error * 5 / 16;
-        colorBuffer[y + 1][x + 1] += error * 1 / 16;
+
+        if (x < originImage.getWidth() - 1) {
+            colorBuffer[y][x + 1] += error * 7 / 16;
+        }
+        if (y < originImage.getHeight() - 1 && x > 0) {
+            colorBuffer[y + 1][x - 1] += error * 3 / 16;
+        }
+        if (y < originImage.getHeight() - 1) {
+            colorBuffer[y + 1][x] += error * 5 / 16;
+        }
+        if (y < originImage.getHeight() - 1 && x < originImage.getWidth() - 1) {
+            colorBuffer[y + 1][x + 1] += error * 1 / 16;
+        }
+    }
+
+    private int[] createColorComponentPalette(int colorQuantization) {
+        int[] colorComponentPalette = new int[colorQuantization];
+        int step = (int) Math.round(256.0 / (colorQuantization - 1));
+
+        int initialColorComponent = 0;
+        for (int i = 0; i < colorQuantization; ++i) {
+            colorComponentPalette[i] = initialColorComponent;
+            initialColorComponent += step;
+            initialColorComponent = clampColorComponent(initialColorComponent);
+        }
+        return colorComponentPalette;
+    }
+
+    private int findColorComponentInPalette(int[] palette, int colorComponent) {
+        int minDifference = 255;
+        int closestColor = colorComponent;
+        for (int color : palette) {
+            int currentDifference = Math.abs(color - colorComponent);
+            if (currentDifference < minDifference) {
+                minDifference = currentDifference;
+                closestColor = color;
+            }
+        }
+        return closestColor;
     }
 
     private void floydSteinbergDithering(int redQuantization, int greenQuantization, int blueQuantization) {
@@ -741,36 +797,38 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         double[][] blueBuffer = new double[height][width];
         fillRGBBuffers(redBuffer, greenBuffer, blueBuffer);
 
+        int[] redPalette = createColorComponentPalette(redQuantization);
+        int[] greenPalette = createColorComponentPalette(greenQuantization);
+        int[] bluePalette = createColorComponentPalette(blueQuantization);
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
-                int position = y * width + x;
-                if (isBorderedValue(position, width, height, 1)) {
-                    continue;
-                }
-                floydSteinbergErrorPropagation(redBuffer, x, y, redQuantization);
-                floydSteinbergErrorPropagation(greenBuffer, x, y, greenQuantization);
-                floydSteinbergErrorPropagation(blueBuffer, x, y, blueQuantization);
-            }
-        }
+                int oldRedComponent = (int) Math.round(redBuffer[y][x]);
+                int oldGreenComponent = (int) Math.round(greenBuffer[y][x]);
+                int oldBlueComponent = (int) Math.round(blueBuffer[y][x]);
 
-        for (int x = 0; x < width; ++x) {
-            for (int y = 0; y < height; ++y) {
-                int updatedColor = clampColorComponent((int) blueBuffer[y][x])
-                        | clampColorComponent((int) (greenBuffer[y][x])) << 8
-                        | clampColorComponent((int) (redBuffer[y][x])) << 16;
+                int newRedComponent = findColorComponentInPalette(redPalette, oldRedComponent);
+                int newGreenComponent = findColorComponentInPalette(greenPalette, oldGreenComponent);
+                int newBlueComponent = findColorComponentInPalette(bluePalette, oldBlueComponent);
+
+                int updatedColor = newBlueComponent | (newGreenComponent << 8) | (newRedComponent << 16);
                 changedImage.setRGB(x, y, updatedColor);
+
+                floydSteinbergErrorPropagation(redBuffer, x, y, newRedComponent);
+                floydSteinbergErrorPropagation(greenBuffer, x, y, newGreenComponent);
+                floydSteinbergErrorPropagation(blueBuffer, x, y, newBlueComponent);
             }
         }
     }
 
-    private int[][] generateOrderlyDitheringMatrixWithDegreeOfTwoSize(int degreeOfTwo) {
-        int[][] matrix = FilterMatrices.ORDERLY_DITHERING_BASE_MATRIX;
+    private double[][] generateOrderlyDitheringMatrixWithDegreeOfTwoSize(int totalSize) {
+        int degreeOfTwo = (int) Math.round(Math.log(totalSize) / Math.log(2));
+        double[][] matrix = FilterMatrices.ORDERLY_DITHERING_BASE_MATRIX;
         for (int i = 0; i < (degreeOfTwo - 1); ++i) {
             int matrixSize = matrix.length;
-            int[][] nextMatrix = new int[2 * matrixSize][2 * matrixSize];
+            double[][] nextMatrix = new double[2 * matrixSize][2 * matrixSize];
             for (int x = 0; x < matrixSize; ++x) {
                 for (int y = 0; y < matrixSize; ++y) {
-                    int value = matrix[y][x];
+                    double value = matrix[y][x];
                     int multiplier = 4;
                     nextMatrix[y][x] = multiplier * value;
                     nextMatrix[y][x + matrixSize] = multiplier * value + 2;
@@ -783,31 +841,40 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         return matrix;
     }
 
-    private int calculateSuitableDegreeForDitheringMatrixByQuantization(int quantization) {
-        return (int) Math.round(Math.log(quantization) / Math.log(2));
+    private int calculateSuitableSizeForDitheringMatrixByQuantizations(int redQuantization, int greenQuantization, int blueQuantization) {
+        double redSize = 256.0 / (redQuantization);
+        double greenSize = 256.0 / (greenQuantization);
+        double blueSize = 256.0 / (blueQuantization);
+        double maxSize = Math.max(redSize, Math.max(greenSize, blueSize));
+
+        int initialSize = 2;
+        while (initialSize * initialSize < maxSize) {
+            initialSize *= 2;
+        }
+        return initialSize;
     }
 
-    private double calculateDivisorForDitheringMatrix(int degreeOfTwo) {
-        return Math.pow(4, degreeOfTwo - 1.0);
-    }
-
-    private int determinateColorComponentByDitheringMatrix(int[][] ditheringMatrix, int colorComponent, int x, int y,
-                                                           int quantization, int degree) {
-        double divisor = calculateDivisorForDitheringMatrix(degree);
+    private void ditheringMatrixNormalization(double[][] ditheringMatrix) {
         int matrixSize = ditheringMatrix.length;
-        int newComponent = (int) (ditheringMatrix[y % matrixSize][x % matrixSize] * 256 / divisor);
-        return (colorComponent <= newComponent) ? findClosestPaletteColor(colorComponent, quantization) :
-                findRightPaletteNeighborColor(colorComponent, quantization);
+        for (int y = 0; y < matrixSize; ++y) {
+            for (int x = 0; x < matrixSize; ++x) {
+                ditheringMatrix[x][y] = (ditheringMatrix[x][y] + 1) / (matrixSize * matrixSize);
+            }
+        }
     }
 
     private void orderlyDithering(int redQuantization, int greenQuantization, int blueQuantization) {
-        int redDegree = calculateSuitableDegreeForDitheringMatrixByQuantization(redQuantization);
-        int greenDegree = calculateSuitableDegreeForDitheringMatrixByQuantization(greenQuantization);
-        int blueDegree = calculateSuitableDegreeForDitheringMatrixByQuantization(blueQuantization);
+        int matrixSize = calculateSuitableSizeForDitheringMatrixByQuantizations(redQuantization, greenQuantization, blueQuantization);
+        double[][] ditheringMatrix = generateOrderlyDitheringMatrixWithDegreeOfTwoSize(matrixSize);
+        ditheringMatrixNormalization(ditheringMatrix);
 
-        int[][] redDitheringMatrix = generateOrderlyDitheringMatrixWithDegreeOfTwoSize(redDegree);
-        int[][] greenDitheringMatrix = generateOrderlyDitheringMatrixWithDegreeOfTwoSize(greenDegree);
-        int[][] blueDitheringMatrix = generateOrderlyDitheringMatrixWithDegreeOfTwoSize(blueDegree);
+        int[] redPalette = createColorComponentPalette(redQuantization);
+        int[] greenPalette = createColorComponentPalette(greenQuantization);
+        int[] bluePalette = createColorComponentPalette(blueQuantization);
+
+        double redStep = (double) 256 / redPalette.length;
+        double greenStep = (double) 256 / greenPalette.length;
+        double blueStep = (double) 256 / bluePalette.length;
         for (int x = 0; x < originImage.getWidth(); ++x) {
             for (int y = 0; y < originImage.getHeight(); ++y) {
                 int pixelColor = originImage.getRGB(x, y);
@@ -815,17 +882,22 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 int greenComponent = (pixelColor >> 8) & 0xFF;
                 int blueComponent = pixelColor & 0xFF;
 
-                redComponent = determinateColorComponentByDitheringMatrix(redDitheringMatrix, redComponent, x, y, redQuantization, redDegree);
-                greenComponent = determinateColorComponentByDitheringMatrix(greenDitheringMatrix, greenComponent, x, y, greenQuantization, greenDegree);
-                blueComponent = determinateColorComponentByDitheringMatrix(blueDitheringMatrix, blueComponent, x, y, blueQuantization, blueDegree);
+                int tempRedComponent = (int) Math.round((redComponent - 0.5 * redStep + redStep * ditheringMatrix[y % matrixSize][x % matrixSize]));
+                int tempGreenComponent = (int) Math.round((greenComponent - 0.5 * greenStep + greenStep * ditheringMatrix[y % matrixSize][x % matrixSize]));
+                int tempBlueComponent = (int) Math.round((blueComponent - 0.5 * blueStep + blueStep * ditheringMatrix[y % matrixSize][x % matrixSize]));
 
-                int updatedColor = blueComponent | (greenComponent << 8) | (redComponent << 16);
+                int newRedComponent = findColorComponentInPalette(redPalette, tempRedComponent);
+                int newGreenComponent = findColorComponentInPalette(greenPalette, tempGreenComponent);
+                int newBlueComponent = findColorComponentInPalette(bluePalette, tempBlueComponent);
+
+                int updatedColor = newBlueComponent | (newGreenComponent << 8) | (newRedComponent << 16);
                 changedImage.setRGB(x, y, updatedColor);
             }
         }
     }
 
-    private int calculateMedianValue(int x, int y, int matrixSize, java.util.List<Integer> pixels) {
+    private int calculateMedianBlurValue(int x, int y, int matrixSize, java.util.List<Integer> redComponents,
+                                         java.util.List<Integer> greenComponents, java.util.List<Integer> blueComponents) {
         int matrixRadius = matrixSize / 2;
 
         for (int i = 0; i < matrixSize; ++i) {
@@ -834,13 +906,88 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                 int currentX = Math.min(Math.max(x + j - matrixRadius, 0), originImage.getWidth() - 1);
 
                 int pixelColor = originImage.getRGB(currentX, currentY);
-                pixels.add(pixelColor);
+                int redComponent = (pixelColor >> 16) & 0xFF;
+                int greenComponent = (pixelColor >> 8) & 0xFF;
+                int blueComponent = pixelColor & 0xFF;
+
+                redComponents.add(redComponent);
+                greenComponents.add(greenComponent);
+                blueComponents.add(blueComponent);
             }
         }
-        pixels.sort(Comparator.naturalOrder());
-        int medianValue = pixels.get(matrixSize / 2);
-        pixels.clear();
-        return medianValue;
+
+        int medianRed = (int) Math.round(redComponents.stream().mapToInt(i -> i).average().orElse(0));
+        int medianGreen = (int) Math.round(greenComponents.stream().mapToInt(i -> i).average().orElse(0));
+        int medianBlue = (int) Math.round(blueComponents.stream().mapToInt(i -> i).average().orElse(0));
+        redComponents.clear();
+        greenComponents.clear();
+        blueComponents.clear();
+        return medianBlue | (medianGreen << 8) | (medianRed << 16);
+    }
+
+    private void medianBlurFilter(int matrixSize) {
+        int imageWidth = originImage.getWidth();
+        int imageHeight = originImage.getHeight();
+        int shiftFromBorderInPx = matrixSize / 2;
+
+        ExecutorService executorService = Executors.newFixedThreadPool(UtilConsts.ProgramConfigurationConsts.THREADS_NUMBERS);
+        int stepY = imageHeight / UtilConsts.ProgramConfigurationConsts.THREADS_NUMBERS;
+        java.util.List<CompletableFuture<Void>> completableFutures = new ArrayList<>();
+        for (int i = 0; i < UtilConsts.ProgramConfigurationConsts.THREADS_NUMBERS; ++i) {
+            final int futureIndex = i;
+            completableFutures.add(CompletableFuture.runAsync(() -> {
+                java.util.List<Integer> redComponents = new ArrayList<>();
+                java.util.List<Integer> greenComponents = new ArrayList<>();
+                java.util.List<Integer> blueComponents = new ArrayList<>();
+                int startY = futureIndex * stepY;
+                int endY = (futureIndex + 1) * stepY;
+                for (int x = 0; x < imageWidth; ++x) {
+                    for (int y = startY; y < endY; ++y) {
+                        int position = y * imageWidth + x;
+                        if (isBorderedValue(position, imageWidth, imageHeight, shiftFromBorderInPx)) {
+                            continue;
+                        }
+                        int updatedColor = calculateMedianBlurValue(x, y, matrixSize, redComponents, greenComponents, blueComponents);
+                        changedImage.setRGB(x, y, updatedColor);
+                    }
+                }
+            }, executorService));
+        }
+        completableFutures.forEach(CompletableFuture::join);
+    }
+
+    private int calculateMedianValue(int x, int y, int matrixSize, java.util.List<Integer> redComponents,
+                                     java.util.List<Integer> greenComponents, java.util.List<Integer> blueComponents) {
+        int matrixRadius = matrixSize / 2;
+
+        for (int i = 0; i < matrixSize; ++i) {
+            for (int j = 0; j < matrixSize; ++j) {
+                int currentY = Math.min(Math.max(y + i - matrixRadius, 0), originImage.getHeight() - 1);
+                int currentX = Math.min(Math.max(x + j - matrixRadius, 0), originImage.getWidth() - 1);
+
+                int pixelColor = originImage.getRGB(currentX, currentY);
+                int redComponent = (pixelColor >> 16) & 0xFF;
+                int greenComponent = (pixelColor >> 8) & 0xFF;
+                int blueComponent = pixelColor & 0xFF;
+
+                redComponents.add(redComponent);
+                greenComponents.add(greenComponent);
+                blueComponents.add(blueComponent);
+            }
+        }
+        redComponents.sort(Comparator.naturalOrder());
+        greenComponents.sort(Comparator.naturalOrder());
+        blueComponents.sort(Comparator.naturalOrder());
+
+        int totalElementsSize = matrixSize * matrixSize;
+        int medianRed = redComponents.get(totalElementsSize / 2);
+        int medianGreen = greenComponents.get(totalElementsSize / 2);
+        int medianBlue = blueComponents.get(totalElementsSize / 2);
+        redComponents.clear();
+        greenComponents.clear();
+        blueComponents.clear();
+
+        return medianBlue | (medianGreen << 8) | (medianRed << 16);
     }
 
     private void medianFilter(int matrixSize) {
@@ -854,7 +1001,9 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         for (int i = 0; i < UtilConsts.ProgramConfigurationConsts.THREADS_NUMBERS; ++i) {
             final int futureIndex = i;
             completableFutures.add(CompletableFuture.runAsync(() -> {
-                java.util.List<Integer> pixels = new ArrayList<>();
+                java.util.List<Integer> redComponents = new ArrayList<>();
+                java.util.List<Integer> greenComponents = new ArrayList<>();
+                java.util.List<Integer> blueComponents = new ArrayList<>();
                 int startY = futureIndex * stepY;
                 int endY = (futureIndex + 1) * stepY;
                 for (int x = 0; x < imageWidth; ++x) {
@@ -863,7 +1012,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
                         if (isBorderedValue(position, imageWidth, imageHeight, shiftFromBorderInPx)) {
                             continue;
                         }
-                        int updatedColor = calculateMedianValue(x, y, matrixSize, pixels);
+                        int updatedColor = calculateMedianValue(x, y, matrixSize, redComponents, greenComponents, blueComponents);
                         changedImage.setRGB(x, y, updatedColor);
                     }
                 }

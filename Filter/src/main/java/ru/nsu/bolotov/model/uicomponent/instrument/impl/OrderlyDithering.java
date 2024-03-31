@@ -1,5 +1,6 @@
 package ru.nsu.bolotov.model.uicomponent.instrument.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import ru.nsu.bolotov.model.uicomponent.instrument.DialogEnabled;
 import ru.nsu.bolotov.model.uicomponent.instrument.Instrument;
 import ru.nsu.bolotov.model.filter.mode.FilterMode;
@@ -158,8 +159,11 @@ public class OrderlyDithering implements Instrument, DialogEnabled {
             @Override
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
-                int value = Integer.parseInt(colorQuantizationField.getText());
-                colorQuantizationSlider.setValue(value);
+                String inputValue = colorQuantizationField.getText();
+                if (StringUtils.isNumeric(inputValue)) {
+                    int numericValue = Integer.parseInt(inputValue);
+                    colorQuantizationSlider.setValue(numericValue);
+                }
             }
         });
 
