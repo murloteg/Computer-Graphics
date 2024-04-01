@@ -863,6 +863,12 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         }
     }
 
+    /**
+     * Note: this dithering uses error centring
+     * @param redQuantization
+     * @param greenQuantization
+     * @param blueQuantization
+     */
     private void orderlyDithering(int redQuantization, int greenQuantization, int blueQuantization) {
         int matrixSize = calculateSuitableSizeForDitheringMatrixByQuantizations(redQuantization, greenQuantization, blueQuantization);
         double[][] ditheringMatrix = generateOrderlyDitheringMatrixWithDegreeOfTwoSize(matrixSize);
