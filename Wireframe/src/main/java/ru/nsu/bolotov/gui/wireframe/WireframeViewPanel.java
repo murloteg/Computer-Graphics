@@ -39,6 +39,7 @@ public class WireframeViewPanel extends JPanel implements PropertyChangeListener
         }
     }
 
+    // TODO: добавить оси XYZ
     @Override
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
@@ -50,6 +51,8 @@ public class WireframeViewPanel extends JPanel implements PropertyChangeListener
         int centerY = getHeight() / 2;
 
         double zoomParameter = wireframeRepresentation.getZoomParameter();
+        // TODO: вращать вокруг центра фигуры
+        // FIXME: учесть расстояние до точек (разная яркость)
         if (bSplineRepresentation.getSupportPoints().size() < 4) {
             Map<Integer, java.util.List<Point2D>> defaultWireframeExample = wireframeRepresentation.defaultWireframeExample();
             java.util.List<Point2D> examplePoints = defaultWireframeExample.get(0);

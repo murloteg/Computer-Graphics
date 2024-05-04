@@ -52,10 +52,11 @@ public class ParametersPanel extends JPanel implements PropertyChangeListener {
         });
         this.add(circleSegmentsComboBox);
 
+        // FIXME: от 1 сегмента
         JLabel bSplineSegmentsLabel = new JLabel("BSpline Part Segments");
         this.add(bSplineSegmentsLabel);
         JComboBox<Integer> bSplineSegmentsComboBox = new JComboBox<>();
-        for (int i = 3; i <= 20; ++i) {
+        for (int i = 1; i <= 20; ++i) {
             bSplineSegmentsComboBox.addItem(i);
         }
         bSplineSegmentsComboBox.setSelectedItem(applicationParameters.getNumberOfBSplinePartSegments());

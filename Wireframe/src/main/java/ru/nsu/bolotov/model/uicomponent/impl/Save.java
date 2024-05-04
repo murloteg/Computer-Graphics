@@ -47,6 +47,7 @@ public class Save implements EditorInstrument {
         });
     }
 
+    // FIXME: перенести в WireframeWindow
     private void saveFile(JFrame frame) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileFilter() {

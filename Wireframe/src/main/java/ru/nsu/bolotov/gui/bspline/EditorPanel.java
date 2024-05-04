@@ -101,9 +101,6 @@ public class EditorPanel extends JPanel implements MouseMotionListener, MouseLis
                 activePoint.setLocation((e.getX() - centerX) / currentDistanceBetweenAxisDashPx, (centerY - e.getY()) / currentDistanceBetweenAxisDashPx);
                 bSplineRepresentation.createBSpline();
             }
-            case MOVE_PLANE_POSITION -> {
-                // TODO
-            }
             default -> {
                 return;
             }

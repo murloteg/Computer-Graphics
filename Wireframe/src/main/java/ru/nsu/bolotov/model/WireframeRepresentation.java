@@ -74,7 +74,6 @@ public class WireframeRepresentation {
 
     public void updateZoomParameter(double zoomParameter) {
         this.zoomParameter = zoomParameter;
-        initializePerspectiveProjectionMatrix();
     }
 
     private void initializeRotationMatrix() {
@@ -90,7 +89,7 @@ public class WireframeRepresentation {
         this.cameraPerspectiveProjectionMatrix = new Matrix(new double[][]{
                 {1.0, 0.0, 0.0, 0.0},
                 {0.0, 1.0, 0.0, 0.0},
-                {0.0, 0.0, 1.0, zoomParameter},
+                {0.0, 0.0, 0.0, 10.0},
                 {0.0, 0.0, 0.0, 1.0}
         });
     }

@@ -44,6 +44,7 @@ public class Open implements EditorInstrument {
         });
     }
 
+    // FIXME: перенести в WireframeWindow
     private void openFile(JFrame frame) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileFilter() {
