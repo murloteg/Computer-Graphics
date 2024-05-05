@@ -2,6 +2,7 @@ package ru.nsu.bolotov.gui.wireframe;
 
 import ru.nsu.bolotov.model.BSplineRepresentation;
 import ru.nsu.bolotov.model.FourCoordinatesVector;
+import ru.nsu.bolotov.model.Matrix;
 import ru.nsu.bolotov.model.WireframeRepresentation;
 import ru.nsu.bolotov.model.parameters.ApplicationParameters;
 
@@ -12,6 +13,7 @@ import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Map;
+import java.util.List;
 
 import static ru.nsu.bolotov.util.UtilConsts.DefaultApplicationParameters.MAXIMAL_WIREFRAME_ZOOM_PARAMETER;
 import static ru.nsu.bolotov.util.UtilConsts.DefaultApplicationParameters.MINIMAL_WIREFRAME_ZOOM_PARAMETER;
@@ -39,7 +41,6 @@ public class WireframeViewPanel extends JPanel implements PropertyChangeListener
         }
     }
 
-    // TODO: добавить оси XYZ
     @Override
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
@@ -53,10 +54,23 @@ public class WireframeViewPanel extends JPanel implements PropertyChangeListener
         double zoomParameter = wireframeRepresentation.getZoomParameter();
         if (bSplineRepresentation.getSupportPoints().size() < 4) {
             Map<Integer, java.util.List<Point2D>> defaultWireframeExample = wireframeRepresentation.defaultWireframeExample();
-            java.util.List<Point2D> examplePoints = defaultWireframeExample.get(0);
-            java.util.List<Point2D> exampleEdges = defaultWireframeExample.get(1);
+            List<Point2D> examplePoints = defaultWireframeExample.get(0);
+            List<Point2D> exampleEdges = defaultWireframeExample.get(1);
+
+            double maxXValue = Double.MIN_VALUE;
+            double maxYValue = Double.MIN_VALUE;
+            for (Point2D point : examplePoints) {
+                maxXValue = Math.max(maxXValue, point.getX());
+                maxYValue = Math.max(maxYValue, point.getY());
+            }
 
             for (Point2D point : exampleEdges) {
+                double normalizedX1 = examplePoints.get((int) point.getX()).getX() / maxXValue;
+                double normalizedY1 = examplePoints.get((int) point.getX()).getY() / maxYValue;
+                double normalizedX2 = examplePoints.get((int) point.getY()).getX() / maxXValue;
+//                double normalizedY2 = examplePoints.get((int) point.getY()).getY() / maxYValue;
+                Color colorEdge = interpolateColor(normalizedX1, normalizedY1, normalizedX2);
+                graphics2D.setColor(colorEdge);
                 graphics2D.drawLine(
                         (int) (centerX + examplePoints.get((int) point.getX()).getX() * zoomParameter), (int) (centerY - examplePoints.get((int) point.getX()).getY() * zoomParameter),
                         (int) (centerX + examplePoints.get((int) point.getY()).getX() * zoomParameter), (int) (centerY - examplePoints.get((int) point.getY()).getY() * zoomParameter)
@@ -64,11 +78,11 @@ public class WireframeViewPanel extends JPanel implements PropertyChangeListener
             }
         } else {
             wireframeRepresentation.createWireframePoints(bSplineRepresentation.getBSplinePoints());
-            java.util.List<FourCoordinatesVector> points = wireframeRepresentation.getWireframeVectors();
-            java.util.List<Integer> edges = wireframeRepresentation.getEdges();
+            List<FourCoordinatesVector> points = wireframeRepresentation.getWireframeVectors();
+            List<Integer> edges = wireframeRepresentation.getEdges();
 
-            double maxXValue = 0;
-            double maxYValue = 0;
+            double maxXValue = Double.MIN_VALUE;
+            double maxYValue = Double.MIN_VALUE;
             for (FourCoordinatesVector point : points) {
                 maxXValue = Math.max(maxXValue, point.getX());
                 maxYValue = Math.max(maxYValue, point.getY());
@@ -90,6 +104,7 @@ public class WireframeViewPanel extends JPanel implements PropertyChangeListener
                 );
             }
         }
+        drawXYZ(graphics2D, centerX, centerY);
     }
 
     private Color interpolateColor(double x1, double y1, double x2) {
@@ -98,6 +113,27 @@ public class WireframeViewPanel extends JPanel implements PropertyChangeListener
         int blue = Math.max(Math.min((int) (255 * (1 - x2)), 255), 0);
 
         return new Color(red, green, blue);
+    }
+
+    private void drawXYZ(Graphics2D graphics2D, int centerX, int centerY) {
+        double axisLength = 25;
+        double zoomParameter = wireframeRepresentation.getZoomParameter();
+
+        Matrix rotationMatrix = wireframeRepresentation.getRotationMatrix();
+        FourCoordinatesVector xAxisStart = new FourCoordinatesVector(-axisLength, 0, 0);
+        FourCoordinatesVector xAxisEnd = Matrix.multiplyMatrixByVector(rotationMatrix, xAxisStart);
+        graphics2D.setColor(Color.RED);
+        graphics2D.drawLine(centerX, centerY, centerX + (int) (xAxisEnd.getX() * zoomParameter), centerY - (int) (xAxisEnd.getY() * zoomParameter));
+
+        FourCoordinatesVector yAxisStart = new FourCoordinatesVector(0, -axisLength, 0);
+        FourCoordinatesVector yAxisEnd = Matrix.multiplyMatrixByVector(rotationMatrix, yAxisStart);
+        graphics2D.setColor(Color.GREEN);
+        graphics2D.drawLine(centerX, centerY, centerX + (int) (yAxisEnd.getX() * zoomParameter), centerY - (int) (yAxisEnd.getY() * zoomParameter));
+
+        FourCoordinatesVector zAxisStart = new FourCoordinatesVector(0, 0, -axisLength);
+        FourCoordinatesVector zAxisEnd = Matrix.multiplyMatrixByVector(rotationMatrix, zAxisStart);
+        graphics2D.setColor(Color.BLUE);
+        graphics2D.drawLine(centerX, centerY, centerX + (int) (zAxisEnd.getX() * zoomParameter), centerY - (int) (zAxisEnd.getY() * zoomParameter));
     }
 
     public void resetRotationMatrix() {

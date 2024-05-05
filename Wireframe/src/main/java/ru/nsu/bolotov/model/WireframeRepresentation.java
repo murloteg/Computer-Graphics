@@ -20,8 +20,8 @@ public class WireframeRepresentation {
     private Matrix normalizeMatrix;
     private double zoomParameter = DEFAULT_WIREFRAME_ZOOM_PARAMETER;
     private double rotationAngle = DEFAULT_ROTATION_ANGLE_DEGREES;
-    private final java.util.List<FourCoordinatesVector> wireframeVectors = new ArrayList<>();
-    private final java.util.List<Integer> edges = new ArrayList<>();
+    private final List<FourCoordinatesVector> wireframeVectors = new ArrayList<>();
+    private final List<Integer> edges = new ArrayList<>();
 
     public WireframeRepresentation(ApplicationParameters applicationParameters) {
         this.applicationParameters = applicationParameters;
@@ -65,7 +65,12 @@ public class WireframeRepresentation {
     }
 
     public void resetRotationMatrix() {
+        initializeRotationMatrix();
         initializeTranslateMatrix();
+    }
+
+    public Matrix getRotationMatrix() {
+        return rotationMatrix;
     }
 
     public double getZoomParameter() {
@@ -101,19 +106,6 @@ public class WireframeRepresentation {
                 {0.0, 0.0, 1.0, 0.0},
                 {0.0, 0.0, 0.0, 1.0}
         });
-    }
-
-    public double[] getRotationAngles() {
-        double[][] rotationMatrixData = rotationMatrix.getElements();
-
-        double angleX = Math.acos(rotationMatrixData[2][2]);
-        double angleY = Math.atan2(rotationMatrixData[2][0], rotationMatrixData[2][2]);
-        double angleZ = Math.atan2(rotationMatrixData[0][1], rotationMatrixData[1][1]);
-
-        angleX = Math.toDegrees(angleX);
-        angleY = Math.toDegrees(angleY);
-        angleZ = Math.toDegrees(angleZ);
-        return new double[] {angleX, angleY, angleZ};
     }
 
     private void setNormalizeMatrix() {
