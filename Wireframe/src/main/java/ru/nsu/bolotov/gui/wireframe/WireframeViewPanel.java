@@ -31,7 +31,7 @@ import static ru.nsu.bolotov.util.UtilConsts.StringConsts.*;
 public class WireframeViewPanel extends JPanel implements PropertyChangeListener, MouseListener, MouseMotionListener, MouseWheelListener {
     private final transient BSplineRepresentation bSplineRepresentation;
     private final transient WireframeRepresentation wireframeRepresentation;
-    private final ApplicationParameters applicationParameters;
+    private final transient ApplicationParameters applicationParameters;
     private Point lastPoint;
 
     public WireframeViewPanel(BSplineRepresentation bSplineRepresentation, ApplicationParameters applicationParameters) {

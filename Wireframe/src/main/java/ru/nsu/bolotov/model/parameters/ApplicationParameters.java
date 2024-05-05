@@ -54,10 +54,11 @@ public class ApplicationParameters {
             int circleSmoothingSegments,
             double zoomParameter
     ) {
+        this.numberOfSupportPoints = numberOfSupportPoints;
         this.numberOfBSplinePartSegments = numberOfBSplinePartSegments;
         this.numberOfFormingLines = numberOfFormingLines;
         this.circleSmoothingSegments = circleSmoothingSegments;
         this.zoomParameter = zoomParameter;
-        setNumberOfSupportPoints(numberOfSupportPoints);
+        propertyChangeSupport.firePropertyChange("loadParameters", null, this);
     }
 }
