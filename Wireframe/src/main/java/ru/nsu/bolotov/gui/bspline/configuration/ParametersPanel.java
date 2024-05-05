@@ -52,7 +52,7 @@ public class ParametersPanel extends JPanel implements PropertyChangeListener {
         });
         this.add(circleSegmentsComboBox);
 
-        // FIXME: от 1 сегмента
+        // TODO: check that numberOfBSplinePartSegments == 1 it's OK for 4-points bSpline
         JLabel bSplineSegmentsLabel = new JLabel("BSpline Part Segments");
         this.add(bSplineSegmentsLabel);
         JComboBox<Integer> bSplineSegmentsComboBox = new JComboBox<>();

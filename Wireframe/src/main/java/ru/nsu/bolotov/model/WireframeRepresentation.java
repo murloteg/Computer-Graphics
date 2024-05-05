@@ -156,13 +156,19 @@ public class WireframeRepresentation {
         int circleSmoothingSegments = applicationParameters.getCircleSmoothingSegments();
 
         double angle = (double) 360 / (numberOfFormingLines * circleSmoothingSegments);
+        double sumX = 0.0;
+        for (Point2D point : bSplinePoints) {
+            sumX += point.getX();
+        }
+        double centerX = sumX / bSplinePoints.size();
+
         Matrix resultMatrix = Matrix.multiplyMatrixByMatrix(cameraPerspectiveProjectionMatrix, translateMatrix);
         for (int i = 0; i < numberOfFormingLines * circleSmoothingSegments; i++) {
             double angleForPart = i * angle;
             double cos = Math.cos(Math.toRadians(angleForPart));
             double sin = Math.sin(Math.toRadians(angleForPart));
             for (Point2D p : bSplinePoints) {
-                FourCoordinatesVector newPoint = new FourCoordinatesVector(p.getY() * cos, p.getY() * sin, p.getX());
+                FourCoordinatesVector newPoint = new FourCoordinatesVector(p.getY() * cos, p.getY() * sin, p.getX() - centerX);
                 newPoint = Matrix.multiplyMatrixByVector(resultMatrix, newPoint);
                 wireframeVectors.add(newPoint);
             }
