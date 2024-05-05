@@ -1,15 +1,16 @@
 package ru.nsu.bolotov.gui.bspline;
 
 import ru.nsu.bolotov.gui.bspline.configuration.ParametersPanel;
+import ru.nsu.bolotov.gui.uicomponent.editor.impl.*;
 import ru.nsu.bolotov.model.BSplineRepresentation;
 import ru.nsu.bolotov.model.parameters.ApplicationParameters;
-import ru.nsu.bolotov.model.uicomponent.EditorInstrument;
-import ru.nsu.bolotov.model.uicomponent.impl.*;
+import ru.nsu.bolotov.gui.uicomponent.editor.EditorInstrument;
 
 import javax.swing.*;
 
 import java.awt.*;
 import java.net.URL;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -19,7 +20,7 @@ import static ru.nsu.bolotov.util.UtilConsts.StringConsts.*;
 
 public class BSplineEditorFrame {
     private final JFrame bSplineFrame;
-    private final java.util.List<EditorInstrument> editorInstrumentList;
+    private final List<EditorInstrument> editorInstrumentList;
 
     public BSplineEditorFrame(BSplineRepresentation bSplineRepresentation, ApplicationParameters applicationParameters) {
         bSplineFrame = new JFrame(BSPLINE_EDITOR_TITLE);
@@ -47,15 +48,11 @@ public class BSplineEditorFrame {
     }
 
     private void initializeInstruments(JFrame frame, EditorPanel editorPanel) {
-        Save saveInstrument = new Save();
-        Open openInstrument = new Open();
         CreatePoints createPointsInstrument = new CreatePoints();
         MovePlane movePlaneInstrument = new MovePlane();
         Normalize normalizeInstrument = new Normalize();
         Info infoInstrument = new Info();
 
-        editorInstrumentList.add(saveInstrument);
-        editorInstrumentList.add(openInstrument);
 //        editorInstrumentList.add(createPointsInstrument);
 //        editorInstrumentList.add(movePlaneInstrument);
         editorInstrumentList.add(normalizeInstrument);
@@ -78,14 +75,11 @@ public class BSplineEditorFrame {
 
     private void addMenuBar(JFrame frame, EditorPanel editorPanel) {
         JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = new JMenu("File");
         JMenu moveStateMenu = new JMenu("Move");
         JMenu instrumentMenu = new JMenu("Instrument");
         JMenu helpMenu = new JMenu("Help");
         for (EditorInstrument editorInstrument : editorInstrumentList) {
-            if ("Open".equals(editorInstrument.getInstrumentName()) || "Save".equals(editorInstrument.getInstrumentName())) {
-                fileMenu.add(editorInstrument.getMenuButton());
-            } else if ("Info".equals(editorInstrument.getInstrumentName())) {
+            if ("Info".equals(editorInstrument.getInstrumentName())) {
                 helpMenu.add(editorInstrument.getMenuButton());
             } else if ("MovePlane".equals(editorInstrument.getInstrumentName()) || "CreatePoints".equals(editorInstrument.getInstrumentName())) {
                 moveStateMenu.add(editorInstrument.getMenuButton());
@@ -95,7 +89,6 @@ public class BSplineEditorFrame {
         }
         JMenu runBar = createRunMenuBar(editorPanel);
 
-        menuBar.add(fileMenu);
 //        menuBar.add(moveStateMenu);
         menuBar.add(instrumentMenu);
         menuBar.add(helpMenu);

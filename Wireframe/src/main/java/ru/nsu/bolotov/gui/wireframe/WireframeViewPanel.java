@@ -1,9 +1,15 @@
 package ru.nsu.bolotov.gui.wireframe;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import ru.nsu.bolotov.model.BSplineRepresentation;
 import ru.nsu.bolotov.model.FourCoordinatesVector;
 import ru.nsu.bolotov.model.Matrix;
 import ru.nsu.bolotov.model.WireframeRepresentation;
+import ru.nsu.bolotov.model.dto.ApplicationParametersDto;
+import ru.nsu.bolotov.model.dto.BSplineStateDto;
+import ru.nsu.bolotov.model.dto.ProgramStateDto;
 import ru.nsu.bolotov.model.parameters.ApplicationParameters;
 
 import javax.swing.*;
@@ -12,21 +18,27 @@ import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Map;
 import java.util.List;
 
 import static ru.nsu.bolotov.util.UtilConsts.DefaultApplicationParameters.MAXIMAL_WIREFRAME_ZOOM_PARAMETER;
 import static ru.nsu.bolotov.util.UtilConsts.DefaultApplicationParameters.MINIMAL_WIREFRAME_ZOOM_PARAMETER;
+import static ru.nsu.bolotov.util.UtilConsts.StringConsts.*;
 
 public class WireframeViewPanel extends JPanel implements PropertyChangeListener, MouseListener, MouseMotionListener, MouseWheelListener {
     private final transient BSplineRepresentation bSplineRepresentation;
     private final transient WireframeRepresentation wireframeRepresentation;
+    private final ApplicationParameters applicationParameters;
     private Point lastPoint;
 
     public WireframeViewPanel(BSplineRepresentation bSplineRepresentation, ApplicationParameters applicationParameters) {
         this.bSplineRepresentation = bSplineRepresentation;
         bSplineRepresentation.addPropertyChangeListener(this);
         this.wireframeRepresentation = new WireframeRepresentation(applicationParameters);
+        this.applicationParameters = applicationParameters;
 
         this.setBackground(Color.WHITE);
         addMouseListener(this);
@@ -53,7 +65,7 @@ public class WireframeViewPanel extends JPanel implements PropertyChangeListener
 
         double zoomParameter = wireframeRepresentation.getZoomParameter();
         if (bSplineRepresentation.getSupportPoints().size() < 4) {
-            Map<Integer, java.util.List<Point2D>> defaultWireframeExample = wireframeRepresentation.defaultWireframeExample();
+            Map<Integer, List<Point2D>> defaultWireframeExample = wireframeRepresentation.defaultWireframeExample();
             List<Point2D> examplePoints = defaultWireframeExample.get(0);
             List<Point2D> exampleEdges = defaultWireframeExample.get(1);
 
@@ -107,32 +119,31 @@ public class WireframeViewPanel extends JPanel implements PropertyChangeListener
         drawXYZ(graphics2D, centerX, centerY);
     }
 
-    private Color interpolateColor(double x1, double y1, double x2) {
-        int red = Math.max(Math.min((int) (255 * x1), 255), 0);
-        int green = Math.max(Math.min((int) (255 * y1), 255), 0);
-        int blue = Math.max(Math.min((int) (255 * (1 - x2)), 255), 0);
-
+    private Color interpolateColor(double normalizedX1, double normalizedY1, double normalizedX2) {
+        int red = Math.max(Math.min((int) (255 * normalizedX1), 255), 0);
+        int green = Math.max(Math.min((int) (255 * normalizedY1), 255), 0);
+        int blue = Math.max(Math.min((int) (255 * (1 - normalizedX2)), 255), 0);
         return new Color(red, green, blue);
     }
 
     private void drawXYZ(Graphics2D graphics2D, int centerX, int centerY) {
         double axisLength = 25;
         double zoomParameter = wireframeRepresentation.getZoomParameter();
-
         Matrix rotationMatrix = wireframeRepresentation.getRotationMatrix();
+
         FourCoordinatesVector xAxisStart = new FourCoordinatesVector(-axisLength, 0, 0);
         FourCoordinatesVector xAxisEnd = Matrix.multiplyMatrixByVector(rotationMatrix, xAxisStart);
-        graphics2D.setColor(Color.RED);
+        graphics2D.setColor(Color.BLUE);
         graphics2D.drawLine(centerX, centerY, centerX + (int) (xAxisEnd.getX() * zoomParameter), centerY - (int) (xAxisEnd.getY() * zoomParameter));
 
         FourCoordinatesVector yAxisStart = new FourCoordinatesVector(0, -axisLength, 0);
         FourCoordinatesVector yAxisEnd = Matrix.multiplyMatrixByVector(rotationMatrix, yAxisStart);
-        graphics2D.setColor(Color.GREEN);
+        graphics2D.setColor(Color.RED);
         graphics2D.drawLine(centerX, centerY, centerX + (int) (yAxisEnd.getX() * zoomParameter), centerY - (int) (yAxisEnd.getY() * zoomParameter));
 
         FourCoordinatesVector zAxisStart = new FourCoordinatesVector(0, 0, -axisLength);
         FourCoordinatesVector zAxisEnd = Matrix.multiplyMatrixByVector(rotationMatrix, zAxisStart);
-        graphics2D.setColor(Color.BLUE);
+        graphics2D.setColor(Color.GREEN);
         graphics2D.drawLine(centerX, centerY, centerX + (int) (zAxisEnd.getX() * zoomParameter), centerY - (int) (zAxisEnd.getY() * zoomParameter));
     }
 
@@ -140,6 +151,74 @@ public class WireframeViewPanel extends JPanel implements PropertyChangeListener
         wireframeRepresentation.resetRotationMatrix();
         lastPoint = new Point();
         repaint();
+    }
+
+    public String saveProgramStateAsJsonString() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        BSplineStateDto bSplineStateDto = new BSplineStateDto(
+                bSplineRepresentation.getSupportPoints(),
+                bSplineRepresentation.getBSplinePoints()
+        );
+        ApplicationParametersDto applicationParametersDto = new ApplicationParametersDto(
+                applicationParameters.getNumberOfSupportPoints(),
+                applicationParameters.getNumberOfBSplinePartSegments(),
+                applicationParameters.getNumberOfFormingLines(),
+                applicationParameters.getCircleSmoothingSegments(),
+                applicationParameters.getZoomParameter()
+        );
+        double[][] rotationMatrix = wireframeRepresentation.getRotationMatrix().getElements();
+        double[][] translateMatrix = wireframeRepresentation.getTranslateMatrix().getElements();
+        ProgramStateDto programStateDto = new ProgramStateDto(
+                WIREFRAME_PROGRAM_ID,
+                bSplineStateDto,
+                applicationParametersDto,
+                rotationMatrix,
+                translateMatrix
+        );
+
+        String serializerResult;
+        try {
+            serializerResult = objectMapper.writeValueAsString(programStateDto);
+        } catch (IOException exception) {
+            throw new UncheckedIOException(exception);
+        }
+        return serializerResult;
+    }
+
+    public void loadProgramStateFromJson(File jsonFile) {
+        ObjectMapper objectMapper = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES, true);
+        ProgramStateDto programStateDto;
+        try {
+            programStateDto = objectMapper.readValue(jsonFile, ProgramStateDto.class);
+        } catch (UnrecognizedPropertyException exception) {
+            JOptionPane.showMessageDialog(this, INCORRECT_JSON_DESERIALIZATION, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+            return;
+        } catch (IOException exception) {
+            throw new UncheckedIOException(exception);
+        }
+        if (!WIREFRAME_PROGRAM_ID.equals(programStateDto.getProgramId())) {
+            JOptionPane.showMessageDialog(this, INCORRECT_PROGRAM_ID, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+        }
+        BSplineStateDto bSplineStateDto = programStateDto.getBSplineStateDto();
+        bSplineRepresentation.loadBSplineParameters(bSplineStateDto.getSupportPoints(), bSplineStateDto.getBSplinePoints());
+
+        ApplicationParametersDto applicationParametersDto = programStateDto.getApplicationParametersDto();
+        applicationParameters.loadApplicationParameters(
+                applicationParametersDto.getNumberOfSupportPoints(),
+                applicationParametersDto.getNumberOfBSplinePartSegments(),
+                applicationParametersDto.getNumberOfFormingLines(),
+                applicationParametersDto.getCircleSmoothingSegments(),
+                applicationParametersDto.getZoomParameter()
+        );
+
+        double[][] rotationMatrixData = programStateDto.getRotationMatrix();
+        Matrix rotationMatrix = new Matrix(rotationMatrixData);
+        wireframeRepresentation.setRotationMatrix(rotationMatrix);
+
+        double[][] translateMatrixData = programStateDto.getRotationMatrix();
+        Matrix translateMatrix = new Matrix(translateMatrixData);
+        wireframeRepresentation.setTranslateMatrix(translateMatrix);
     }
 
     @Override

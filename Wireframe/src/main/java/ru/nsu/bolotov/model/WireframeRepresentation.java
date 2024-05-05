@@ -1,5 +1,7 @@
 package ru.nsu.bolotov.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import ru.nsu.bolotov.model.parameters.ApplicationParameters;
 
 import java.awt.*;
@@ -9,18 +11,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ru.nsu.bolotov.util.UtilConsts.DefaultApplicationParameters.DEFAULT_ROTATION_ANGLE_DEGREES;
-import static ru.nsu.bolotov.util.UtilConsts.DefaultApplicationParameters.DEFAULT_WIREFRAME_ZOOM_PARAMETER;
+import static ru.nsu.bolotov.util.UtilConsts.DefaultApplicationParameters.*;
 
 public class WireframeRepresentation {
     private final ApplicationParameters applicationParameters;
-    private Matrix rotationMatrix;
     private Matrix cameraPerspectiveProjectionMatrix;
-    private Matrix translateMatrix;
     private Matrix normalizeMatrix;
-    private double zoomParameter = DEFAULT_WIREFRAME_ZOOM_PARAMETER;
-    private double rotationAngle = DEFAULT_ROTATION_ANGLE_DEGREES;
+
+    @Getter
+    @Setter
+    private Matrix translateMatrix;
+
+    @Getter
+    @Setter
+    private Matrix rotationMatrix;
+
+    @Getter
     private final List<FourCoordinatesVector> wireframeVectors = new ArrayList<>();
+
+    @Getter
     private final List<Integer> edges = new ArrayList<>();
 
     public WireframeRepresentation(ApplicationParameters applicationParameters) {
@@ -30,12 +39,8 @@ public class WireframeRepresentation {
         initializeTranslateMatrix();
     }
 
-    public List<FourCoordinatesVector> getWireframeVectors() {
-        return wireframeVectors;
-    }
-
-    public List<Integer> getEdges() {
-        return edges;
+    public double getZoomParameter() {
+        return applicationParameters.getZoomParameter();
     }
 
     public void updateRotationMatrix(Point first, Point second) {
@@ -51,8 +56,8 @@ public class WireframeRepresentation {
     }
 
     private Matrix findRotationMatrix(FourCoordinatesVector axis) {
-        double cos = Math.cos(Math.toRadians(rotationAngle));
-        double sin = Math.sin(Math.toRadians(rotationAngle));
+        double cos = Math.cos(Math.toRadians(DEFAULT_ROTATION_ANGLE_DEGREES));
+        double sin = Math.sin(Math.toRadians(DEFAULT_ROTATION_ANGLE_DEGREES));
         double x = axis.getX();
         double y = axis.getY();
         double z = axis.getZ();
@@ -69,16 +74,8 @@ public class WireframeRepresentation {
         initializeTranslateMatrix();
     }
 
-    public Matrix getRotationMatrix() {
-        return rotationMatrix;
-    }
-
-    public double getZoomParameter() {
-        return zoomParameter;
-    }
-
     public void updateZoomParameter(double zoomParameter) {
-        this.zoomParameter = zoomParameter;
+        applicationParameters.setZoomParameter(zoomParameter);
     }
 
     private void initializeRotationMatrix() {
@@ -94,7 +91,7 @@ public class WireframeRepresentation {
         this.cameraPerspectiveProjectionMatrix = new Matrix(new double[][]{
                 {1.0, 0.0, 0.0, 0.0},
                 {0.0, 1.0, 0.0, 0.0},
-                {0.0, 0.0, 0.0, 10.0},
+                {0.0, 0.0, 0.0, DEFAULT_PERSPECTIVE_PROJECTION_SCALE},
                 {0.0, 0.0, 0.0, 1.0}
         });
     }

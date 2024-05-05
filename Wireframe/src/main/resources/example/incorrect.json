@@ -1,0 +1,45 @@
+{
+	"_id": "6637b2c0166eac18e2fe1eec",
+	"index": 0,
+	"guid": "544d6b7f-aafe-4fae-bd53-1ba2c99c2cb6",
+	"isActive": false,
+	"balance": "$1,264.94",
+	"picture": "http://placehold.it/32x32",
+	"age": 40,
+	"eyeColor": "brown",
+	"name": "Mccullough Carrillo",
+	"gender": "male",
+	"company": "GADTRON",
+	"email": "mcculloughcarrillo@gadtron.com",
+	"phone": "+1 (854) 415-3131",
+	"address": "757 Provost Street, Harrison, Wyoming, 6124",
+	"about": "Sint esse aliqua Lorem non exercitation occaecat laborum elit esse labore quis. Anim ad consequat cillum ad occaecat. Dolor esse pariatur proident ut fugiat magna exercitation ex veniam aliqua. Culpa ut cillum incididunt elit esse pariatur occaecat Lorem. Do et aliqua fugiat amet dolore culpa consectetur quis ipsum voluptate proident nisi laborum cupidatat.\r\n",
+	"registered": "2017-04-06T05:53:17 -07:00",
+	"latitude": -55.757301,
+	"longitude": 153.5383,
+	"tags": [
+		"anim",
+		"laboris",
+		"adipisicing",
+		"est",
+		"fugiat",
+		"tempor",
+		"culpa"
+	],
+	"friends": [
+		{
+			"id": 0,
+			"name": "Waters Cortez"
+		},
+		{
+			"id": 1,
+			"name": "Jaclyn Davis"
+		},
+		{
+			"id": 2,
+			"name": "Mcclure Branch"
+		}
+	],
+	"greeting": "Hello, Mccullough Carrillo! You have 5 unread messages.",
+	"favoriteFruit": "strawberry"
+}

@@ -1,7 +1,7 @@
-package ru.nsu.bolotov.model.uicomponent.impl;
+package ru.nsu.bolotov.gui.uicomponent.editor.impl;
 
 import ru.nsu.bolotov.gui.bspline.EditorPanel;
-import ru.nsu.bolotov.model.uicomponent.EditorInstrument;
+import ru.nsu.bolotov.gui.uicomponent.editor.EditorInstrument;
 
 import javax.swing.*;
 import java.awt.*;

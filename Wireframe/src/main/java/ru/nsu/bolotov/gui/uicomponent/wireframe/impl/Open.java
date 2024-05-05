@@ -1,13 +1,13 @@
-package ru.nsu.bolotov.model.uicomponent.impl;
+package ru.nsu.bolotov.gui.uicomponent.wireframe.impl;
 
-import ru.nsu.bolotov.gui.bspline.EditorPanel;
-import ru.nsu.bolotov.model.uicomponent.EditorInstrument;
+import ru.nsu.bolotov.gui.uicomponent.wireframe.WireframePanelInstrument;
+import ru.nsu.bolotov.gui.wireframe.WireframeViewPanel;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
-public class Open implements EditorInstrument {
+public class Open implements WireframePanelInstrument {
     private final JButton instrumentButton;
     private final JMenuItem menuButton;
 
@@ -34,34 +34,32 @@ public class Open implements EditorInstrument {
     }
 
     @Override
-    public void injectActionListeners(JFrame frame, EditorPanel editorPanel) {
+    public void injectActionListeners(JFrame frame, WireframeViewPanel wireframeViewPanel) {
         instrumentButton.addActionListener(event -> {
-            openFile(frame);
+            openFile(frame, wireframeViewPanel);
         });
 
         menuButton.addActionListener(event -> {
-            openFile(frame);
+            openFile(frame, wireframeViewPanel);
         });
     }
 
-    // FIXME: перенести в WireframeWindow
-    private void openFile(JFrame frame) {
+    private void openFile(JFrame frame, WireframeViewPanel wireframeViewPanel) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileFilter() {
             @Override
             public boolean accept(File file) {
-                return file.getName().endsWith(".png") || file.getName().endsWith(".jpg") ||
-                        file.getName().endsWith(".bmp") || file.getName().endsWith(".gif");
+                return file.getName().endsWith(".json");
             }
 
             @Override
             public String getDescription() {
-                return "PNG, JPG, BMP, GIF";
+                return "JSON";
             }
         });
 
         fileChooser.showOpenDialog(frame);
         File selectedFile = fileChooser.getSelectedFile();
-//        imagePanel.loadFileContent(selectedFile);
+        wireframeViewPanel.loadProgramStateFromJson(selectedFile);
     }
 }

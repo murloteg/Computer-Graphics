@@ -1,4 +1,4 @@
-package ru.nsu.bolotov.model.uicomponent;
+package ru.nsu.bolotov.gui.uicomponent.editor;
 
 import ru.nsu.bolotov.gui.bspline.EditorPanel;
 

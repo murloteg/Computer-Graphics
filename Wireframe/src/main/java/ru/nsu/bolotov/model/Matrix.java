@@ -1,26 +1,18 @@
 package ru.nsu.bolotov.model;
 
-import java.util.Arrays;
+import lombok.Getter;
 
 public class Matrix {
     private final int rows;
     private final int columns;
+
+    @Getter
     private final double[][] elements;
 
     public Matrix(double[][] elements) {
         this.rows = elements.length;
         this.columns = elements[0].length;
         this.elements = elements;
-    }
-
-    public Matrix(Matrix other) {
-        this.rows = other.rows;
-        this.columns = other.columns;
-        this.elements = Arrays.copyOf(other.elements, other.elements.length);
-    }
-
-    public double[][] getElements() {
-        return elements;
     }
 
     public double getValueByPosition(int row, int column) {

@@ -11,6 +11,7 @@ public final class UtilConsts {
         public static final double MINIMAL_WIREFRAME_ZOOM_PARAMETER = 25.0;
         public static final double MAXIMAL_WIREFRAME_ZOOM_PARAMETER = 300.0;
         public static final double DEFAULT_ROTATION_ANGLE_DEGREES = 6.0;
+        public static final double DEFAULT_PERSPECTIVE_PROJECTION_SCALE = 10.0;
 
         private DefaultApplicationParameters() {
             throw new IllegalStateException(StringConsts.INSTANTIATION_MESSAGE);
@@ -30,6 +31,7 @@ public final class UtilConsts {
 
     public static final class StringConsts {
         public static final String BSPLINE_EDITOR_TITLE = "BSpline Editor";
+        public static final String WIREFRAME_PROGRAM_ID = "WIREFRAME_APPLICATION";
         public static final String ABOUT_BUTTON = "О программе";
         public static final String ABOUT_PROGRAM_TEXT = """
                 Информация о программе Custom Wireframe
@@ -44,6 +46,8 @@ public final class UtilConsts {
                 """;
         public static final String ERROR_TITLE = "Произошла ошибка";
         public static final String INCORRECT_FILE_EXTENSION_MESSAGE = "Указано некорректное расширение файла!";
+        public static final String INCORRECT_JSON_DESERIALIZATION = "Содержимое файла не может быть обработано";
+        public static final String INCORRECT_PROGRAM_ID = "Используется несовместимый wireframe-файл";
         public static final String INSTANTIATION_MESSAGE = "Instantiation of util class";
 
         private StringConsts() {

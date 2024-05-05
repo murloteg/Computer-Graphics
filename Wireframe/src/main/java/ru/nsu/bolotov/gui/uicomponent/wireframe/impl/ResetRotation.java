@@ -1,16 +1,15 @@
-package ru.nsu.bolotov.model.uicomponent.impl;
+package ru.nsu.bolotov.gui.uicomponent.wireframe.impl;
 
-import ru.nsu.bolotov.gui.bspline.EditorPanel;
-import ru.nsu.bolotov.gui.bspline.MovingMode;
-import ru.nsu.bolotov.model.uicomponent.EditorInstrument;
+import ru.nsu.bolotov.gui.uicomponent.wireframe.WireframePanelInstrument;
+import ru.nsu.bolotov.gui.wireframe.WireframeViewPanel;
 
 import javax.swing.*;
 
-public class CreatePoints implements EditorInstrument {
+public class ResetRotation implements WireframePanelInstrument {
     private final JButton instrumentButton;
     private final JMenuItem menuButton;
 
-    public CreatePoints() {
+    public ResetRotation() {
         String instrumentName = this.getInstrumentName();
         this.instrumentButton = new JButton();
         this.instrumentButton.setToolTipText(instrumentName);
@@ -33,13 +32,13 @@ public class CreatePoints implements EditorInstrument {
     }
 
     @Override
-    public void injectActionListeners(JFrame frame, EditorPanel editorPanel) {
+    public void injectActionListeners(JFrame frame, WireframeViewPanel wireframeViewPanel) {
         instrumentButton.addActionListener(event -> {
-            editorPanel.changeMovingMode(MovingMode.STOP_MOVING);
+            wireframeViewPanel.resetRotationMatrix();
         });
 
         menuButton.addActionListener(event -> {
-            editorPanel.changeMovingMode(MovingMode.STOP_MOVING);
+            wireframeViewPanel.resetRotationMatrix();
         });
     }
 }

@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import static ru.nsu.bolotov.util.UtilConsts.DefaultApplicationParameters.DISTANCE_BETWEEN_AXIS_DASH_PX;
@@ -14,7 +16,7 @@ import static ru.nsu.bolotov.util.UtilConsts.DefaultApplicationParameters.SUPPOR
 import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.MINIMAL_HEIGHT;
 import static ru.nsu.bolotov.util.UtilConsts.DimensionConsts.MINIMAL_WIDTH;
 
-public class EditorPanel extends JPanel implements MouseMotionListener, MouseListener, MouseWheelListener {
+public class EditorPanel extends JPanel implements MouseMotionListener, MouseListener, MouseWheelListener, PropertyChangeListener {
     private final transient ApplicationParameters applicationParameters;
     private final transient BSplineRepresentation bSplineRepresentation;
     private int currentDistanceBetweenAxisDashPx = DISTANCE_BETWEEN_AXIS_DASH_PX;
@@ -27,6 +29,7 @@ public class EditorPanel extends JPanel implements MouseMotionListener, MouseLis
     public EditorPanel(BSplineRepresentation bSplineRepresentation, ApplicationParameters applicationParameters) {
         this.applicationParameters = applicationParameters;
         this.bSplineRepresentation = bSplineRepresentation;
+        bSplineRepresentation.addPropertyChangeListener(this);
         Dimension minimalDimension = new Dimension(MINIMAL_WIDTH, MINIMAL_HEIGHT);
         this.setPreferredSize(minimalDimension);
         this.setBackground(Color.BLACK);
@@ -38,6 +41,13 @@ public class EditorPanel extends JPanel implements MouseMotionListener, MouseLis
         addMouseListener(this);
         addMouseMotionListener(this);
         addMouseWheelListener(this);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("bSplineUpdated".equals(evt.getPropertyName())) {
+            repaint();
+        }
     }
 
     @Override

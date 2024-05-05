@@ -1,5 +1,8 @@
 package ru.nsu.bolotov.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.awt.geom.Point2D;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -18,24 +21,24 @@ public class BSplineRepresentation {
                     {1.0 / 6, 2.0 / 3, 1.0 / 6, 0}
             }
     );
-    private final List<Point2D> supportPoints = new ArrayList<>();
-    private final List<Point2D> bSplinePoints = new ArrayList<>();
+
+    @Getter
+    private List<Point2D> supportPoints = new ArrayList<>();
+
+    @Getter
+    private List<Point2D> bSplinePoints = new ArrayList<>();
+
+    @Setter
     private int numberOfBSplinePartSegments = DEFAULT_NUMBER_OF_BSPLINE_PART_SEGMENTS;
 
     public void addPropertyChangeListener(PropertyChangeListener propertyChangeListener) {
         propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
     }
 
-    public void setNumberOfBSplinePartSegments(int numberOfBSplinePartSegments) {
-        this.numberOfBSplinePartSegments = numberOfBSplinePartSegments;
-    }
-
-    public List<Point2D> getSupportPoints() {
-        return supportPoints;
-    }
-
-    public List<Point2D> getBSplinePoints() {
-        return bSplinePoints;
+    public void loadBSplineParameters(List<Point2D> supportPoints, List<Point2D> bSplinePoints) {
+        this.supportPoints = supportPoints;
+        this.bSplinePoints = bSplinePoints;
+        propertyChangeSupport.firePropertyChange("bSplineUpdated", null, this);
     }
 
     public void addNewSupportPoint(Point2D point2D) {
