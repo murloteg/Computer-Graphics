@@ -51,7 +51,6 @@ public class WireframeViewPanel extends JPanel implements PropertyChangeListener
         int centerY = getHeight() / 2;
 
         double zoomParameter = wireframeRepresentation.getZoomParameter();
-        // FIXME: учесть расстояние до точек (разная яркость)
         if (bSplineRepresentation.getSupportPoints().size() < 4) {
             Map<Integer, java.util.List<Point2D>> defaultWireframeExample = wireframeRepresentation.defaultWireframeExample();
             java.util.List<Point2D> examplePoints = defaultWireframeExample.get(0);
@@ -68,16 +67,37 @@ public class WireframeViewPanel extends JPanel implements PropertyChangeListener
             java.util.List<FourCoordinatesVector> points = wireframeRepresentation.getWireframeVectors();
             java.util.List<Integer> edges = wireframeRepresentation.getEdges();
 
+            double maxXValue = 0;
+            double maxYValue = 0;
+            for (FourCoordinatesVector point : points) {
+                maxXValue = Math.max(maxXValue, point.getX());
+                maxYValue = Math.max(maxYValue, point.getY());
+            }
+
             for (int i = 0; i < edges.size(); i += 2) {
                 FourCoordinatesVector p1 = points.get(edges.get(i));
                 FourCoordinatesVector p2 = points.get(edges.get(i + 1));
 
+                double normalizedX1 = p1.getX() / maxXValue;
+                double normalizedY1 = p1.getY() / maxYValue;
+                double normalizedX2 = p2.getX() / maxXValue;
+//                double normalizedY2 = p2.getY() / maxYValue;
+                Color colorEdge = interpolateColor(normalizedX1, normalizedY1, normalizedX2);
+                graphics2D.setColor(colorEdge);
                 graphics2D.drawLine(
                         (int) (centerX + p1.getX() * zoomParameter), (int) (centerY - p1.getY() * zoomParameter),
                         (int) (centerX + p2.getX() * zoomParameter), (int) (centerY - p2.getY() * zoomParameter)
                 );
             }
         }
+    }
+
+    private Color interpolateColor(double x1, double y1, double x2) {
+        int red = Math.max(Math.min((int) (255 * x1), 255), 0);
+        int green = Math.max(Math.min((int) (255 * y1), 255), 0);
+        int blue = Math.max(Math.min((int) (255 * (1 - x2)), 255), 0);
+
+        return new Color(red, green, blue);
     }
 
     public void resetRotationMatrix() {

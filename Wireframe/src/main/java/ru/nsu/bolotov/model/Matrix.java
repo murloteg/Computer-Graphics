@@ -19,6 +19,10 @@ public class Matrix {
         this.elements = Arrays.copyOf(other.elements, other.elements.length);
     }
 
+    public double[][] getElements() {
+        return elements;
+    }
+
     public double getValueByPosition(int row, int column) {
         if (row < 0 || row >= this.rows || column < 0 || column >= this.columns) {
             throw new IllegalArgumentException("Illegal position");
