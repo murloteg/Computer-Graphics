@@ -20,10 +20,6 @@ public class WireframeRepresentation {
 
     @Getter
     @Setter
-    private Matrix translateMatrix;
-
-    @Getter
-    @Setter
     private Matrix rotationMatrix;
 
     @Getter
@@ -36,7 +32,6 @@ public class WireframeRepresentation {
         this.applicationParameters = applicationParameters;
         initializeRotationMatrix();
         initializePerspectiveProjectionMatrix();
-        initializeTranslateMatrix();
     }
 
     public double getZoomParameter() {
@@ -51,7 +46,6 @@ public class WireframeRepresentation {
         axis.normalization();
 
         Matrix rotation = findRotationMatrix(axis);
-        translateMatrix = Matrix.multiplyMatrixByMatrix(rotation, translateMatrix);
         rotationMatrix = Matrix.multiplyMatrixByMatrix(rotation, rotationMatrix);
     }
 
@@ -71,7 +65,6 @@ public class WireframeRepresentation {
 
     public void resetRotationMatrix() {
         initializeRotationMatrix();
-        initializeTranslateMatrix();
     }
 
     public void updateZoomParameter(double zoomParameter) {
@@ -92,15 +85,6 @@ public class WireframeRepresentation {
                 {1.0, 0.0, 0.0, 0.0},
                 {0.0, 1.0, 0.0, 0.0},
                 {0.0, 0.0, 0.0, DEFAULT_PERSPECTIVE_PROJECTION_SCALE},
-                {0.0, 0.0, 0.0, 1.0}
-        });
-    }
-
-    private void initializeTranslateMatrix() {
-        this.translateMatrix = new Matrix(new double[][]{
-                {1.0, 0.0, 0.0, 0.0},
-                {0.0, 1.0, 0.0, 0.0},
-                {0.0, 0.0, 1.0, 0.0},
                 {0.0, 0.0, 0.0, 1.0}
         });
     }
@@ -164,7 +148,7 @@ public class WireframeRepresentation {
         }
         double centerX = sumX / bSplinePoints.size();
 
-        Matrix resultMatrix = Matrix.multiplyMatrixByMatrix(cameraPerspectiveProjectionMatrix, translateMatrix);
+        Matrix resultMatrix = Matrix.multiplyMatrixByMatrix(cameraPerspectiveProjectionMatrix, rotationMatrix);
         for (int i = 0; i < numberOfFormingLines * circleSmoothingSegments; i++) {
             double angleForPart = i * angle;
             double cos = Math.cos(Math.toRadians(angleForPart));
@@ -219,7 +203,7 @@ public class WireframeRepresentation {
         examplePoints.add(new FourCoordinatesVector(0.0, 1.0, 0.0));
 
         List<Point2D> exampleVectors = new ArrayList<>();
-        Matrix resultMatrix = Matrix.multiplyMatrixByMatrix(cameraPerspectiveProjectionMatrix, translateMatrix);
+        Matrix resultMatrix = Matrix.multiplyMatrixByMatrix(cameraPerspectiveProjectionMatrix, rotationMatrix);
         for (FourCoordinatesVector p : examplePoints) {
             FourCoordinatesVector planePoint;
             planePoint = Matrix.multiplyMatrixByVector(resultMatrix, p);

@@ -21,8 +21,4 @@ public class ProgramStateDto {
     @JsonProperty(value = "rotation_matrix", required = true)
     @JsonDeserialize(as = double[][].class)
     private double[][] rotationMatrix;
-
-    @JsonProperty(value = "translate_matrix", required = true)
-    @JsonDeserialize(as = double[][].class)
-    private double[][] translateMatrix;
 }

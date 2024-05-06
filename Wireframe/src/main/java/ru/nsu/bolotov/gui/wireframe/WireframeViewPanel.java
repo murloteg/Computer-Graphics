@@ -167,13 +167,11 @@ public class WireframeViewPanel extends JPanel implements PropertyChangeListener
                 applicationParameters.getZoomParameter()
         );
         double[][] rotationMatrix = wireframeRepresentation.getRotationMatrix().getElements();
-        double[][] translateMatrix = wireframeRepresentation.getTranslateMatrix().getElements();
         ProgramStateDto programStateDto = new ProgramStateDto(
                 WIREFRAME_PROGRAM_ID,
                 bSplineStateDto,
                 applicationParametersDto,
-                rotationMatrix,
-                translateMatrix
+                rotationMatrix
         );
 
         String serializerResult;
@@ -215,10 +213,6 @@ public class WireframeViewPanel extends JPanel implements PropertyChangeListener
         double[][] rotationMatrixData = programStateDto.getRotationMatrix();
         Matrix rotationMatrix = new Matrix(rotationMatrixData);
         wireframeRepresentation.setRotationMatrix(rotationMatrix);
-
-        double[][] translateMatrixData = programStateDto.getRotationMatrix();
-        Matrix translateMatrix = new Matrix(translateMatrixData);
-        wireframeRepresentation.setTranslateMatrix(translateMatrix);
     }
 
     @Override
